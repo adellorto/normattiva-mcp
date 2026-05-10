@@ -5,7 +5,7 @@
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
-    "normattiva-mcp": "./dist/index.js"
+    "normattiva-mcp": "dist/index.js"
   },
   "files": [
     "dist",
@@ -30,11 +30,15 @@
     "ai",
     "claude"
   ],
-  "author": "",
+  "author": "adellorto (https://github.com/adellorto)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/adellorto/normattiva-mcp.git"
+  },
+  "homepage": "https://github.com/adellorto/normattiva-mcp/tree/main",
+  "bugs": {
+    "url": "https://github.com/adellorto/normattiva-mcp/issues"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
