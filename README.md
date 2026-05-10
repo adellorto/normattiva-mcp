@@ -36,7 +36,7 @@ It wraps the synchronous read endpoints (search, article detail, recent updates)
 
 ## Installation & client configuration
 
-Once published, run via `npx`:
+Run via `npx`:
 
 ```bash
 npx normattiva-mcp

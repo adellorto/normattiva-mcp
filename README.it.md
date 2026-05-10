@@ -36,7 +36,7 @@ Wrappa gli endpoint sincroni di lettura (ricerca, dettaglio atto, atti aggiornat
 
 ## Installazione e configurazione del client
 
-Una volta pubblicato, eseguilo con `npx`:
+Eseguilo con `npx`:
 
 ```bash
 npx normattiva-mcp
