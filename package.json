@@ -1,0 +1,47 @@
+{
+  "name": "normattiva-mcp",
+  "version": "0.1.0",
+  "description": "MCP server wrapping the Normattiva OpenData API for Italian legislation (search, read articles, monitor recent updates).",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "normattiva-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc && chmod +x dist/index.js",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "normattiva",
+    "italian-law",
+    "legislation",
+    "ipzs",
+    "ai",
+    "claude"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.6.0"
+  }
+}

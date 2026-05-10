@@ -1,0 +1,23 @@
+# Ignora tutti i file PDF
+*.pdf
+.env
+
+# Node
+node_modules/
+dist/
+*.tsbuildinfo
+npm-debug.log*
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+.claude/
+
+# Python venv (used by exploratory tests/)
+.venv/
+
+# Exploratory tests material — keep only the Normattiva API notebook and the smoke test.
+tests/*
+!tests/normattiva_api_tests.ipynb
+!tests/smoke.mjs
