@@ -4,7 +4,7 @@
 
 # Node
 node_modules/
-dist/
+**/dist/
 *.tsbuildinfo
 npm-debug.log*
 
@@ -16,6 +16,10 @@ npm-debug.log*
 
 # Python venv (used by exploratory tests/)
 .venv/
+
+# Files staged into stdio-server by prepack (canonical copies live at repo root)
+/packages/stdio-server/README.md
+/packages/stdio-server/LICENSE
 
 # Exploratory tests material — keep only the Normattiva API notebook and the smoke test.
 tests/*

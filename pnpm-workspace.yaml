@@ -1,0 +1,7 @@
+packages:
+  - "packages/*"
+
+# esbuild's install script downloads its platform-specific native binary.
+# Required for the publish-time bundling step in packages/stdio-server.
+allowBuilds:
+  esbuild: true

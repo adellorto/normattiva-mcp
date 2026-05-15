@@ -1,0 +1,53 @@
+{
+  "name": "normattiva-mcp",
+  "version": "0.1.2",
+  "description": "MCP server wrapping the Normattiva OpenData API for Italian legislation (search, read articles, monitor recent updates).",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "normattiva-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc && chmod +x dist/index.js",
+    "bundle": "./node_modules/esbuild/bin/esbuild dist/index.js --bundle --platform=node --format=esm --outfile=dist/index.bundled.mjs --external:zod --external:@modelcontextprotocol/sdk --external:@modelcontextprotocol/sdk/* && mv dist/index.bundled.mjs dist/index.js && chmod +x dist/index.js",
+    "start": "node dist/index.js",
+    "prepack": "npm run build && npm run bundle && cp ../../README.md ../../LICENSE .",
+    "postpack": "rm README.md LICENSE && npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "normattiva",
+    "italian-law",
+    "legislation",
+    "ipzs",
+    "ai",
+    "claude"
+  ],
+  "author": "adellorto (https://github.com/adellorto)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adellorto/normattiva-mcp.git"
+  },
+  "homepage": "https://github.com/adellorto/normattiva-mcp/tree/main",
+  "bugs": {
+    "url": "https://github.com/adellorto/normattiva-mcp/issues"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@normattiva/core": "workspace:*",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}

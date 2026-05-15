@@ -8,6 +8,7 @@ import {
 } from "./api.js";
 import { htmlToText } from "./html.js";
 import type { RicercaAvanzataBody } from "./types.js";
+import type { ToolContext } from "./context.js";
 
 const dateString = z
   .string()
@@ -23,7 +24,7 @@ function jsonContent(data: unknown) {
   };
 }
 
-export function registerTools(server: McpServer): void {
+export function registerTools(server: McpServer, _ctx: ToolContext): void {
   server.registerTool(
     "search_acts",
     {

@@ -1,19 +1,24 @@
 #!/usr/bin/env node
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { registerTools } from "./tools.js";
-import { registerResources } from "./resources.js";
-import { registerPrompts } from "./prompts.js";
+import {
+  registerTools,
+  registerResources,
+  registerPrompts,
+  type ToolContext,
+} from "@normattiva/core";
 
 async function main(): Promise<void> {
   const server = new McpServer({
     name: "normattiva-mcp",
-    version: "0.1.0",
+    version: "0.1.2",
   });
 
-  registerTools(server);
-  registerResources(server);
-  registerPrompts(server);
+  const ctx: ToolContext = {};
+
+  registerTools(server, ctx);
+  registerResources(server, ctx);
+  registerPrompts(server, ctx);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

@@ -5,6 +5,7 @@ import {
   getCollezioniPredefinite,
   getRicerchePredefinite,
 } from "./api.js";
+import type { ToolContext } from "./context.js";
 
 function jsonResource(uri: URL, data: unknown) {
   return {
@@ -18,7 +19,7 @@ function jsonResource(uri: URL, data: unknown) {
   };
 }
 
-export function registerResources(server: McpServer): void {
+export function registerResources(server: McpServer, _ctx: ToolContext): void {
   server.registerResource(
     "denominazioni",
     "normattiva://tipologiche/denominazioni",

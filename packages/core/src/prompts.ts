@@ -1,7 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import type { ToolContext } from "./context.js";
 
-export function registerPrompts(server: McpServer): void {
+export function registerPrompts(server: McpServer, _ctx: ToolContext): void {
   server.registerPrompt(
     "ricerca-articolo",
     {

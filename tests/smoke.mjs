@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const serverPath = resolve(__dirname, "..", "dist", "index.js");
+const serverPath = resolve(__dirname, "..", "packages", "stdio-server", "dist", "index.js");
 
 const proc = spawn("node", [serverPath], {
   stdio: ["pipe", "pipe", "inherit"],
