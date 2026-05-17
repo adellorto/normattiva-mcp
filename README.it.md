@@ -78,6 +78,36 @@ Il server dialoga sempre con l'**ambiente di esercizio dell'API OpenData** di No
 
 L'API OpenData è aperta e non richiede autenticazione.
 
+## Trasporto HTTP (self-hosted)
+
+Oltre al binario stdio pubblicato su npm, il repo include anche `packages/http-server/` — un deploy su Vercel dello stesso server MCP sul trasporto Streamable HTTP. Utile per i client che hanno bisogno di un endpoint remoto invece di un sottoprocesso locale.
+
+**Endpoint hosted:** TBD.
+
+Self-host sul tuo account Vercel:
+
+```bash
+git clone https://github.com/adellorto/normattiva-mcp.git
+cd normattiva-mcp
+pnpm install
+cd packages/http-server
+npx vercel deploy
+```
+
+Configurazione client dopo il deploy:
+
+```json
+{
+  "mcpServers": {
+    "normattiva": {
+      "url": "https://<your-deployment>.vercel.app/api/mcp"
+    }
+  }
+}
+```
+
+L'handler espone solo Streamable HTTP (SSE è rimosso dalla spec MCP 2025-03-26). Nessuna autenticazione di default — chiunque conosca l'URL può chiamarlo.
+
 ## Build da sorgente
 
 Richiede Node.js ≥ 20.

@@ -1,6 +1,11 @@
 packages:
   - "packages/*"
 
+# Dedupe the SDK: mcp-handler@1.1.0 pins an older 1.26.0; force everyone onto
+# the same line as packages/core and packages/stdio-server.
+overrides:
+  "@modelcontextprotocol/sdk": "^1.29.0"
+
 # esbuild's install script downloads its platform-specific native binary.
 # Required for the publish-time bundling step in packages/stdio-server.
 allowBuilds:

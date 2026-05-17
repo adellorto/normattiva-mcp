@@ -21,7 +21,12 @@ npm-debug.log*
 /packages/stdio-server/README.md
 /packages/stdio-server/LICENSE
 
+# `npm pack` output
+/packages/stdio-server/*.tgz
+
 # Exploratory tests material — keep only the Normattiva API notebook and the smoke test.
 tests/*
 !tests/normattiva_api_tests.ipynb
 !tests/smoke.mjs
+.vercel
+.env*.local

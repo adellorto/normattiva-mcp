@@ -78,6 +78,36 @@ The server always talks to Normattiva's **production OpenData API** (`https://ap
 
 The OpenData API is open and does not require authentication.
 
+## HTTP transport (self-hosted)
+
+In addition to the npm-published stdio binary, this repo also ships `packages/http-server/` — a Vercel deployment of the same MCP server over the Streamable HTTP transport. Useful for clients that need a remote endpoint instead of a local subprocess.
+
+**Hosted endpoint:** TBD.
+
+Self-host on your own Vercel account:
+
+```bash
+git clone https://github.com/adellorto/normattiva-mcp.git
+cd normattiva-mcp
+pnpm install
+cd packages/http-server
+npx vercel deploy
+```
+
+Client config once deployed:
+
+```json
+{
+  "mcpServers": {
+    "normattiva": {
+      "url": "https://<your-deployment>.vercel.app/api/mcp"
+    }
+  }
+}
+```
+
+The handler exposes only Streamable HTTP (SSE is removed from the 2025-03-26 MCP spec). No authentication by default — anyone with the URL can call it.
+
 ## Building from source
 
 Requires Node.js ≥ 20.

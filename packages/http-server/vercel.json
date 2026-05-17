@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": ["fra1"],
+  "installCommand": "pnpm install --frozen-lockfile && pnpm --filter @normattiva/core build",
+  "outputDirectory": ".",
+  "functions": {
+    "api/mcp.ts": {
+      "maxDuration": 60
+    }
+  }
+}
