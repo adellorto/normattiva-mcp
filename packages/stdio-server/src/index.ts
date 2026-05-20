@@ -11,7 +11,7 @@ import {
 async function main(): Promise<void> {
   const server = new McpServer({
     name: "normattiva-mcp",
-    version: "0.1.2",
+    version: "0.1.4",
   });
 
   const ctx: ToolContext = {};

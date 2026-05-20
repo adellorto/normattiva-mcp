@@ -35,9 +35,9 @@ export function registerPrompts(server: McpServer, _ctx: ToolContext): void {
   server.registerPrompt(
     "monitoraggio-modifiche",
     {
-      title: "Monitora modifiche normative recenti",
+      title: "Monitora modifiche al testo consolidato di atti esistenti",
       description:
-        "Recupera gli atti normativi italiani modificati negli ultimi N giorni e ne fornisce un riepilogo.",
+        "Recupera gli atti normativi italiani il cui testo consolidato è stato modificato negli ultimi N giorni e ne fornisce un riepilogo. Per gli atti pubblicati di recente in Gazzetta Ufficiale usa invece search_acts con data_pubblicazione_da/a.",
       argsSchema: {
         giorni: z
           .string()
@@ -58,8 +58,10 @@ export function registerPrompts(server: McpServer, _ctx: ToolContext): void {
             content: {
               type: "text",
               text:
-                `Recupera con recent_updates gli atti normativi italiani modificati ` +
-                `tra il ${fmt(inizio)} e il ${fmt(oggi)}. ` +
+                `Recupera con recent_updates gli atti normativi italiani il cui testo consolidato ` +
+                `è stato modificato tra il ${fmt(inizio)} e il ${fmt(oggi)} ` +
+                `(non si tratta di nuove pubblicazioni in Gazzetta Ufficiale: ` +
+                `per quelle usa search_acts con data_pubblicazione_da/a). ` +
                 `Raggruppa i risultati per tipologia di atto e fornisci un riepilogo ` +
                 `delle modifiche più rilevanti, evidenziando gli atti modificanti principali.`,
             },

@@ -19,7 +19,7 @@ const COMMON_HEADERS: Record<string, string> = {
   Accept: "application/json, text/plain, */*",
   "Accept-Language": "it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7",
   Origin: "https://dati.normattiva.it",
-  "User-Agent": "normattiva-mcp/0.1.2 (+https://www.npmjs.com/package/normattiva-mcp)",
+  "User-Agent": "normattiva-mcp/0.1.4 (+https://www.npmjs.com/package/normattiva-mcp)",
 };
 
 const REQUEST_TIMEOUT_MS = 20_000;

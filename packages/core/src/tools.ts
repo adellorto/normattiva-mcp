@@ -30,7 +30,7 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
     {
       title: "Search Italian legislation (Normattiva)",
       description:
-        "Search Italian legislation on Normattiva by free text, title, act type, year/number, date range, or vigenza class. Returns metadata for each matching atto including codice_redazionale and data_gu, which are required to fetch article text via read_article. The denominazione parameter expects an Italian act-type label like 'LEGGE' or 'DECRETO LEGISLATIVO' — see resource normattiva://tipologiche/denominazioni for the full list.",
+        "Search Italian legislation on Normattiva by free text, title, act type, year/number, date range, or vigenza class. Returns metadata for each matching atto including codice_redazionale and data_gu, which are required to fetch article text via read_article. The denominazione parameter expects an Italian act-type label like 'LEGGE' or 'DECRETO LEGISLATIVO' — see resource normattiva://tipologiche/denominazioni for the full list. To find acts newly published in Gazzetta Ufficiale within a window, set data_pubblicazione_da and data_pubblicazione_a (this is the right tool for 'what was published recently?', not recent_updates).",
       inputSchema: {
         testo: z.string().optional().describe("Keywords searched in the act body."),
         titolo: z.string().optional().describe("Keywords searched in the act title."),
@@ -46,8 +46,12 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
         giorno: z.number().int().min(1).max(31).optional(),
         data_emanazione_da: dateString.optional(),
         data_emanazione_a: dateString.optional(),
-        data_pubblicazione_da: dateString.optional(),
-        data_pubblicazione_a: dateString.optional(),
+        data_pubblicazione_da: dateString
+          .optional()
+          .describe("Start of the publication window in Gazzetta Ufficiale (YYYY-MM-DD). Use this (with data_pubblicazione_a) to answer 'which acts were published recently'."),
+        data_pubblicazione_a: dateString
+          .optional()
+          .describe("End of the publication window in Gazzetta Ufficiale (YYYY-MM-DD)."),
         classe: z
           .enum(["1", "2", "3"])
           .optional()
@@ -414,12 +418,12 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
   server.registerTool(
     "recent_updates",
     {
-      title: "Atti recently modified on Normattiva",
+      title: "Atti whose consolidated text was amended on Normattiva",
       description:
-        "Lists Italian normative acts whose text was modified within a date window. Useful for monitoring legislative changes. The window must be at most 12 months wide and data_fine cannot precede data_inizio.",
+        "Lists Italian normative acts whose consolidated text was amended within a date window (i.e. the in-force version changed because another act modified it). Does NOT return acts newly published in Gazzetta Ufficiale — for 'what was published recently', call search_acts with data_pubblicazione_da / data_pubblicazione_a instead. Useful for monitoring how existing legislation evolves. The window must be at most 12 months wide and data_fine cannot precede data_inizio.",
       inputSchema: {
-        data_inizio: dateString.describe("Start of the modification window (YYYY-MM-DD)."),
-        data_fine: dateString.describe("End of the modification window (YYYY-MM-DD), max 12 months after data_inizio."),
+        data_inizio: dateString.describe("Start of the amendment window (YYYY-MM-DD). Refers to the date the consolidated text changed, not to publication in Gazzetta Ufficiale."),
+        data_fine: dateString.describe("End of the amendment window (YYYY-MM-DD), max 12 months after data_inizio."),
       },
     },
     async ({ data_inizio, data_fine }) => {
