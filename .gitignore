@@ -13,6 +13,7 @@ npm-debug.log*
 .idea/
 .vscode/
 .claude/
+CLAUDE.md
 
 # Python venv (used by exploratory tests/)
 .venv/
