@@ -6,6 +6,8 @@ Server [Model Context Protocol](https://modelcontextprotocol.io) leggero che esp
 
 Wrappa gli endpoint sincroni di lettura (ricerca, dettaglio atto, atti aggiornati) e i cataloghi delle tipologiche statiche come **tools**, **resources** e **prompts** MCP.
 
+**Landing page & quickstart:** [`normattiva-mcp.adellorto.com`](https://normattiva-mcp.adellorto.com/) — config copia-incolla per Claude, ChatGPT, Cursor e stdio. Versione italiana su [`/it/`](https://normattiva-mcp.adellorto.com/it/).
+
 ## Funzionalità
 
 ### Tools
@@ -83,8 +85,6 @@ L'API OpenData è aperta e non richiede autenticazione.
 Oltre al binario stdio pubblicato su npm, il repo include anche `packages/http-server/` — un deploy su Vercel dello stesso server MCP sul trasporto Streamable HTTP. Utile per i client che hanno bisogno di un endpoint remoto invece di un sottoprocesso locale.
 
 **Endpoint hosted:** `https://normattiva-mcp.adellorto.com/api/mcp` — gratuito, nessuna registrazione, nessuna autenticazione.
-
-**Landing page:** [`normattiva-mcp.adellorto.com`](https://normattiva-mcp.adellorto.com/) — config copia-incolla per Claude, ChatGPT e stdio. Versione italiana su [`/it/`](https://normattiva-mcp.adellorto.com/it/).
 
 Configurazione client:
 

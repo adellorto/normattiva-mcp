@@ -6,6 +6,8 @@ A lightweight [Model Context Protocol](https://modelcontextprotocol.io) server t
 
 It wraps the synchronous read endpoints (search, article detail, recent updates) and the static reference catalogs as MCP **tools**, **resources**, and **prompts**.
 
+**Landing page & quickstart:** [`normattiva-mcp.adellorto.com`](https://normattiva-mcp.adellorto.com/) — copy-paste client configs for Claude, ChatGPT, Cursor and stdio. Italian version at [`/it/`](https://normattiva-mcp.adellorto.com/it/).
+
 ## Capabilities
 
 ### Tools
@@ -83,8 +85,6 @@ The OpenData API is open and does not require authentication.
 In addition to the npm-published stdio binary, this repo also ships `packages/http-server/` — a Vercel deployment of the same MCP server over the Streamable HTTP transport. Useful for clients that need a remote endpoint instead of a local subprocess.
 
 **Hosted endpoint:** `https://normattiva-mcp.adellorto.com/api/mcp` — free, no signup, no auth.
-
-**Landing page:** [`normattiva-mcp.adellorto.com`](https://normattiva-mcp.adellorto.com/) — copy-paste client configs for Claude, ChatGPT and stdio. Italian version at [`/it/`](https://normattiva-mcp.adellorto.com/it/).
 
 Client config:
 
