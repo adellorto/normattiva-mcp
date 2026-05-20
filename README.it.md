@@ -84,6 +84,8 @@ Oltre al binario stdio pubblicato su npm, il repo include anche `packages/http-s
 
 **Endpoint hosted:** `https://normattiva-mcp.adellorto.com/api/mcp` — gratuito, nessuna registrazione, nessuna autenticazione.
 
+**Landing page:** [`normattiva-mcp.adellorto.com`](https://normattiva-mcp.adellorto.com/) — config copia-incolla per Claude, ChatGPT e stdio. Versione italiana su [`/it/`](https://normattiva-mcp.adellorto.com/it/).
+
 Configurazione client:
 
 ```json

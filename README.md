@@ -84,6 +84,8 @@ In addition to the npm-published stdio binary, this repo also ships `packages/ht
 
 **Hosted endpoint:** `https://normattiva-mcp.adellorto.com/api/mcp` — free, no signup, no auth.
 
+**Landing page:** [`normattiva-mcp.adellorto.com`](https://normattiva-mcp.adellorto.com/) — copy-paste client configs for Claude, ChatGPT and stdio. Italian version at [`/it/`](https://normattiva-mcp.adellorto.com/it/).
+
 Client config:
 
 ```json
