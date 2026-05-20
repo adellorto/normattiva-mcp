@@ -12,11 +12,11 @@ Wrappa gli endpoint sincroni di lettura (ricerca, dettaglio atto, atti aggiornat
 
 | Tool | Scopo |
 | --- | --- |
-| `search_acts` | Ricerca atti normativi italiani per testo libero, titolo, denominazione atto, anno/numero, intervallo di date, classe provvedimento o data di vigenza. Restituisce i metadati di ciascun atto trovato, incluso `codice_redazionale` e `data_gu` (necessari a `read_article`). |
+| `search_acts` | Ricerca atti normativi italiani per testo libero, titolo, denominazione atto, anno/numero, intervallo di date, classe provvedimento o data di vigenza. Restituisce i metadati di ciascun atto trovato, incluso `codice_redazionale` e `data_gu` (necessari a `read_article`). Per trovare atti **appena pubblicati** in Gazzetta Ufficiale in una finestra temporale, valorizza `data_pubblicazione_da` / `data_pubblicazione_a` — è questo lo strumento giusto per "cosa è stato pubblicato di recente?", non `recent_updates`. |
 | `list_articles` | Scopre i numeri degli articoli di un atto sondando in sequenza `read_article` a partire da `articolo=1`. Per default trova solo gli articoli base; con `include_suffixes: true` sonda anche `bis`/`ter`/`quater`/… per ognuno. Ogni voce porta i flag opzionali `is_preamble` e `is_abrogated` (informativi; nessun filtro lato server). Gli articoli interni a gruppi strutturati (`id_gruppo != 0`) non vengono enumerati automaticamente. |
 | `read_article` | Recupera il testo di un singolo articolo di uno specifico atto a una data di vigenza. Per default ritorna testo semplice; con `format: "html"` restituisce il markup originale (preserva i marcatori di emendamento). In modalità testo i target dei link sono inlinati come `L. 5/2003 [urn:nir:stato:legge:2003-06-05;131]` così le citazioni URN sopravvivono alla conversione. Le risposte di successo includono `found: true`; articoli inesistenti (`sotto_articolo`, `id_gruppo` errato o `articolo` fuori range) ritornano `{ found: false, reason, richiesta }` senza sollevare eccezioni — il sondaggio è exception-free. L'LLM può chiamarlo in parallelo per più articoli dello stesso atto. |
 | `read_act` | Lettura aggregata di un intero atto: enumera internamente gli articoli e ne recupera ognuno, ritornandoli in ordine fino al limite `max_chars` (default 80 000 ≈ 20k token Claude). Onora `include_suffixes` e `id_gruppo` come `list_articles`. Quando il budget è esaurito la risposta include `truncated: true`, `truncated_reason` e `articolo_successivo` per riprendere con una chiamata successiva impostando `articolo_da` a quel valore. |
-| `recent_updates` | Elenca atti normativi modificati in una finestra temporale (max 12 mesi). Utile per monitorare le modifiche legislative. |
+| `recent_updates` | Elenca atti normativi il cui **testo consolidato è stato modificato** in una finestra temporale (max 12 mesi) — cioè la versione vigente è cambiata perché un altro atto l'ha modificata. **Non** elenca atti appena pubblicati in Gazzetta Ufficiale; per quelli usa `search_acts` con `data_pubblicazione_da` / `data_pubblicazione_a`. |
 
 ### Resources
 
@@ -32,7 +32,7 @@ Wrappa gli endpoint sincroni di lettura (ricerca, dettaglio atto, atti aggiornat
 | Nome | Argomenti | Scopo |
 | --- | --- | --- |
 | `ricerca-articolo` | `argomento` | Cerca la normativa italiana su un argomento e legge gli articoli più rilevanti. |
-| `monitoraggio-modifiche` | `giorni` (default `7`) | Riepiloga le modifiche normative degli ultimi *N* giorni. |
+| `monitoraggio-modifiche` | `giorni` (default `7`) | Riepiloga le modifiche al testo consolidato di atti esistenti negli ultimi *N* giorni (usa `recent_updates`; per atti appena pubblicati usa invece `search_acts` con `data_pubblicazione_da/a`). |
 
 ## Installazione e configurazione del client
 

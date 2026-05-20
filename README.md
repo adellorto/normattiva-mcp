@@ -12,11 +12,11 @@ It wraps the synchronous read endpoints (search, article detail, recent updates)
 
 | Tool | Purpose |
 | --- | --- |
-| `search_acts` | Search Italian legislation by free text, title, act type, year/number, date range, vigenza class, or in-force date. Returns metadata for each matching atto including `codice_redazionale` and `data_gu` (which `read_article` needs). |
+| `search_acts` | Search Italian legislation by free text, title, act type, year/number, date range, vigenza class, or in-force date. Returns metadata for each matching atto including `codice_redazionale` and `data_gu` (which `read_article` needs). To find acts **newly published** in Gazzetta Ufficiale within a window, set `data_pubblicazione_da` / `data_pubblicazione_a` — this is the right tool for "what was published recently?", not `recent_updates`. |
 | `list_articles` | Discover the article numbers of an atto by sequentially probing `read_article` from `articolo=1`. Finds base articles by default; pass `include_suffixes: true` to also probe `bis`/`ter`/`quater`/… for each one. Each entry carries optional `is_preamble` and `is_abrogated` flags (informational; nothing is filtered server-side). Articles inside structured groups (`id_gruppo != 0`) are still not enumerated automatically. |
 | `read_article` | Fetch the text of a single article of a specific atto at a given date of vigenza. Returns plain text by default; pass `format: "html"` for the original markup (preserves amendment markers). In text mode, hyperlink targets are inlined as `L. 5/2003 [urn:nir:stato:legge:2003-06-05;131]` so URN citations survive the conversion. Successful responses include `found: true`; non-existent articles (wrong `sotto_articolo`, `id_gruppo`, or out-of-range `articolo`) return `{ found: false, reason, richiesta }` instead of throwing — so probing is exception-free. The LLM can call this in parallel for several articles of the same atto. |
 | `read_act` | Aggregate-read of an entire atto: internally enumerates articles and fetches each one, returning them in order capped by `max_chars` (default 80 000 ≈ 20k Claude tokens). Honors `include_suffixes` and `id_gruppo` like `list_articles`. When the budget is exhausted the response includes `truncated: true`, `truncated_reason`, and `articolo_successivo` for resuming via a follow-up call with `articolo_da` set to that value. |
-| `recent_updates` | Lists atti normativi modified within a date window (max 12 months). Useful for monitoring legislative changes. |
+| `recent_updates` | Lists atti normativi whose **consolidated text was amended** within a date window (max 12 months) — i.e. the in-force version changed because another act modified it. Does **not** list acts newly published in Gazzetta Ufficiale; for those, use `search_acts` with `data_pubblicazione_da` / `data_pubblicazione_a`. |
 
 ### Resources
 
@@ -32,7 +32,7 @@ It wraps the synchronous read endpoints (search, article detail, recent updates)
 | Name | Args | Purpose |
 | --- | --- | --- |
 | `ricerca-articolo` | `argomento` | Search Italian law on a topic and read the most relevant articles. |
-| `monitoraggio-modifiche` | `giorni` (default `7`) | Summarize legislative changes in the last *N* days. |
+| `monitoraggio-modifiche` | `giorni` (default `7`) | Summarize amendments to the consolidated text of existing acts in the last *N* days (uses `recent_updates`; for newly published acts use `search_acts` with `data_pubblicazione_da/a`). |
 
 ## Installation & client configuration
 
