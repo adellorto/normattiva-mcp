@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>normattiva-mcp — Italian law, served to your agents</title>
+    <meta name="description" content="A Model Context Protocol server for Normattiva, the official Italian legislation portal. Connect Claude, ChatGPT, Cursor or any MCP-compatible client. Free, no signup, no auth." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" hreflang="en" href="https://normattiva-mcp.adellorto.com/" />
+    <link rel="alternate" hreflang="it" href="https://normattiva-mcp.adellorto.com/it/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar__brand">
+        <a href="https://portfolio.adellorto.com" aria-label="ADELLORTO portfolio">
+          <span class="wordmark">ADELLORTO</span>
+        </a>
+        <span class="topbar__sub">/ normattiva-mcp</span>
+      </div>
+      <nav class="topbar__nav" aria-label="Primary">
+        <a href="#quickstart" class="topbar__link">Quickstart</a>
+        <a href="https://github.com/adellorto/normattiva-mcp" class="topbar__link" target="_blank" rel="noopener" aria-label="GitHub repository">
+          <svg class="icon-github" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+          </svg>
+          <span class="label">GitHub</span>
+        </a>
+        <div class="lang-toggle" role="group" aria-label="Language">
+          <span class="lang-toggle__btn lang-toggle__btn--active" aria-current="page">EN</span>
+          <a class="lang-toggle__btn" href="/it/" hreflang="it">IT</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero__overline">remote · model context protocol · v0.1.4</div>
+        <div class="section-mark" aria-hidden="true">§</div>
+        <h1 class="hero__title">Italian law,<br />served to your agents.</h1>
+        <p class="hero__lead">
+          A Model Context Protocol server for
+          <a href="https://www.normattiva.it" target="_blank" rel="noopener">Normattiva</a>,
+          the official Italian legislation portal run by IPZS. Connect any MCP-compatible client and
+          read consolidated act text with stable URN citations. Free, no signup, no auth.
+        </p>
+        <div class="button-row">
+          <a class="btn btn--primary" href="#quickstart">Quickstart →</a>
+          <a class="btn btn--ghost" href="https://github.com/adellorto/normattiva-mcp" target="_blank" rel="noopener">
+            <svg class="icon-github" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+            </svg>
+            GitHub
+          </a>
+        </div>
+      </section>
+
+      <div class="hero__card-wrap">
+        <div class="config-card">
+          <div class="config-card__head">
+            <div class="config-card__file">
+              <span class="config-card__dot"></span>
+              <span class="config-card__filename">.mcp.json</span>
+            </div>
+            <div class="config-card__tabs" aria-hidden="true">
+              <span class="tab tab--active">Claude Code</span>
+              <span class="tab">Cursor</span>
+              <span class="tab">Cline</span>
+            </div>
+          </div>
+          <pre class="config-card__body" id="hero-config">{
+  <span class="k">"mcpServers"</span>: {
+    <span class="name">"normattiva"</span>: {
+      <span class="k">"url"</span>: <span class="v">"https://normattiva-mcp.adellorto.com/api/mcp"</span>
+    }
+  }
+}</pre>
+          <div class="config-card__foot">
+            <span>Streamable HTTP · MCP 2025-06-18 · no auth</span>
+            <button class="copy-btn" data-copy="hero-config" type="button">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="quickstart" class="section-wrap">
+        <div class="roman-divider">
+          <span class="overline">Quickstart</span>
+          <span class="roman-divider__rule"></span>
+        </div>
+
+        <div class="quickstart-tabs" role="tablist" aria-label="Quickstart by client">
+          <button class="quickstart-tab quickstart-tab--active" data-tab="claude" role="tab" aria-selected="true" type="button">Claude</button>
+          <button class="quickstart-tab" data-tab="chatgpt" role="tab" aria-selected="false" type="button">ChatGPT</button>
+          <button class="quickstart-tab" data-tab="stdio" role="tab" aria-selected="false" type="button">Stdio · npm</button>
+        </div>
+
+        <div class="quickstart-panel quickstart-panel--active" data-panel="claude" role="tabpanel">
+          <div class="section-body">
+            <div class="section-body__lede">
+              Claude Desktop, Claude Code and Cursor all speak MCP. Pick the one you use.
+            </div>
+            <div class="section-body__main">
+              <div class="step">
+                <span class="step__num">1</span>
+                <div class="step__body">
+                  <strong>Claude Desktop</strong> · Open <code>Settings → Connectors</code> and choose <em>Add custom connector</em>. Paste the endpoint URL and confirm. Remote connectors require a Pro, Max, Team or Enterprise plan.
+                  <div><span class="badge-note">UI install</span></div>
+                </div>
+              </div>
+
+              <div class="step">
+                <span class="step__num">2</span>
+                <div class="step__body">
+                  <strong>Claude Code</strong> · Add to <code>.mcp.json</code> at the project root (or <code>~/.claude.json</code> for a global server):
+<pre class="code-block">{
+  <span class="k">"mcpServers"</span>: {
+    <span class="name">"normattiva"</span>: {
+      <span class="k">"url"</span>: <span class="v">"https://normattiva-mcp.adellorto.com/api/mcp"</span>
+    }
+  }
+}</pre>
+                </div>
+              </div>
+
+              <div class="step">
+                <span class="step__num">3</span>
+                <div class="step__body">
+                  <strong>Cursor</strong> · Same JSON, in <code>.cursor/mcp.json</code>:
+<pre class="code-block">{
+  <span class="k">"mcpServers"</span>: {
+    <span class="name">"normattiva"</span>: {
+      <span class="k">"url"</span>: <span class="v">"https://normattiva-mcp.adellorto.com/api/mcp"</span>
+    }
+  }
+}</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quickstart-panel" data-panel="chatgpt" role="tabpanel" hidden>
+          <div class="section-body">
+            <div class="section-body__lede">
+              ChatGPT exposes MCP through <strong>Apps &amp; Connectors</strong> (formerly "Connectors"). Custom servers need Pro, Team, Enterprise or Edu and the Developer Mode toggle.
+            </div>
+            <div class="section-body__main">
+              <div class="step">
+                <span class="step__num">1</span>
+                <div class="step__body">
+                  Open <code>Settings → Connectors</code> (or <em>Apps &amp; Connectors</em>) and <strong>enable Developer Mode</strong>.
+                  <div><span class="badge-note">developer mode</span></div>
+                </div>
+              </div>
+              <div class="step">
+                <span class="step__num">2</span>
+                <div class="step__body">
+                  Add a new MCP server pointing to:
+<pre class="code-block">https://normattiva-mcp.adellorto.com/api/mcp</pre>
+                </div>
+              </div>
+              <div class="step">
+                <span class="step__num">3</span>
+                <div class="step__body">
+                  Run a prompt or call the connector from <strong>Deep Research</strong>. Note: without Developer Mode, ChatGPT's Deep Research expects MCP servers that expose <code>search</code> and <code>fetch</code> tools — this server uses domain-specific tools (<code>search_acts</code>, <code>read_article</code>, <code>read_act</code>, <code>list_articles</code>, <code>recent_updates</code>), so Developer Mode is required.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quickstart-panel" data-panel="stdio" role="tabpanel" hidden>
+          <div class="section-body">
+            <div class="section-body__lede">
+              Prefer to run the server as a local subprocess? It is also published as <code>normattiva-mcp</code> on npm.
+            </div>
+            <div class="section-body__main">
+              <div class="step">
+                <span class="step__num">1</span>
+                <div class="step__body">
+                  Replace the URL config with a stdio command. Works in any MCP client that accepts <code>command</code>/<code>args</code>:
+<pre class="code-block">{
+  <span class="k">"mcpServers"</span>: {
+    <span class="name">"normattiva"</span>: {
+      <span class="k">"command"</span>: <span class="v">"npx"</span>,
+      <span class="k">"args"</span>: [<span class="v">"-y"</span>, <span class="v">"normattiva-mcp"</span>]
+    }
+  }
+}</pre>
+                </div>
+              </div>
+              <div class="step">
+                <span class="step__num">2</span>
+                <div class="step__body">
+                  Requires Node.js ≥ 20. No native dependencies; the Normattiva OpenData API is open and needs no API key.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 Adellorto · MIT · <a href="https://adellorto.com" target="_blank" rel="noopener">adellorto.com</a></span>
+      <div class="footer__links">
+        <a href="https://github.com/adellorto/normattiva-mcp" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg class="icon-github" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+          </svg>
+          GitHub
+        </a>
+      </div>
+    </footer>
+
+    <script>
+      document.querySelectorAll(".copy-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const target = document.getElementById(btn.dataset.copy);
+          if (!target) return;
+          const text = target.innerText || target.textContent || "";
+          try {
+            await navigator.clipboard.writeText(text);
+            const original = btn.textContent;
+            btn.classList.add("is-copied");
+            btn.textContent = "Copied";
+            setTimeout(() => {
+              btn.classList.remove("is-copied");
+              btn.textContent = original;
+            }, 1500);
+          } catch (e) {
+            /* clipboard unavailable */
+          }
+        });
+      });
+
+      document.querySelectorAll(".quickstart-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const target = tab.dataset.tab;
+          document.querySelectorAll(".quickstart-tab").forEach((t) => {
+            const active = t.dataset.tab === target;
+            t.classList.toggle("quickstart-tab--active", active);
+            t.setAttribute("aria-selected", active ? "true" : "false");
+          });
+          document.querySelectorAll(".quickstart-panel").forEach((p) => {
+            const active = p.dataset.panel === target;
+            p.classList.toggle("quickstart-panel--active", active);
+            if (active) p.removeAttribute("hidden");
+            else p.setAttribute("hidden", "");
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
