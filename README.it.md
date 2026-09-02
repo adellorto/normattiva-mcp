@@ -2,6 +2,8 @@
 
 [English](./README.md) · **Italiano**
 
+[![Listed in italia-mcp-servers](https://img.shields.io/badge/listed%20in-italia--mcp--servers-blue)](https://github.com/bsab/italia-mcp-servers)
+
 Server [Model Context Protocol](https://modelcontextprotocol.io) leggero che espone l'API OpenData di [Normattiva](https://www.normattiva.it) — il portale ufficiale della legislazione italiana gestito da IPZS — a client LLM come Claude Desktop, Cursor e Claude Code.
 
 Wrappa gli endpoint sincroni di lettura (ricerca, dettaglio atto, atti aggiornati) e i cataloghi delle tipologiche statiche come **tools**, **resources** e **prompts** MCP.
