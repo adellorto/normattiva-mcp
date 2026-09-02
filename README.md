@@ -2,6 +2,8 @@
 
 **English** · [Italiano](./README.it.md)
 
+[![Listed in italia-mcp-servers](https://img.shields.io/badge/listed%20in-italia--mcp--servers-blue)](https://github.com/bsab/italia-mcp-servers)
+
 A lightweight [Model Context Protocol](https://modelcontextprotocol.io) server that exposes the [Normattiva](https://www.normattiva.it) OpenData API — the official Italian legislation portal run by IPZS — to LLM clients like Claude Desktop, Cursor, and Claude Code.
 
 It wraps the synchronous read endpoints (search, article detail, recent updates) and the static reference catalogs as MCP **tools**, **resources**, and **prompts**.
