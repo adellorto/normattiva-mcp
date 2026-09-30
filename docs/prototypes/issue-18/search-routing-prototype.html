@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Issue 18 — exact lookup and discovery routing</title>
+  <style>
+    :root { color-scheme: light; --ink:#17211d; --muted:#64706a; --paper:#f4f0e7; --card:#fffdf7; --line:#d9d2c3; --accent:#1d6b50; --accent2:#c75a36; --dark:#17332a; --ok:#daf1e7; --warn:#fff0ce; --bad:#f8dcd4; }
+    * { box-sizing:border-box; }
+    body { margin:0; font:15px/1.5 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--ink); background:linear-gradient(145deg,#ebe5d8 0,#f8f5ee 42%,#ede9de 100%); }
+    button,textarea,select,input { font:inherit; }
+    button { cursor:pointer; }
+    header { background:var(--dark); color:#f9f5e9; padding:40px max(24px,calc((100vw - 1180px)/2)); }
+    header p { max-width:820px; color:#cbd8d1; margin:8px 0 0; }
+    h1 { margin:0; font:700 clamp(28px,5vw,52px)/1.05 Georgia,serif; letter-spacing:-.025em; }
+    .eyebrow { color:#9fd5bf; text-transform:uppercase; font-size:12px; font-weight:800; letter-spacing:.13em; margin-bottom:12px; }
+    .notice { display:inline-flex; gap:8px; align-items:center; margin-top:18px; padding:7px 11px; border:1px solid #587c6d; border-radius:999px; font-size:12px; }
+    main { max-width:1180px; margin:auto; padding:22px 24px 60px; }
+    nav { display:flex; gap:8px; flex-wrap:wrap; margin:0 0 22px; }
+    nav button { border:1px solid var(--line); background:var(--card); padding:9px 14px; border-radius:999px; color:var(--ink); }
+    nav button.active { color:white; background:var(--accent); border-color:var(--accent); }
+    section[hidden] { display:none; }
+    .grid { display:grid; gap:18px; grid-template-columns:repeat(12,1fr); }
+    .card { grid-column:span 12; background:rgba(255,253,247,.94); border:1px solid var(--line); border-radius:16px; padding:20px; box-shadow:0 10px 28px rgba(35,45,40,.06); }
+    .half { grid-column:span 6; }
+    .third { grid-column:span 4; }
+    @media(max-width:820px){ .half,.third { grid-column:span 12; } }
+    h2,h3 { margin:0 0 10px; }
+    h2 { font:700 28px/1.15 Georgia,serif; }
+    h3 { font-size:16px; }
+    p { margin:8px 0 12px; }
+    .muted,small { color:var(--muted); }
+    label { display:block; font-weight:700; margin:12px 0 6px; }
+    textarea,select { width:100%; border:1px solid #bbb4a7; background:white; border-radius:10px; padding:11px; }
+    textarea { min-height:126px; resize:vertical; }
+    .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .primary { border:0; background:var(--accent); color:white; padding:10px 15px; border-radius:9px; font-weight:700; }
+    .secondary { border:1px solid var(--line); background:white; color:var(--ink); padding:8px 11px; border-radius:9px; }
+    .pill { display:inline-block; border-radius:999px; padding:4px 9px; font-size:12px; font-weight:800; background:var(--ok); color:#174b3b; }
+    .pill.warn { background:var(--warn); color:#76520d; }
+    .pill.bad { background:var(--bad); color:#852c20; }
+    pre { margin:10px 0 0; padding:14px; border-radius:11px; background:#17211d; color:#dbece3; overflow:auto; font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace; }
+    table { border-collapse:collapse; width:100%; font-size:13px; }
+    th,td { text-align:left; padding:9px 8px; border-bottom:1px solid var(--line); }
+    th { color:#4d5853; font-size:11px; text-transform:uppercase; letter-spacing:.06em; }
+    td.num,th.num { text-align:right; font-variant-numeric:tabular-nums; }
+    .best { background:#e0f2e9; font-weight:800; }
+    .metric { font:700 34px/1 Georgia,serif; color:var(--accent); margin:7px 0; }
+    .flow { display:grid; gap:8px; }
+    .flow div { border-left:4px solid var(--accent); background:#f3f7f3; padding:10px 12px; border-radius:5px 10px 10px 5px; }
+    .cases { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:9px; }
+    .case { display:flex; flex-direction:column; align-items:flex-start; justify-content:space-between; gap:8px; min-height:118px; padding:12px; border:1px solid var(--line); border-radius:10px; background:#fff; }
+    .case code { white-space:normal; color:#27332d; }
+    .verdict { border:2px solid var(--accent); }
+    .choice { display:block; margin:9px 0; padding:12px; border:1px solid var(--line); border-radius:10px; background:white; font-weight:500; }
+    .choice input { margin-right:8px; }
+    ul { padding-left:20px; }
+    .schema-bar { height:16px; margin:7px 0; border-radius:8px; background:#dfd9cd; overflow:hidden; }
+    .schema-bar span { display:block; height:100%; background:var(--accent2); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">Wayfinder · Issue 18 · Throwaway prototype</div>
+    <h1>Find the act first.<br>Route it on the server.</h1>
+    <p>A tested tool surface for exact citations, common names, topical discovery, advanced research filters, and opaque continuation cursors—without asking a small model to understand Normattiva's internal API split.</p>
+    <div class="notice">No network · no persistence · simulated planner only</div>
+  </header>
+  <main>
+    <nav aria-label="Prototype sections">
+      <button class="active" data-tab="playground">Playground</button>
+      <button data-tab="evidence">Model evidence</button>
+      <button data-tab="edges">Boundary cases</button>
+      <button data-tab="decision">Decision</button>
+    </nav>
+
+    <section id="playground">
+      <div class="grid">
+        <article class="card half">
+          <h2>Try a request</h2>
+          <p class="muted">The model chooses only between a new search and a literal cursor. A deterministic server planner owns legal parsing and endpoint selection.</p>
+          <label for="request">User request</label>
+          <textarea id="request">Find article 52 of the CAD</textarea>
+          <div class="row" id="presets">
+            <button class="secondary" data-value="Find D.Lgs. 82/2005">Exact citation</button>
+            <button class="secondary" data-value="Find article 2043 of the Civil Code">Act + article</button>
+            <button class="secondary" data-value="Acts about artificial intelligence">Topic</button>
+            <button class="secondary" data-value="Continue with cursor eyJwYWdlIjoyfQ==">Cursor</button>
+          </div>
+          <label for="fault">Simulated upstream condition</label>
+          <select id="fault">
+            <option value="none">Available</option>
+            <option value="relevance">Relevance capability unavailable</option>
+            <option value="rate">Rate limited (429)</option>
+            <option value="server">Generic upstream 5xx</option>
+          </select>
+          <p><button class="primary" id="route">Route request</button></p>
+        </article>
+        <article class="card half" aria-live="polite">
+          <div class="row"><span id="route-pill" class="pill">discovery</span><strong id="route-title">Resolve the common act name</strong></div>
+          <p id="route-note">Article tokens are separated before the act is resolved.</p>
+          <h3>Public tool call</h3>
+          <pre id="public-call"></pre>
+          <h3>Hidden server plan</h3>
+          <pre id="server-plan"></pre>
+        </article>
+        <article class="card third">
+          <h3>Current public schema</h3>
+          <div class="metric">2,520 B</div>
+          <div class="schema-bar"><span style="width:100%"></span></div>
+          <small>Wide search surface exposed to the model.</small>
+        </article>
+        <article class="card third">
+          <h3>Recommended schema</h3>
+          <div class="metric">1,478 B</div>
+          <div class="schema-bar"><span style="width:58.65%"></span></div>
+          <small>Two shallow calls: request or literal cursor.</small>
+        </article>
+        <article class="card third">
+          <h3>Prompt reduction</h3>
+          <div class="metric">41.3%</div>
+          <p><span class="pill">smaller and stronger</span></p>
+          <small>No extra classification turn.</small>
+        </article>
+        <article class="card">
+          <h2>The deep seam</h2>
+          <div class="flow">
+            <div><strong>Model:</strong> preserve the request's facts and contradictions in <code>find_acts({request})</code>.</div>
+            <div><strong>Planner:</strong> parse, normalize aliases, validate, and select exact, relevance, advanced, reject, or clarify.</div>
+            <div><strong>Adapter:</strong> translate a closed plan to Normattiva and validate its response—not merely the HTTP status.</div>
+            <div><strong>Result:</strong> return identified act, candidates, or no candidates with route and degradation metadata.</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="evidence" hidden>
+      <div class="grid">
+        <article class="card">
+          <h2>Core routing: 30 calls per model</h2>
+          <p class="muted">Ten request types, three repetitions. Counts are valid expected calls; all interfaces used the same neutral system prompt.</p>
+          <table>
+            <thead><tr><th>Model</th><th class="num">Current wide</th><th class="num">Original split</th><th class="num">One-of</th><th class="num">Final shallow</th></tr></thead>
+            <tbody>
+              <tr><td>Qwen 3 14B, thinking</td><td class="num">25</td><td class="num">19</td><td class="num">21</td><td class="num best">30</td></tr>
+              <tr><td>DeepSeek V4.1 Flash</td><td class="num">13</td><td class="num">21</td><td class="num">19</td><td class="num best">27</td></tr>
+              <tr><td>Llama 3.1 8B Instruct</td><td class="num">15</td><td class="num">18</td><td class="num">6</td><td class="num best">30</td></tr>
+            </tbody>
+          </table>
+        </article>
+        <article class="card">
+          <h2>Edge suite: 54 calls per model</h2>
+          <p class="muted">Eighteen adversarial and legally distinct prompts, three repetitions. The suite covers historical citations, aliases, dates, status, conflicts, impossible acts, and continuation.</p>
+          <table>
+            <thead><tr><th>Model</th><th class="num">Citation-first split</th><th class="num">Decomposed router</th><th class="num">Final shallow</th></tr></thead>
+            <tbody>
+              <tr><td>Qwen 3 14B, thinking</td><td class="num">39</td><td class="num">42</td><td class="num best">54</td></tr>
+              <tr><td>DeepSeek V4.1 Flash</td><td class="num">28</td><td class="num">31</td><td class="num best">44</td></tr>
+              <tr><td>Llama 3.1 8B Instruct</td><td class="num">31</td><td class="num">33</td><td class="num best">54</td></tr>
+            </tbody>
+          </table>
+        </article>
+        <article class="card half">
+          <h2>Final edge efficiency</h2>
+          <table>
+            <thead><tr><th>Model</th><th class="num">Prompt</th><th class="num">Completion</th><th class="num">Cost</th></tr></thead>
+            <tbody>
+              <tr><td>Qwen</td><td class="num">500</td><td class="num">335</td><td class="num">$0.00857</td></tr>
+              <tr><td>DeepSeek</td><td class="num">629</td><td class="num">143</td><td class="num">$0.00587</td></tr>
+              <tr><td>Llama</td><td class="num">696</td><td class="num">35</td><td class="num">$0.00138</td></tr>
+            </tbody>
+          </table>
+          <p class="muted">Average tokens per request; cost is the full 54-call run.</p>
+        </article>
+        <article class="card half">
+          <h2>Optimization delta</h2>
+          <table>
+            <thead><tr><th>Model</th><th>Prompt</th><th>Completion</th><th>Cost</th></tr></thead>
+            <tbody>
+              <tr><td>Qwen</td><td>719 → 500</td><td>523 → 335</td><td>$0.01144 → $0.00857</td></tr>
+              <tr><td>DeepSeek</td><td>875 → 629</td><td>166 → 143</td><td>$0.00718 → $0.00587</td></tr>
+              <tr><td>Llama</td><td>755 → 696</td><td>44 → 35</td><td>$0.00206 → $0.00138</td></tr>
+            </tbody>
+          </table>
+          <p class="muted">The final structure improved edge accuracy while reducing prompt, completion, and spend for all three model families.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="edges" hidden>
+      <article class="card">
+        <h2>Edge-case prompt set</h2>
+        <p class="muted">Click any prompt to route it in the playground. These categories came from the second optimization round.</p>
+        <div class="cases" id="edge-cases"></div>
+      </article>
+      <div class="grid" style="margin-top:18px">
+        <article class="card half">
+          <h2>Never weaken these</h2>
+          <ul>
+            <li>An exact citation that returns zero results.</li>
+            <li>Contradictory act type, number, year, or date constraints.</li>
+            <li>Invalid or reversed date ranges.</li>
+            <li>Rate limits and generic upstream failures.</li>
+            <li>A missing, reconstructed, or invented cursor.</li>
+          </ul>
+        </article>
+        <article class="card half">
+          <h2>One narrow fallback</h2>
+          <p>Only when the observational relevance capability is classified as unavailable may discovery retry with documented chronological order.</p>
+          <p><span class="pill warn">degraded: true</span> The response must say that relevance ranking was lost.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="decision" hidden>
+      <div class="grid">
+        <article class="card half verdict">
+          <div class="eyebrow" style="color:var(--accent)">Accepted decision</div>
+          <h2>Use the shallow public router</h2>
+          <pre>find_acts({ request: string })
+continue_acts({ cursor: string })</pre>
+          <p>Keep exact/discovery/advanced distinctions inside a deterministic planner. This is the only tested design that simultaneously reduced schema weight and improved every model family.</p>
+          <label class="choice"><input type="radio" name="verdict" checked> Accepted: plan the production implementation</label>
+          <label class="choice"><input type="radio" name="verdict"> Revise the prototype first</label>
+          <label class="choice"><input type="radio" name="verdict"> Reject this direction</label>
+          <p class="muted">This prototype records a choice locally in the browser only; report the verdict in the issue/conversation.</p>
+        </article>
+        <article class="card half">
+          <h2>What production still needs</h2>
+          <ul>
+            <li>A tested parser/planner and canonical act-name resolver.</li>
+            <li>Strict 0/1/many exact-result semantics.</li>
+            <li>Closed validation for dates, order, types, and facets.</li>
+            <li>Explicit currentness policy; “updated” is not synonymous with “in force.”</li>
+            <li>Article-tree metadata for cases such as Civil Code article 2043.</li>
+            <li>Provider pinning/regression checks for structured tool calls.</li>
+          </ul>
+          <p class="muted">The eval measured first-call routing only. It did not execute legal searches or reproduce a full host prompt.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const request = $("request");
+    const exactPatterns = [
+      /(?:d\.?\s*lgs\.?|decreto legislativo)\s*(?:n\.?\s*)?(\d+)\s*[\/]\s*(\d{2,4})/i,
+      /(?:l\.?|legge)\s*(?:n\.?\s*)?(\d+)\s*[\/]\s*(\d{2,4})/i,
+      /(?:d\.?p\.?r\.?|decreto del presidente)\s*(?:n\.?\s*)?(\d+)\s*[\/]\s*(\d{2,4})/i,
+      /(?:r\.?d\.?|regio decreto)\s*(?:n\.?\s*)?(\d+)\s*[\/]\s*(\d{2,4})/i,
+      /(?:d\.?l\.?|decreto[- ]legge)\s*(?:n\.?\s*)?(\d+)\s*[\/]\s*(\d{2,4})/i
+    ];
+    const aliases = /\b(CAD|TUEL|codice civile|codice dei contratti(?: pubblici)?|amministrazione digitale)\b/i;
+    const article = /(?:articolo|art\.?)[\s]*(\d+[a-z-]*)/i;
+    const cursor = /\bcursor\s+([^\s,;]+)/i;
+    const reversed = /(dal|tra)\s+(\d{4}-\d{2}-\d{2}).*?(al|e)\s+(\d{4}-\d{2}-\d{2})/i;
+    const conflict = /D\.?\s*Lgs\.?\s*36\s*\/\s*2023.*(?:legge\s+36|trasparenza)|legge\s+36\s*\/\s*2023.*decreto legislativo/i;
+    const dates = /(pubblicat|gazzetta|emanat|in vigore|vigente|abrogat|dal\s+\d{4}|tra\s+\d{4})/i;
+
+    function classify(raw) {
+      const text = raw.trim();
+      const fault = $("fault").value;
+      const c = text.match(cursor);
+      if (/\b(continua|continue|pagina successiva|next page)\b/i.test(text)) {
+        if (!c) return result("needs_cursor", "A literal cursor is required", {tool:"find_acts",arguments:{request:text}}, {status:"needs_cursor", reason:"No opaque cursor was supplied."}, "warn");
+        return result("continuation", "Continue the existing result set", {tool:"continue_acts",arguments:{cursor:c[1]}}, {route:"continuation", cursor:c[1]});
+      }
+      const range = text.match(reversed);
+      if (range && range[2] > range[4]) return result("reject", "Reject an incoherent date range", {tool:"find_acts",arguments:{request:text}}, {status:"invalid_request", field:"date_range", reason:"Start is after end."}, "bad");
+      if (conflict.test(text)) return result("reject", "Preserve and expose the conflict", {tool:"find_acts",arguments:{request:text}}, {status:"conflict", reason:"Explicit coordinates disagree; constraints will not be dropped."}, "bad");
+      let hit;
+      for (const pattern of exactPatterns) if ((hit = text.match(pattern))) break;
+      const art = text.match(article);
+      if (hit) return result("exact", "Strict numbered-act lookup", {tool:"find_acts",arguments:{request:text}}, {route:"exact", number:Number(hit[1]), year:normalizeYear(hit[2]), article:art?.[1] || null, semantics:"0=no exact match; 1=identified; >1=ambiguous", fallback:false});
+      if (aliases.test(text) || art) {
+        if (fault === "relevance") return result("discovery", "Resolve the act with degraded ordering", {tool:"find_acts",arguments:{request:text}}, {route:"discovery", intent:"act_alias", article:art?.[1] || null, order:"recente", degraded:true, reason:"relevance_unavailable"}, "warn");
+        if (fault !== "none") return upstreamFailure(text, fault);
+        return result("discovery", "Resolve the common act name", {tool:"find_acts",arguments:{request:text}}, {route:"discovery", intent:"act_alias", article:art?.[1] || null, order:"rilevante", fallback_policy:"only if relevance capability is unavailable"});
+      }
+      if (dates.test(text)) return fault === "none" ? result("advanced", "Use validated advanced filters", {tool:"find_acts",arguments:{request:text}}, {route:"advanced", validated_filters:true, order:"recente"}) : upstreamFailure(text, fault);
+      if (fault === "relevance") return result("discovery", "Topical search with degraded ordering", {tool:"find_acts",arguments:{request:text}}, {route:"discovery", intent:"topic", order:"recente", degraded:true, reason:"relevance_unavailable"}, "warn");
+      if (fault !== "none") return upstreamFailure(text, fault);
+      return result("discovery", "Topical relevance discovery", {tool:"find_acts",arguments:{request:text}}, {route:"discovery", intent:"topic", order:"rilevante"});
+    }
+    function normalizeYear(value) { const n=Number(value); return value.length===2 ? (n>30?1900+n:2000+n) : n; }
+    function result(route,title,call,plan,tone="") { return {route,title,call,plan,tone,note:noteFor(route,plan)}; }
+    function upstreamFailure(text,fault) {
+      const status = fault === "rate" ? 429 : 500;
+      return result("error", "Return the upstream failure", {tool:"find_acts",arguments:{request:text}}, {status:"upstream_error", http_status:status, fallback:false, reason:"Do not turn an operational failure into different legal results."}, "bad");
+    }
+    function noteFor(route, plan) {
+      if (route === "exact") return "Explicit coordinates are constraints. An empty exact result never falls through to broad discovery.";
+      if (route === "discovery" && plan.article) return "Article tokens are separated before the parent act is resolved.";
+      if (route === "reject") return "Validation occurs before any Normattiva request.";
+      if (route === "needs_cursor") return "The model cannot invent or reconstruct continuation state.";
+      if (route === "error") return "Fallback is disabled for rate limits and generic upstream errors.";
+      return "The server, not the language model, owns endpoint-specific routing details.";
+    }
+    function render() {
+      const out=classify(request.value);
+      $("route-pill").textContent=out.route;
+      $("route-pill").className="pill "+(out.tone||"");
+      $("route-title").textContent=out.title;
+      $("route-note").textContent=out.note;
+      $("public-call").textContent=JSON.stringify(out.call,null,2);
+      $("server-plan").textContent=JSON.stringify(out.plan,null,2);
+    }
+    document.querySelectorAll("nav button").forEach(button => button.addEventListener("click", () => {
+      document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active")); button.classList.add("active");
+      document.querySelectorAll("main section").forEach(s=>s.hidden=s.id!==button.dataset.tab);
+    }));
+    $("presets").addEventListener("click", event => { if(event.target.dataset.value){ request.value=event.target.dataset.value; render(); }});
+    $("route").addEventListener("click",render); $("fault").addEventListener("change",render);
+    const cases = [
+      ["Historical citation","Find L. 241/90"],["Administrative record","Find DPR 445/2000"],["Royal decree","Find RD 262/1942"],["Decree-law","Find DL 76/2020"],
+      ["Acronym","Find the CAD"],["Common name","Find the TUEL"],["Current code","Find the current public procurement code"],["Topic","Acts about artificial intelligence"],
+      ["Type + year facet","2023 legislative decrees about code"],["Publication range","Acts published from 2026-09-25 to 2026-09-30"],["Issuance range","Acts enacted from 2023-01-01 to 2023-12-31"],["In force","Acts in force on 2026-09-30"],
+      ["Repealed","Find the repealed public procurement code"],["Conflict","Find D.Lgs. 36/2023 but only Legge 36/2023"],["Reversed dates","Acts from 2024-12-31 to 2024-01-01"],["Exact miss","Find Legge 99999/1990"],
+      ["Literal cursor","Continue with cursor eyJwYWdlIjoyfQ=="],["Missing cursor","Show the next page"]
+    ];
+    $("edge-cases").innerHTML=cases.map(([name,prompt])=>`<div class="case"><strong>${name}</strong><code>${prompt}</code><button class="secondary" data-edge="${prompt}">Try</button></div>`).join("");
+    $("edge-cases").addEventListener("click",event=>{ if(event.target.dataset.edge){ request.value=event.target.dataset.edge; document.querySelector('[data-tab="playground"]').click(); render(); window.scrollTo({top:160,behavior:"smooth"}); }});
+    render();
+  </script>
+</body>
+</html>
