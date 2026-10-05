@@ -18,7 +18,7 @@ type Target = { citation?: Citation; alias?: ActAlias };
 interface Options { signingKey: Uint8Array; upstream?: UpstreamRuntime; pageSize?: number; }
 const cursorSchema = z.object({
   v: z.literal(1), operation: z.literal("continue_acts"), alias_version: z.literal(ALIAS_VERSION), plan: discoveryPlanSchema,
-  target: z.number().int().nonnegative(), page: z.number().int().positive().max(1_000_000),
+  target: z.number().int().nonnegative(), page: z.number().int().positive().max(Number.MAX_SAFE_INTEGER),
   offset: z.number().int().nonnegative().max(RESPONSE_LIMITS.discoveryMax),
   limit: z.number().int().positive().max(RESPONSE_LIMITS.discoveryMax),
   page_digest: z.string().regex(/^[a-f0-9]{64}$/).optional(), degraded: z.boolean(),
@@ -46,7 +46,7 @@ export class ActDiscovery {
     const plan = planDiscovery(parsed.data.request);
     try {
       this.continuation({ v: 1, operation: "continue_acts", alias_version: ALIAS_VERSION, plan, target: 20,
-        page: 1_000_000, offset: 19, limit: this.limit, page_digest: "0".repeat(64), degraded: false });
+        page: Number.MAX_SAFE_INTEGER, offset: 19, limit: this.limit, page_digest: "0".repeat(64), degraded: false });
     } catch { throw invalidRequest("Shorten the request so its exact interpretation fits a bounded continuation reference.", "request_reference_limit"); }
     return this.call(signal, () => this.search({ v: 1, operation: "continue_acts", alias_version: ALIAS_VERSION, plan,
       target: 0, page: 1, offset: 0, limit: this.limit, degraded: false }));
@@ -73,14 +73,17 @@ export class ActDiscovery {
   }
   private targets(plan: DiscoveryPlan): Target[] {
     if (plan.route === "exact") return [{ citation: plan.citation! }];
-    if (plan.route === "alias") return ACT_ALIASES.filter(alias => plan.aliases!.includes(alias.id)).map(alias => ({ citation: alias.citation, alias }));
+    if (plan.route === "alias") return plan.aliases!.map(id => {
+      const alias = ACT_ALIASES.find(alias => alias.id === id)!;
+      return { citation: alias.citation, alias };
+    });
     return [{}];
   }
   private candidate(item: AttoListItem, target: Target, path: string): Candidate {
     const { citation, alias } = target;
-    if (citation && (item.denominazioneAtto?.toUpperCase() !== citation.type || String(item.annoProvvedimento) !== citation.year
+    if (citation && (typeof item.denominazioneAtto !== "string" || item.denominazioneAtto.toUpperCase() !== citation.type || String(item.annoProvvedimento) !== citation.year
       || !/^\d+$/.test(String(item.numeroProvvedimento)) || String(Number(item.numeroProvvedimento)) !== citation.number
-      || (citation.issued && item.dataEmanazione?.slice(0, 10) !== citation.issued))) throw malformed();
+      || (citation.issued && (typeof item.dataEmanazione !== "string" || item.dataEmanazione.slice(0, 10) !== citation.issued)))) throw malformed();
     const parsed = publicationSchema.strict().safeParse({ data_gu: item.dataGU, codice_redazionale: item.codiceRedazionale });
     if (!parsed.success || !/^[A-Za-z0-9_-]{1,80}$/.test(parsed.data.codice_redazionale)
       || typeof item.titoloAtto !== "string" || !item.titoloAtto.trim()) throw malformed();
@@ -121,6 +124,8 @@ export class ActDiscovery {
     if (!Number.isSafeInteger(total) || !Number.isSafeInteger(pages) || !Number.isSafeInteger(page)
       || total! < 0 || pages! < 0 || page !== state.page || !items || items.length > state.limit
       || total! < items.length || (total === 0 && (pages! > 1 || items.length !== 0))
+      || (total! > 0 && (pages !== Math.ceil(total! / state.limit)
+        || items.length !== Math.min(state.limit, Math.max(0, total! - (state.page - 1) * state.limit))))
       || (total! > 0 && (pages! < 1 || (!items.length && state.page <= pages!) || (state.page === 1 && pages === 1 && total !== items.length)))
       || new Set(items.map(item => `${item.dataGU}|${item.codiceRedazionale}`)).size !== items.length) throw malformed();
     if (state.offset > items.length || (state.page_digest && state.page_digest !== digest(JSON.stringify(items)))) {
@@ -133,6 +138,8 @@ export class ActDiscovery {
     const items: Candidate[] = [], targets = this.targets(state.plan);
     let soleExactMatch = false;
     while (state.target < targets.length) {
+      const scope = currentCall()!;
+      if (items.length && scope.attempts >= scope.maxAttempts) return this.finish(this.more(state, items));
       try {
         const target = targets[state.target]!;
         const { response, path } = await this.fetchPage(state, target);

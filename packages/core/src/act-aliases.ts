@@ -1,9 +1,9 @@
 import type { Citation } from "./discovery-plan.js";
 
-export interface ActAlias { id: string; names: readonly string[]; name: string; citation: Citation; urn: string; provenance: string; verified_at: string; }
+export interface ActAlias { id: string; family: string; names: readonly string[]; name: string; citation: Citation; urn: string; provenance: string; verified_at: string; }
 const codes = "https://www.normattiva.it/staticPage/codici";
 function code(id: string, name: string, names: string[], type: string, issued: string, number: string, urnType = "decreto.legislativo"): ActAlias {
-  return { id, name, names: [name, ...names], citation: { type, year: issued.slice(0, 4), number },
+  return { id, family: id.startsWith("contracts-") ? "contracts" : id, name, names: [name, ...names], citation: { type, year: issued.slice(0, 4), number, issued },
     urn: `urn:nir:stato:${urnType}:${issued};${number}`, provenance: codes, verified_at: "2026-10-05" };
 }
 // Reviewed seed, not an exhaustive synonym dictionary. Changes require source

@@ -14,7 +14,14 @@ export const discoveryPlanSchema = z.object({
     dataInizioEmanazione: calendarDateSchema.optional(), dataFineEmanazione: calendarDateSchema.optional(),
     dataInizioPubProvvedimento: calendarDateSchema.optional(), dataFinePubProvvedimento: calendarDateSchema.optional(),
     vigenza: calendarDateSchema.optional(), classeProvvedimento: z.enum(["1", "2", "3"]).optional() }).strict().optional(),
-}).strict();
+}).strict().superRefine((plan, ctx) => {
+  const filters = Object.keys(plan.filters ?? {}).length;
+  const exact = plan.route === "exact" && !!plan.citation && !plan.aliases && !plan.query && !filters;
+  const alias = plan.route === "alias" && !!plan.aliases?.length && new Set(plan.aliases).size === plan.aliases.length
+    && !plan.citation && !plan.query && !filters;
+  const search = !plan.citation && !plan.aliases && (plan.route === "relevance" ? !!plan.query?.trim() && !filters : plan.route === "advanced" && filters > 0);
+  if (!exact && !alias && !search) ctx.addIssue({ code: "custom", message: "Discovery plan fields must match one route." });
+});
 export type DiscoveryPlan = z.infer<typeof discoveryPlanSchema>;
 export function invalidRequest(message: string, code = "unsupported_request"): OperationError {
   return new OperationError({ category: "invalid_input", code, message, retryability: false });
@@ -42,7 +49,7 @@ function research(text: string): { query: string; filters: NonNullable<Discovery
     (_, first, last, month, year) => `dal ${first} ${month} ${year} al ${last} ${month} ${year}`);
   const dates = [...rest.matchAll(new RegExp(datePattern, "g"))];
   const values = dates.map(match => date(match[0]));
-  const published = /\bpubblicat[ioe]|gazzetta ufficiale/.test(rest), issued = /\bemanat[ioe]/.test(rest);
+  const published = /\bpubblicat[ioae]|gazzetta ufficiale/.test(rest), issued = /\bemanat[ioae]/.test(rest);
   const inForce = /\bin vigore\s+(?:il|al)/.test(rest);
   if (published && issued) throw invalidRequest("Specify one publication or issuance window per request.");
   if ((published || issued) && !inForce) {
@@ -74,13 +81,13 @@ function research(text: string): { query: string; filters: NonNullable<Discovery
     if (Number(year) < 1861 || Number(year) > new Date().getUTCFullYear()) throw invalidRequest("Use a supported act year.");
     filters.annoProvvedimento = year; rest = rest.replace(years[0]![0], " ");
   }
-  const classes = [...rest.matchAll(/\b(abrogat[ioe]|aggiornat[ioe]|senza aggiornamenti)\b/g)];
+  const classes = [...rest.matchAll(/\b(abrogat[ioae]|aggiornat[ioae]|senza aggiornamenti)\b/g)];
   if (new Set(classes.map(match => match[1]!.startsWith("abrogat") ? "3" : match[1]!.startsWith("aggiornat") ? "2" : "1")).size > 1) {
     throw invalidRequest("The requested version classes contradict each other.");
   }
   if (classes.length) filters.classeProvvedimento = classes[0]![1]!.startsWith("abrogat") ? "3" : classes[0]![1]!.startsWith("aggiornat") ? "2" : "1";
-  rest = rest.replace(/\b(?:abrogat[ioe]|aggiornat[ioe]|senza aggiornamenti)\b/g, " ");
-  rest = rest.replace(/\b(?:quali|norme|italiane|atti|sono stati|sono|stati|risultavano|risultano|pubblicat[ioe]|emanat[ioe]|in gazzetta ufficiale|gazzetta ufficiale|in vigore|dal|tra il|al|e il|il)\b/g, " ");
+  rest = rest.replace(/\b(?:abrogat[ioae]|aggiornat[ioae]|senza aggiornamenti)\b/g, " ");
+  rest = rest.replace(/\b(?:quali|norme|italiane|atti|sono stati|sono|stati|risultavano|risultano|pubblicat[ioae]|emanat[ioae]|in gazzetta ufficiale|gazzetta ufficiale|in vigore|dal|tra il|al|e il|il)\b/g, " ");
   rest = rest.replace(/^\s*(?:cerca|trova|mostrami)\s+/i, "").replace(/^\s*(?:i|le|la|gli)\s+/i, "");
   rest = rest.replace(/^\s*(?:riguardano|disciplinano|sulla|sulle|sul|sui|su)\s+/i, "");
   rest = rest.replace(/^\s*(?:i|le|la|gli)\s+/i, "");
@@ -113,20 +120,25 @@ export function planDiscovery(request: string): DiscoveryPlan {
   if (/\b(?:continua|continue|cursore|cursor|pagina successiva|next page)\b/i.test(request)) {
     throw invalidRequest("Use continue_acts with the literal cursor returned by discovery.", "continuation_required");
   }
-  const articles = [...request.matchAll(/\b(?:articolo|art\.)\s*(\d+(?:\s*-\s*[a-z]+)?(?:\s*,?\s*comma\s+\d+)?)/gi)];
+  if (/\b(?:non|escludi|escludendo|tranne)\s+(?:abrogat[ioae]|aggiornat[ioae]|vigent[ie])\b/i.test(request)) {
+    throw invalidRequest("Use a supported positive version class; negated status constraints require clarification.");
+  }
+  const suffix = "bis|ter|quater|quinquies|sexies|septies|octies|novies|decies|undecies|duodecies|terdecies|quaterdecies|quindecies|sexdecies|septiesdecies|octiesdecies|noviesdecies|vicies|duodevicies";
+  const articles = [...request.matchAll(new RegExp(String.raw`\b(?:articolo|art\.)\s*(\d+(?:\s*-?\s*(?:${suffix})\b)?(?:\s*,?\s*comma\s+\d+)?)`, "gi"))];
   if (articles.length > 1) throw invalidRequest("Discover one article-bearing act request at a time.");
   const articleMatch = articles[0];
   const text = articleMatch ? request.replace(articleMatch[0], " ") : request;
   const matches = citations(text);
   const aliases = matchingAliases(text);
   if (matches.length > 1) throw invalidRequest("Supply one complete act citation per discovery request.");
-  if (matches.length && aliases.length && !aliases.some(alias => sameCitation(alias.citation, matches[0]!))) {
+  if (matches.length && aliases.length && [...new Set(aliases.map(alias => alias.family))]
+    .some(family => !aliases.some(alias => alias.family === family && sameCitation(alias.citation, matches[0]!)))) {
     throw invalidRequest("The common name and supplied citation contradict each other.", "contradictory_request");
   }
   const common = { request, uncertainTime: /\b(?:oggi|vigente|vigenti|attuale|current|in vigore|vecchio|storico|precedente)\b/i.test(text),
-    ...(articleMatch ? { article: articleMatch[1]!.replace(/\s*-\s*/g, "-").replace(/\s+/g, " ") } : {}) };
+    ...(articleMatch ? { article: articleMatch[1]!.replace(/\s*-?\s*([a-z]+)(?![a-z])/i, (part, suffix) => suffix.toLowerCase() === "comma" ? part : `-${suffix.toLowerCase()}`).replace(/\s+/g, " ") } : {}) };
   if (matches.length) {
-    if (/\b(?:pubblicat[ioa]|emanat[ioa]|in vigore\s+(?:il|al)|abrogat[ioa]|aggiornat[ioa]|senza aggiornamenti)\b/i.test(text)
+    if (/\b(?:pubblicat[ioae]|emanat[ioae]|in vigore\s+(?:il|al)|abrogat[ioae]|aggiornat[ioae]|senza aggiornamenti|nel\s+\d{4})\b/i.test(text)
       || /\b(?:e|oppure)\s+(?:d\.?\s*[lp]|decreto|legge|regio)/i.test(text)) {
       throw invalidRequest("Use separate exact identification and date/status research requests; combined constraints require clarification.");
     }
@@ -134,7 +146,9 @@ export function planDiscovery(request: string): DiscoveryPlan {
   }
   // Citation-like incomplete input is not a topic. Unknown modifiers require
   // clarification instead of silently dropping legal retrieval constraints.
-  if (/\b(?:legge|l\.|d\.?\s*lgs\.?|d\.?\s*p\.?\s*r\.?)\s*(?:n\.?\s*)?\d/i.test(text)) {
+  const knownType = typeSpellings.map(([, spelling]) => `(?:${spelling})`).join("|");
+  if (new RegExp(String.raw`\b(?:${knownType})\s*(?:n(?:umero)?\.?\s*)?\d`, "i").test(text)
+    || /\b\d{1,9}\s*\/\s*\d{2,4}\b/.test(text)) {
     throw invalidRequest("Supply the act type, number and year for an exact citation.");
   }
   if (/\b(?:recentemente|recenti|ultimi|ultime|settimana|mese scorso)\b/i.test(text)) throw invalidRequest("Replace relative research dates with explicit calendar dates.");

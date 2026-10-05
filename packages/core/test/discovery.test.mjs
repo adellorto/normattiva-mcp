@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
+import { createHmac } from 'node:crypto';
 import * as core from '../dist/index.js';
 import { UpstreamRuntime } from '../dist/upstream.js';
 
@@ -117,6 +118,8 @@ function searchPage(items, page = 1, pages = 1, total = items.length) {
   return { listaAtti: items, numeroAttiTrovati: total, numeroPagine: pages, paginaCorrente: page };
 }
 const candidate = (n, title = `Synthetic act ${n}`) => ({ ...cad.listaAtti[0], codiceRedazionale: `SYN${n}`, titoloAtto: title });
+const procurement = body => ({ ...candidate(Number(body.numeroProvvedimento)), numeroProvvedimento:body.numeroProvvedimento,
+  annoProvvedimento:body.annoProvvedimento, dataEmanazione:({'36':'2023-03-31T00:00:00Z','50':'2016-04-18T00:00:00Z','163':'2006-04-12T00:00:00Z','82':'2005-03-07T00:00:00Z'})[body.numeroProvvedimento] });
 test('literal discovery cursors resume the exact live-search position in a fresh reader', async () => {
   await fixture(({ body }) => Response.json(body.paginazione.paginaCorrente === 1
     ? searchPage([1,2,3,4,5].map(n => candidate(n)), 1, 2, 7)
@@ -166,8 +169,7 @@ test('only a specifically unavailable relevance endpoint authorizes disclosed ch
 
 test('multiple alias generations and uncertain currentness remain explained candidates', async () => {
   const request = 'Cerco l’articolo 108 del codice dei contratti oggi vigente.';
-  await fixture(({ body }) => Response.json(searchPage([{ ...candidate(Number(body.numeroProvvedimento)),
-    numeroProvvedimento: body.numeroProvvedimento, annoProvvedimento: body.annoProvvedimento }])), async requests => {
+  await fixture(({ body }) => Response.json(searchPage([procurement(body)])), async requests => {
     const result = await discovery().findActs({ request });
     assert.equal(result.match, 'candidates');
     assert.equal(result.article_reference, '108');
@@ -202,7 +204,7 @@ test('interrupted alias verification keeps its exact useful prefix and resumes t
   let fail = true;
   await fixture(({ body }) => {
     if (body.numeroProvvedimento === '50' && fail) return Response.json({}, { status: 429 });
-    return Response.json(searchPage([{ ...candidate(Number(body.numeroProvvedimento)), numeroProvvedimento: body.numeroProvvedimento, annoProvvedimento: body.annoProvvedimento }]));
+    return Response.json(searchPage([procurement(body)]));
   }, async requests => {
     const first = await discovery().findActs({ request: 'codice dei contratti' });
     assert.equal(first.traversal.progress, 'interrupted');
@@ -252,7 +254,7 @@ test('historical alias context does not become an act-year filter and exact cita
     assert.match(page.explanation,/historical status remains unknown/);
     const before = requests.length;
     for (const request of ['D.Lgs. 82/2005 pubblicato dal 2020-01-01 al 2020-02-01',
-      'D.Lgs. 82/2005 in vigore il 2026-02-30', 'D.Lgs. 82/2005 abrogato', 'Legge 241/1990 e DPR 445']) {
+      'D.Lgs. 82/2005 in vigore il 2026-02-30', 'D.Lgs. 82/2005 abrogato', 'D.Lgs. 82/2005 nel 2018', 'Legge 241/1990 e DPR 445']) {
       await assert.rejects(discovery().findActs({ request }), error => error.detail.category === 'invalid_input', request);
     }
     assert.equal(requests.length,before);
@@ -290,4 +292,121 @@ test('the accepted routing prototype requests replay through the production disc
       if (example.versionClass) assert.equal(requests[0].body.classeProvvedimento,'3',example.id);
     });
   }
+});
+
+test('malformed exact metadata is a typed upstream failure and preserves any validated prefix', async () => {
+  const bad = { ...candidate(2), denominazioneAtto: 42 };
+  await fixture(() => Response.json(searchPage([bad])), async () => {
+    await assert.rejects(discovery().findActs({request:'D.Lgs. 82/2005'}),error=>error.detail?.code==='malformed_upstream_response');
+  });
+  await fixture(() => Response.json(searchPage([candidate(1),bad])), async () => {
+    const page=await discovery().findActs({request:'D.Lgs. 82/2005'});
+    assert.equal(page.traversal.progress,'interrupted');
+    assert.equal(page.traversal.items[0].publication.codice_redazionale,'SYN1');
+    assert.equal(page.traversal.failure.error.code,'malformed_upstream_response');
+  });
+});
+
+test('unsupported or negated constraints and contradictory alias families fail before discovery traffic', async () => {
+  await fixture(() => {throw new Error('unexpected traffic')},async requests=>{
+    for(const request of ['R.D. 262','DPCM 12','norme non abrogate','norme non aggiornate',
+      'CAD e Codice civile, D.Lgs. 82/2005']) {
+      await assert.rejects(discovery().findActs({request}),error=>error.detail?.category==='invalid_input',request);
+    }
+    assert.equal(requests.length,0);
+  });
+});
+
+test('article suffixes separated by spaces remain part of the retrieval intent',async()=>{
+  await fixture(()=>Response.json(cad),async()=>{
+    const page=await discovery().findActs({request:'Cerca articolo 52 bis del CAD'});
+    assert.equal(page.article_reference,'52-bis');
+  });
+});
+
+test('pagination totals must agree with page count and the final-page size',async()=>{
+  for(const response of [searchPage([candidate(1)],1,2,1),searchPage([candidate(1)],1,1,6)]) {
+    await fixture(()=>Response.json(response),async()=>{
+      await assert.rejects(discovery().findActs({request:'topic'}),error=>error.detail?.code==='malformed_upstream_response');
+    });
+  }
+  await fixture(({body})=>Response.json(searchPage([1,2,3,4,5].map(n=>candidate(n+10*body.paginazione.paginaCorrente)),body.paginazione.paginaCorrente,2,6)),async()=>{
+    const first=await discovery().findActs({request:'topic'});
+    await assert.rejects(discovery().continueActs({cursor:first.traversal.cursor}),error=>error.detail?.code==='malformed_upstream_response');
+  });
+});
+
+test('reviewed alias URNs cannot contradict the live issuance identity',async()=>{
+  await fixture(()=>Response.json(searchPage([{...cad.listaAtti[0],dataEmanazione:'2005-03-08T00:00:00Z'}])),async()=>{
+    await assert.rejects(discovery().findActs({request:'CAD'}),error=>error.detail?.code==='malformed_upstream_response');
+  });
+});
+
+test('planned attempt caps return more and continuations receive fresh shared allowances',async()=>{
+  await fixture(({body})=>Response.json(searchPage([procurement(body)])),async requests=>{
+    const upstream=new UpstreamRuntime({composedAttempts:1});
+    let page=await discovery({upstream}).findActs({request:'codice dei contratti'});
+    const ids=[];
+    for(let count=0;;count++) {
+      assert.ok(count<4);
+      ids.push(...page.traversal.items.map(item=>item.publication.codice_redazionale));
+      if(page.traversal.progress==='complete')break;
+      assert.equal(page.traversal.progress,'more');
+      page=await discovery({upstream}).continueActs({cursor:page.traversal.cursor});
+    }
+    assert.deepEqual(ids,['SYN36','SYN50','SYN163']);
+    assert.equal(requests.length,3);
+  });
+});
+
+test('continuation keeps its chosen ordering and never switches after a relevance page',async()=>{
+  await fixture(({body})=>body.paginazione.paginaCorrente===1
+    ?Response.json(searchPage([1,2,3,4,5].map(n=>candidate(n)),1,2,6))
+    :Response.json({}, {status:404}),async requests=>{
+    const page=await discovery().findActs({request:'topic'});
+    await assert.rejects(discovery().continueActs({cursor:page.traversal.cursor}),error=>error.detail.http_status===404);
+    assert.equal(requests.length,2);
+    assert.ok(requests.every(request=>request.url.endsWith('/semplice')));
+  });
+  await fixture(({url,body})=>url.endsWith('/semplice')?Response.json({}, {status:404})
+    :Response.json(body.paginazione.paginaCorrente===1?searchPage([1,2,3,4,5].map(n=>candidate(n)),1,2,6):searchPage([candidate(6)],2,2,6)),async requests=>{
+    const first=await discovery().findActs({request:'topic'});
+    const next=await discovery().continueActs({cursor:first.traversal.cursor});
+    assert.equal(next.ordering,'degraded_chronological');
+    assert.equal(next.traversal.progress,'complete');
+    assert.deepEqual(requests.map(request=>request.url.split('/').at(-1)),['semplice','avanzata','avanzata']);
+  });
+});
+
+test('captured official CAD, TUEL and relevance responses cross the production discovery interface',async()=>{
+  const tuel=JSON.parse(readFileSync(new URL('./fixtures/discovery/tuel-exact-2026-10-05.json',import.meta.url)));
+  const topic=JSON.parse(readFileSync(new URL('./fixtures/discovery/transparency-simple-2026-10-05.json',import.meta.url)));
+  await fixture(({url,body})=>Response.json(url.endsWith('/semplice')?topic:body.numeroProvvedimento==='267'?tuel:cad),async()=>{
+    const local=await discovery().findActs({request:'Cosa dice l’art. 42 del TUEL?'});
+    assert.equal(local.match,'identified');
+    assert.equal(local.article_reference,'42');
+    assert.equal(local.traversal.items[0].publication.codice_redazionale,'000G0304');
+    const digital=await discovery().findActs({request:'CAD'});
+    assert.equal(digital.traversal.items[0].official_urn,'urn:nir:stato:decreto.legislativo:2005-03-07;82');
+    const topical=await discovery().findActs({request:'trasparenza amministrativa'});
+    assert.equal(topical.ordering,'observed_relevance');
+    assert.equal(topical.match,'candidates');
+    assert.equal(topical.traversal.progress,'more');
+  });
+});
+
+test('incompatible signed cursor plans and operations fail before continuation traffic',async()=>{
+  await fixture(()=>Response.json(searchPage([1,2,3,4,5].map(n=>candidate(n)),1,2,6)),async requests=>{
+    const first=await discovery().findActs({request:'topic'});
+    const original=JSON.parse(Buffer.from(first.traversal.cursor.slice(3).split('.')[0],'base64url').toString());
+    const before=requests.length;
+    for(const change of [data=>{data.v=2},data=>{data.operation='read_act'},data=>{delete data.plan.query},
+      data=>{data.plan.route='exact';data.plan.citation={type:'LEGGE',year:'1990',number:'241'}},data=>{data.plan.filters={classeProvvedimento:'3'}}]) {
+      const data=structuredClone(original);change(data);
+      const body=Buffer.from(JSON.stringify(data)).toString('base64url');
+      const cursor='d1_'+body+'.'+createHmac('sha256',key).update(body).digest('base64url');
+      await assert.rejects(discovery().continueActs({cursor}),error=>error.detail?.category==='invalid_cursor');
+    }
+    assert.equal(requests.length,before);
+  });
 });
