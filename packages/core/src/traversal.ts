@@ -54,7 +54,7 @@ export class ActTraversal {
   }
   private entry(act: Acquired, entry: SourceEntry): IndexPage["traversal"]["items"][number] {
     const target = { v: 1 as const, ...binding(act), selector: entry.selector, label: entry.label, contentDigest: entry.contentDigest };
-    const common = { label: entry.label, hierarchy: entry.hierarchy };
+    const common = { label: entry.label, ...(entry.heading ? { heading: entry.heading } : {}), hierarchy: entry.hierarchy };
     return entry.kind === "article" ? { ...common, kind: "article", article_locator: this.codec.issue({ ...target, kind: "article", address: entry.address!, legalDigest: entry.legalDigest, tableDigest: entry.tableDigest, unread: entry.unread }) }
       : { ...common, kind: "attachment", attachment_ref: this.codec.issue({ ...target, kind: "attachment" }), text_available: !entry.unread,
         historical_link_verified: false, ...(entry.officialUrl ? { official_url: entry.officialUrl } : {}),
@@ -70,7 +70,7 @@ export class ActTraversal {
         legal_content_complete: act.legalComplete && verifiedThrough === act.entries.length,
         unread_attachment_refs: displayedEntries.flatMap(e => e.kind === "attachment" && !e.text_available ? [e.attachment_ref] : []),
         ...(act.coverageExplanation ? { explanation: act.coverageExplanation }
-          : verifiedThrough < act.entries.length ? { explanation: "Source and address verification continues with the remaining entries." } : {}) } };
+          : verifiedThrough < act.entries.length ? { explanation: "Remaining entries need verification." } : {}) } };
   }
   private async acquire(publication: Publication, date: string, expected?: Binding): Promise<Acquired> {
     return prepareSource(currentCall()!.signal, () => this.acquirePrepared(publication, date, expected));
@@ -152,9 +152,9 @@ export class ActTraversal {
       const make = (): IndexPage => ({ ...this.envelope(act, index, items), traversal: !items.length && index < act.entries.length ? { progress: "pending", items: [],
         cursor: this.continuation(act, "list_articles", index, 0, 0, limit), explanation: "Source acquisition completed; occurrence verification continues in the next call." }
         : failure ? { progress: "interrupted", items,
-        cursor: this.continuation(act, "list_articles", index, 0, 0, limit), failure: { error: failure.detail, position: String(index) }, explanation: "Verification stopped after the returned prefix; resume at the first unfinished entry." }
+        cursor: this.continuation(act, "list_articles", index, 0, 0, limit), failure: { error: failure.detail, position: String(index) }, explanation: "Prefix preserved; continue with the literal cursor." }
         : index === act.entries.length ? { progress: "complete", items }
-        : { progress: "more", items, cursor: this.continuation(act, "list_articles", index, 0, 0, limit), explanation: "More index entries remain." } });
+        : { progress: "more", items, cursor: this.continuation(act, "list_articles", index, 0, 0, limit), explanation: "These entries are one index page. Continue with the literal cursor for the remaining entries." } });
       while (index < act.entries.length && items.length < limit) {
         if (currentCall()!.attempts >= currentCall()!.maxAttempts && !act.verified.has(act.entries[index]!.selector)) break;
         try { await this.verifyEntry(act, act.entries[index]!); }
@@ -189,7 +189,8 @@ export class ActTraversal {
           const matches = acquired.entries.filter(e => e.kind === "article" && e.label === label);
           if (!matches.length && acquired.inventoryComplete && acquired.entries.every(e => acquired.verified.has(e.selector))) return { outcome: "absent", reason: "complete_inventory_excludes_article", requested,
             evidence: [{ source: "verified_index", checked_at: acquired.checkedAt, publication, snapshot_date: date, representation_digest: acquired.digest }], absence_basis: "verified_index" };
-          if (matches.length > 1) return { outcome: "unresolved", reason: "exact_occurrence_required", requested, evidence };
+          if (matches.length > 1) return { outcome: "unresolved", reason: "exact_occurrence_required", requested,
+            evidence: [{ ...evidence[0]!, explanation: "Multiple occurrences share this label. Select the exact article_locator from list_articles." }] };
           if (matches.length === 1) {
             const entry = this.entry(acquired, matches[0]!);
             if (entry.kind === "article") {
@@ -200,7 +201,8 @@ export class ActTraversal {
         }
       }
       // Ordinary base articles have an established direct coordinate path. No annex or suffix guessing.
-      if (!exact && !/^\d+$/.test(label)) return { outcome: "unresolved", reason: "exact_locator_required", requested, evidence };
+      if (!exact && !/^\d+$/.test(label)) return { outcome: "unresolved", reason: "exact_locator_required", requested,
+        evidence: [{ ...evidence[0]!, explanation: "Use list_articles to select an exact article_locator for this suffixed or structured reference." }] };
       if (exact?.unread) return { outcome: "unresolved", reason: "graphic_content_unread", requested,
         evidence: [{ ...evidence[0]!, explanation: "The acquired article contains unread graphics; its full content is withheld." }] };
       let content: Awaited<ReturnType<ActTraversal["verifiedDetail"]>>;
@@ -225,7 +227,7 @@ export class ActTraversal {
         content: { format: "text", text: text.slice(offset, end), ...(content.title ? { title: content.title } : {}),
           ...(content.from ? { effective_from: content.from } : {}), ...(content.to ? { effective_to: content.to } : {}) },
         ...(end === text.length ? { progress: "complete" as const } : { progress: "more" as const,
-          cursor: this.continuation(reference, "read_article", 0, 0, end, limit, content.notesOnly ? this.codec.issue(reference) : token ?? this.codec.issue(reference)), explanation: "More article text remains." }) });
+          cursor: this.continuation(reference, "read_article", 0, 0, end, limit, content.notesOnly ? this.codec.issue(reference) : token ?? this.codec.issue(reference)), explanation: "This page contains part of the article. Continue with the literal cursor for the remaining text." }) });
       while (!fits(make()) && end > offset) end = boundary(text, offset + Math.floor((end - offset) / 2));
       if (end === offset && text.length > offset) throw internalError("response_limit_exceeded", "The article envelope leaves no space for content.", false);
       return articlePageSchema.parse(make());
@@ -253,9 +255,9 @@ export class ActTraversal {
       const make = (): ReadingPage => ({ ...this.envelope(act, attachment ? 0 : index, items.map(i => i.entry)), traversal: !items.length && index < entries.length ? { progress: "pending", items: [],
         cursor: this.continuation(act, "read_act", index, segment, offset, limit, attachmentToken), explanation: "Source acquisition completed; content verification continues in the next call." }
         : failure ? { progress: "interrupted", items,
-        cursor: this.continuation(act, "read_act", index, segment, offset, limit, attachmentToken), failure: { error: failure.detail, position: `${index}:${segment}:${offset}` }, explanation: "Reading stopped after the returned prefix; resume at the first unfinished entry." }
+        cursor: this.continuation(act, "read_act", index, segment, offset, limit, attachmentToken), failure: { error: failure.detail, position: `${index}:${segment}:${offset}` }, explanation: "Prefix preserved; continue with the literal cursor." }
         : index === entries.length ? { progress: "complete", items }
-        : { progress: "more", items, cursor: this.continuation(act, "read_act", index, segment, offset, limit, attachmentToken), explanation: "More legal content remains." } });
+        : { progress: "more", items, cursor: this.continuation(act, "read_act", index, segment, offset, limit, attachmentToken), explanation: "These entries are one reading page. Continue with the literal cursor for the remaining content." } });
       while (index < entries.length && chars < limit && items.length < RESPONSE_LIMITS.indexMax) {
         const entry = entries[index]!;
         if (currentCall()!.attempts >= currentCall()!.maxAttempts && !act.verified.has(entry.selector)) break;

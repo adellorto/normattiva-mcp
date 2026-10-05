@@ -174,7 +174,7 @@ test('multiple alias generations and uncertain currentness remain explained cand
     assert.equal(result.match, 'candidates');
     assert.equal(result.article_reference, '108');
     assert.equal(result.traversal.items.length, 3);
-    assert.match(result.explanation, /status remains unknown/);
+    assert.match(result.explanation, /status.*unknown/);
     assert.ok(result.traversal.items.every(item => item.current === 'unknown'));
     assert.deepEqual(requests.map(request => request.body.numeroProvvedimento), ['36','50','163']);
     const cadToday = await discovery().findActs({ request: 'CAD oggi vigente' });
@@ -251,7 +251,7 @@ test('historical alias context does not become an act-year filter and exact cita
     const page = await discovery().findActs({ request: 'CAD nel 2018' });
     assert.equal(page.match,'candidates');
     assert.equal(requests[0].body.annoProvvedimento,'2005');
-    assert.match(page.explanation,/historical status remains unknown/);
+    assert.match(page.explanation,/historical.*status.*unknown/);
     const before = requests.length;
     for (const request of ['D.Lgs. 82/2005 pubblicato dal 2020-01-01 al 2020-02-01',
       'D.Lgs. 82/2005 in vigore il 2026-02-30', 'D.Lgs. 82/2005 abrogato', 'D.Lgs. 82/2005 nel 2018', 'Legge 241/1990 e DPR 445']) {

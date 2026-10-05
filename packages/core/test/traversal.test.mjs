@@ -517,3 +517,13 @@ test('changed supplied addresses reject snapshot continuation with unchanged AKN
     await assert.rejects(new ActTraversal({ signingKey: key, cacheBytes: 0 }).listArticles({ cursor }), e => e.detail?.code === 'representation_changed');
   }, { xml: twoXml, page: page + nav('20',20,2) });
 });
+
+test('verified index pages expose actual article headings for topic selection without article bodies', async () => {
+  await fixture(async () => {
+    const reader = new ActTraversal({ signingKey: key });
+    const result = await reader.listArticles({ act_locator: reader.actLocator(publication), snapshot_date: date });
+    assert.equal(result.traversal.items[0].heading, 'Tutela dei dati');
+    assert.equal('segments' in result.traversal.items[0], false);
+  }, { xml: xml.replace('<num>Art. 13.</num>', '<num>Art. 13.</num><heading>Tutela dei dati</heading>'),
+    detail: { ...detail, data: { atto: { ...detail.data.atto, articoloHtml: '<h2>Art. 13.</h2><p>Tutela dei dati</p><p>Legal text.</p>' } } } });
+});

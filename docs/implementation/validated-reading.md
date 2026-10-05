@@ -4,7 +4,7 @@ Stage 2 of [the accepted delivery sequence](https://github.com/adellorto/normatt
 
 ## Shared interfaces
 
-`ActTraversal` exports `actLocator(publication)`, `listArticles(input, signal?)`, `readArticle(input, signal?)`, `readAct(input, signal?)` and `evict()`. Inputs/results use the coordinated schemas from the groundwork. `registerTraversalTools(server, reader, context)` exercises these focused replacement tools at the MCP seam. The default servers still register the existing public interface: shallow discovery, production registration, prompts/resources, migration documentation and release checks belong to the subsequent delivery stages. This commit does not publish a replacement public API or claim release acceptance.
+`ActTraversal` exports `actLocator(publication)`, `listArticles(input, signal?)`, `readArticle(input, signal?)`, `readAct(input, signal?)` and `evict()`. Inputs/results use the coordinated schemas from the groundwork. `registerTraversalTools(server, reader, context)` exercises these focused replacement tools at the MCP seam. The default servers now select this replacement interface alongside shallow discovery in [stage 4](public-integration.md). These local implementation commits do not publish a package or claim final release acceptance.
 
 Example application setup:
 

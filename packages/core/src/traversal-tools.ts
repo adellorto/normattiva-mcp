@@ -4,11 +4,10 @@ import { ActTraversal } from "./traversal.js";
 import { runTool } from "./execution.js";
 import { jsonContent } from "./serialization.js";
 import { errorSchema } from "./errors.js";
-import { calendarDateSchema, RESPONSE_LIMITS, indexPageSchema, readingPageSchema, articleToolResultSchema } from "./contracts.js";
+import { RESPONSE_LIMITS, indexPageSchema, readingPageSchema, articleToolResultSchema } from "./contracts.js";
 import type { ToolContext } from "./context.js";
 
-// This registration seam is used for the staged replacement interface. The
-// coordinated public migration/discovery stage will select it in both servers.
+// All focused reading tools share the same snapshot and continuation module.
 function pageResult<T extends z.ZodRawShape>(schema: z.ZodObject<T>) {
   return schema.partial().extend({ error: errorSchema.optional() }).superRefine((value, ctx) => {
     if (!((value as { error?: unknown }).error ? z.object({ error: errorSchema }).strict() : schema).safeParse(value).success) {
@@ -19,21 +18,24 @@ function pageResult<T extends z.ZodRawShape>(schema: z.ZodObject<T>) {
 export function registerTraversalTools(server: McpServer, reader: ActTraversal, context: ToolContext = {}): void {
   const locator = z.string().min(1).max(4096).optional(), cursor = z.string().min(1).max(16384).optional();
   const max_chars = z.number().int().min(1).max(RESPONSE_LIMITS.textMax).optional();
+  // Semantic date validation belongs to the reader so impossible dates use the
+  // same typed caller-error envelope as other well-shaped invalid inputs.
+  const snapshot_date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional();
   server.registerTool("list_articles", {
-    description: "List verified article occurrences and attachment references at a frozen date. Pass the returned cursor literally to continue. Coverage remains incomplete while verification continues.",
-    inputSchema: { act_locator: locator, snapshot_date: calendarDateSchema.optional(), cursor,
-      page_size: z.number().int().min(1).max(RESPONSE_LIMITS.indexMax).optional() },
+    description: "List verified article occurrences and attachment references using an act_locator from find_acts. Initial snapshot_date defaults to today and freezes on continuation. To continue, supply only the literal returned cursor and an optional page_size. Entries are this page; inspect coverage and progress for completeness.",
+    inputSchema: z.object({ act_locator: locator, snapshot_date, cursor,
+      page_size: z.number().int().min(1).max(RESPONSE_LIMITS.indexMax).optional() }).strict(),
     outputSchema: pageResult(indexPageSchema),
   }, async (args, extra) => runTool("composed", extra.signal, context, args, async () => jsonContent(await reader.listArticles(args, extra.signal))));
   server.registerTool("read_article", {
-    description: "Read one exact article or readable reference. Unresolved is not absence. Large articles return a literal cursor that resumes within content; article locators work after restart without rebuilding an index.",
-    inputSchema: { act_locator: locator, article_locator: locator, article_reference: z.string().trim().min(1).max(200).optional(),
-      snapshot_date: calendarDateSchema.optional(), cursor, max_chars },
+    description: "Read an article_locator from list_articles, or an act_locator plus article_reference (e.g. '13'), without listing first. snapshot_date defaults to today for the act path; exact locators retain their frozen date. To continue within text, supply only the literal cursor and an optional max_chars. Unresolved does not prove absence.",
+    inputSchema: z.object({ act_locator: locator, article_locator: locator, article_reference: z.string().trim().min(1).max(200).optional(),
+      snapshot_date, cursor, max_chars }).strict(),
     outputSchema: articleToolResultSchema,
   }, async (args, extra) => runTool("direct", extra.signal, context, args, async () => jsonContent(await reader.readArticle(args, extra.signal))));
   server.registerTool("read_act", {
-    description: "Read bounded article and attachment text with table relationships preserved. Pass a listed attachment reference to select it, or a returned cursor literally to continue within text or cells. Traversal completion is distinct from legal-content coverage.",
-    inputSchema: { act_locator: locator, attachment_ref: locator, snapshot_date: calendarDateSchema.optional(), cursor, max_chars },
+    description: "Read bounded text and table cells using an act_locator; optionally select a listed attachment_ref. snapshot_date defaults to today and freezes on continuation. To continue within text or cells, supply only the literal cursor and an optional max_chars. Entries are this page; traversal completion is distinct from legal-content coverage.",
+    inputSchema: z.object({ act_locator: locator, attachment_ref: locator, snapshot_date, cursor, max_chars }).strict(),
     outputSchema: pageResult(readingPageSchema),
   }, async (args, extra) => runTool("composed", extra.signal, context, args, async () => jsonContent(await reader.readAct(args, extra.signal))));
 }

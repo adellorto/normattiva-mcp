@@ -2,62 +2,35 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { registerTools } from '../dist/tools.js';
-import { UpstreamRuntime } from '../dist/upstream.js';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { checkContracts } from './fixtures/public-contracts.mjs';
 import { fileURLToPath } from 'node:url';
+import { signingKey } from './fixtures/traversal-upstream.mjs';
 
-const args = { data_gu: '1988-09-12', codice_redazionale: '088G0458', articolo: 13 };
-
-async function checkContracts(client) {
-  assert.ok((await client.listTools()).tools.some(tool => tool.name === 'read_article'));
-  const found = await client.callTool({ name: 'read_article', arguments: args });
-  assert.equal(found.structuredContent.outcome, 'found');
-  assert.equal(found.structuredContent.content.text, 'Fixture legal text.');
-  assert.deepEqual(JSON.parse(found.content[0].text), found.structuredContent);
-  const unresolved = await client.callTool({ name: 'read_article', arguments: { ...args, articolo: 999 } });
-  assert.equal(unresolved.structuredContent.outcome, 'unresolved');
-  const error = await client.callTool({ name: 'read_article', arguments: { ...args, articolo: 998 } });
-  assert.equal(error.isError, true);
-  assert.equal(error.structuredContent.error.category, 'rate_limited');
-  assert.equal(JSON.stringify(error).includes('private dump'), false);
-}
-
-test('the built stdio server exposes the common outcome and error contracts', async () => {
+test('the built stdio server integrates discovery, reading, resources and prompts with configured trust', async () => {
   const client = new Client({ name: 'stdio-contract', version: '0' });
-  const transport = new StdioClientTransport({ command: process.execPath, args: [
-    '--import', fileURLToPath(new URL('./fixtures/upstream.mjs', import.meta.url)),
+  await client.connect(new StdioClientTransport({ command: process.execPath, args: [
+    '--import', fileURLToPath(new URL('./fixtures/public-upstream.mjs', import.meta.url)),
     fileURLToPath(new URL('../../stdio-server/dist/index.js', import.meta.url)),
-  ] });
-  await client.connect(transport);
-  try { await checkContracts(client); }
-  finally { await client.close(); }
+  ], env: { ...process.env, NORMATTIVA_REFERENCE_KEY: signingKey.toString('hex') } }));
+  try { await checkContracts(client); } finally { await client.close(); }
 });
 
-test('Streamable HTTP serializes the same common contracts', async () => {
-  const originalFetch = globalThis.fetch;
-  await import('./fixtures/upstream.mjs');
-  const runtime = new UpstreamRuntime();
-  const client = new Client({ name: 'http-contract', version: '0' });
-  const transport = new StreamableHTTPClientTransport(new URL('https://fixture.invalid/mcp'), {
-    fetch: async (url, init) => {
-      const server = new McpServer({ name: 'http-contract', version: '0' });
-      registerTools(server, { upstream: runtime });
-      const serverTransport = new WebStandardStreamableHTTPServerTransport({
-        sessionIdGenerator: undefined, enableJsonResponse: true,
-      });
-      await server.connect(serverTransport);
-      try { return await serverTransport.handleRequest(new Request(url, init)); }
-      finally { await server.close(); }
-    },
-  });
-  try {
-    await client.connect(transport);
-    await checkContracts(client);
-  } finally {
-    globalThis.fetch = originalFetch;
-    await client.close();
-  }
+test('the production HTTP handler exposes the same focused interface on stateless requests', async () => {
+  // mcp-handler owns a persistent cleanup timer; isolate its process lifecycle.
+  const { stdout } = await promisify(execFile)(process.execPath,
+    [fileURLToPath(new URL('./fixtures/public-http.mjs', import.meta.url))], { timeout: 30_000 });
+  assert.match(stdout, /HTTP public contracts passed/);
+});
+
+test('the migration smoke workflow crosses the built server using synthetic controls', async () => {
+  const fixture = new URL('./fixtures/public-upstream.mjs', import.meta.url).href;
+  const { stdout } = await promisify(execFile)(process.execPath,
+    [fileURLToPath(new URL('../../../tests/smoke.mjs', import.meta.url))], {
+      timeout: 30_000,
+      env: { ...process.env, NORMATTIVA_REFERENCE_KEY: signingKey.toString('hex'),
+        NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --import=${fixture}` },
+    });
+  assert.match(stdout, /Smoke passed/);
 });

@@ -9,7 +9,7 @@ export type Publication = z.infer<typeof publicationSchema>;
 export type Segment = z.infer<typeof contentSegmentSchema>;
 export type Hierarchy = Array<{ kind: string; label: string; occurrence: string }>;
 export interface SourceEntry {
-  kind: "article" | "attachment"; label: string; selector: string; hierarchy: Hierarchy;
+  kind: "article" | "attachment"; label: string; heading?: string; selector: string; hierarchy: Hierarchy;
   segments: Segment[]; contentDigest: string; address?: RetrievalAddress;
   legalDigest: string;
   tableDigest: string;
@@ -273,6 +273,8 @@ export function parseAct(xml: string, publication: Publication, date: string, po
     if (unread) inventoryComplete = false; // Graphics may conceal further article occurrences.
     const entry: SourceEntry = { kind, label, selector: node.path, hierarchy, segments: items,
       contentDigest: digest(legalText(segmentText(items))), legalDigest: digest(legalText(segmentText(segments(node, true)))), tableDigest: tableDigest(segments(node, true)), unread };
+    const heading = child(node, "heading");
+    if (heading) entry.heading = normalized(xmlText(heading));
     if (kind === "article") {
       const matches = navigationByKey.get(navigationKey(label, component)) ?? [];
       const match = matches.find(n => !used.has(n));

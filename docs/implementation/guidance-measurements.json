@@ -1,0 +1,141 @@
+{
+  "tiktoken_version": "0.14.0",
+  "baseline": "Same tools/list with every tool description removed; conservative guidance upper bound. No client wrappers or model evaluation.",
+  "sample_basis": "Synthetic default-registration MCP responses. Explanations plus error messages; both duplicated MCP representations counted. Full payload includes locators and metadata.",
+  "encodings": {
+    "o200k_base": {
+      "schema_without_descriptions": 15814,
+      "schema_with_descriptions": 16130,
+      "guidance_percent": 2.0,
+      "samples": {
+        "identified_currentness_unknown": {
+          "explanatory_tokens_one_representation": 11,
+          "explanatory_tokens_both_representations": 22,
+          "full_mcp_tokens": 488
+        },
+        "index_more": {
+          "explanatory_tokens_one_representation": 22,
+          "explanatory_tokens_both_representations": 44,
+          "full_mcp_tokens": 2820
+        },
+        "article_more": {
+          "explanatory_tokens_one_representation": 18,
+          "explanatory_tokens_both_representations": 36,
+          "full_mcp_tokens": 2727
+        },
+        "article_unresolved": {
+          "explanatory_tokens_one_representation": 15,
+          "explanatory_tokens_both_representations": 30,
+          "full_mcp_tokens": 427
+        },
+        "suffix_unresolved": {
+          "explanatory_tokens_one_representation": 17,
+          "explanatory_tokens_both_representations": 34,
+          "full_mcp_tokens": 433
+        },
+        "reading_more": {
+          "explanatory_tokens_one_representation": 22,
+          "explanatory_tokens_both_representations": 44,
+          "full_mcp_tokens": 2887
+        },
+        "invalid_cursor": {
+          "explanatory_tokens_one_representation": 15,
+          "explanatory_tokens_both_representations": 30,
+          "full_mcp_tokens": 74
+        },
+        "index_pending": {
+          "explanatory_tokens_one_representation": 17,
+          "explanatory_tokens_both_representations": 34,
+          "full_mcp_tokens": 1400
+        },
+        "discovery_more": {
+          "explanatory_tokens_one_representation": 25,
+          "explanatory_tokens_both_representations": 50,
+          "full_mcp_tokens": 2425
+        },
+        "degraded_discovery": {
+          "explanatory_tokens_one_representation": 14,
+          "explanatory_tokens_both_representations": 28,
+          "full_mcp_tokens": 492
+        },
+        "no_candidates": {
+          "explanatory_tokens_one_representation": 14,
+          "explanatory_tokens_both_representations": 28,
+          "full_mcp_tokens": 132
+        },
+        "index_interrupted": {
+          "explanatory_tokens_one_representation": 29,
+          "explanatory_tokens_both_representations": 58,
+          "full_mcp_tokens": 2968
+        }
+      }
+    },
+    "cl100k_base": {
+      "schema_without_descriptions": 15211,
+      "schema_with_descriptions": 15528,
+      "guidance_percent": 2.08,
+      "samples": {
+        "identified_currentness_unknown": {
+          "explanatory_tokens_one_representation": 11,
+          "explanatory_tokens_both_representations": 22,
+          "full_mcp_tokens": 500
+        },
+        "index_more": {
+          "explanatory_tokens_one_representation": 22,
+          "explanatory_tokens_both_representations": 44,
+          "full_mcp_tokens": 3030
+        },
+        "article_more": {
+          "explanatory_tokens_one_representation": 18,
+          "explanatory_tokens_both_representations": 36,
+          "full_mcp_tokens": 2918
+        },
+        "article_unresolved": {
+          "explanatory_tokens_one_representation": 15,
+          "explanatory_tokens_both_representations": 30,
+          "full_mcp_tokens": 431
+        },
+        "suffix_unresolved": {
+          "explanatory_tokens_one_representation": 17,
+          "explanatory_tokens_both_representations": 34,
+          "full_mcp_tokens": 437
+        },
+        "reading_more": {
+          "explanatory_tokens_one_representation": 22,
+          "explanatory_tokens_both_representations": 44,
+          "full_mcp_tokens": 3097
+        },
+        "invalid_cursor": {
+          "explanatory_tokens_one_representation": 15,
+          "explanatory_tokens_both_representations": 30,
+          "full_mcp_tokens": 73
+        },
+        "index_pending": {
+          "explanatory_tokens_one_representation": 17,
+          "explanatory_tokens_both_representations": 34,
+          "full_mcp_tokens": 1471
+        },
+        "discovery_more": {
+          "explanatory_tokens_one_representation": 25,
+          "explanatory_tokens_both_representations": 50,
+          "full_mcp_tokens": 2527
+        },
+        "degraded_discovery": {
+          "explanatory_tokens_one_representation": 15,
+          "explanatory_tokens_both_representations": 30,
+          "full_mcp_tokens": 504
+        },
+        "no_candidates": {
+          "explanatory_tokens_one_representation": 14,
+          "explanatory_tokens_both_representations": 28,
+          "full_mcp_tokens": 129
+        },
+        "index_interrupted": {
+          "explanatory_tokens_one_representation": 29,
+          "explanatory_tokens_both_representations": 58,
+          "full_mcp_tokens": 3174
+        }
+      }
+    }
+  }
+}

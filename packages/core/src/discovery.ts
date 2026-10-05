@@ -101,14 +101,19 @@ export class ActDiscovery {
     return { match: identified ? "identified" : traversal.items.length ? "candidates" : "no_candidates",
       interpretation: state.plan.request, ...(state.plan.article ? { article_reference: state.plan.article } : {}),
       ordering: this.ordering(state), corpus: "live", traversal,
-      ...(state.degraded ? { explanation: "Observed relevance search is unavailable; this search uses chronological ordering." }
-        : state.plan.uncertainTime ? { explanation: "The acts are live-verified, but their requested current or historical status remains unknown; select a candidate with that limitation." }
-        : !traversal.items.length ? { explanation: "This bounded discovery returned no candidates. It does not prove legal absence." } : {}) };
+      ...(traversal.progress === "interrupted" ? {}
+        : !traversal.items.length ? { explanation: state.degraded
+          ? "Relevance unavailable; chronological search returned no candidates. This does not prove absence."
+          : "This bounded discovery returned no candidates. It does not prove legal absence." }
+        : state.degraded ? { explanation: "Observed relevance search is unavailable; chronological candidates have unknown current legal force." }
+        : state.plan.uncertainTime ? { explanation: "Requested historical/current status is unknown; select a candidate." }
+        : { explanation: identified ? "Act identity is verified; current legal force is unknown."
+          : "Select a candidate; current legal force is unknown." }) };
   }
   private continuation(state: SearchCursor): string { return this.tokens.issue("d1_", cursorSchema.parse(state), 16384); }
   private more(state: SearchCursor, items: Candidate[]): DiscoveryPage {
     return this.envelope(state, { progress: "more", items, cursor: this.continuation(state),
-      explanation: "Continue with the literal cursor. Search uses a live corpus; pages may change between calls." });
+      explanation: "Page only; continue with the literal cursor. Live search pages may change." });
   }
   private async fetchPage(state: SearchCursor, target: Target): Promise<{ response: RicercaResponse; path: string }> {
     const { plan } = state, paginazione = { paginaCorrente: state.page, numeroElementiPerPagina: state.limit };
@@ -174,7 +179,7 @@ export class ActDiscovery {
         if (!(error instanceof OperationError) || !items.length) throw error;
         return this.finish(this.envelope(state, { progress: "interrupted", items, cursor: this.continuation(state),
           failure: { error: error.detail, position: `target:${state.target}/page:${state.page}/offset:${state.offset}` },
-          explanation: "Discovery was interrupted after useful candidates. Resume the first unfinished position with the literal cursor." }));
+          explanation: "Prefix preserved; current force unknown. Resume with the literal cursor." }));
       }
     }
     return this.finish(this.envelope(state, { progress: "complete", items }, soleExactMatch));

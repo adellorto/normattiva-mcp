@@ -3,11 +3,14 @@ import { test } from 'node:test';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
-import { registerTools } from '../dist/tools.js';
+import { registerTools, ActTraversal } from '../dist/index.js';
+import { signingKey, publication } from './fixtures/traversal-upstream.mjs';
+const act_locator = new ActTraversal({ signingKey }).actLocator(publication);
+const valid = { sottoTitolo: '(000G0304)', annoGU: 2000, meseGU: 9, giornoGU: 28, articoloHtml: '<h2>Art. 13.</h2><p>text</p>', articoloDataInizioVigenza: '20090704', articoloDataFineVigenza: '99999999' };
 
 async function connected(work) {
   const server = new McpServer({ name: 'contract-test', version: '0' });
-  registerTools(server, {});
+  registerTools(server, { signingKey });
   const client = new Client({ name: 'contract-test', version: '0' });
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await server.connect(serverTransport);
@@ -23,7 +26,7 @@ test('MCP callers receive bounded typed throttling details without upstream bodi
   try {
     await connected(async client => {
       const result = await client.callTool({ name: 'read_article', arguments: {
-        data_gu: '1988-09-12', codice_redazionale: '088G0458', articolo: 13,
+        act_locator, article_reference: '13', snapshot_date: '2026-10-02',
       } });
       assert.equal(result.isError, true);
       assert.equal(result.structuredContent.error.category, 'rate_limited');
@@ -39,9 +42,9 @@ test('impossible year/month/day combinations fail before search contacts upstrea
   globalThis.fetch = async () => { attempts++; return Response.json({ numeroAttiTrovati: 0, listaAtti: [] }); };
   try {
     await connected(async client => {
-      const result = await client.callTool({ name: 'search_acts', arguments: { anno: 2025, mese: 2, giorno: 29 } });
+      const result = await client.callTool({ name: 'find_acts', arguments: { request: 'atti pubblicati dal 2025-02-29 al 2025-03-01' } });
       assert.equal(result.isError, true);
-      assert.equal(result.structuredContent.error.code, 'invalid_calendar_date');
+      assert.equal(result.structuredContent.error.category, 'invalid_input');
     });
     assert.equal(attempts, 0);
   } finally { globalThis.fetch = originalFetch; }
@@ -50,12 +53,12 @@ test('impossible year/month/day combinations fail before search contacts upstrea
 test('malformed successful article metadata fails instead of escaping the result schema', async () => {
   const originalFetch = globalThis.fetch;
   globalThis.fetch = async () => Response.json({ success: true, data: { atto: {
-    articoloHtml: '<p>text</p>', titolo: 42, articoloDataInizioVigenza: 'not-a-date',
+    ...valid, titolo: 42, articoloDataInizioVigenza: 'not-a-date',
   } } });
   try {
     await connected(async client => {
       const result = await client.callTool({ name: 'read_article', arguments: {
-        data_gu: '1988-09-12', codice_redazionale: '088G0458', articolo: 13,
+        act_locator, article_reference: '13', snapshot_date: '2026-10-02',
       } });
       assert.equal(result.isError, true);
       assert.equal(result.structuredContent.error.code, 'malformed_upstream_response');
@@ -66,12 +69,12 @@ test('malformed successful article metadata fails instead of escaping the result
 test('documented compact effective dates normalize without treating the open-end sentinel as a date', async () => {
   const originalFetch = globalThis.fetch;
   globalThis.fetch = async () => Response.json({ success: true, data: { atto: {
-    articoloHtml: '<p>text</p>', articoloDataInizioVigenza: '20090704', articoloDataFineVigenza: '99999999',
+    ...valid,
   } } });
   try {
     await connected(async client => {
       const result = await client.callTool({ name: 'read_article', arguments: {
-        data_gu: '1988-09-12', codice_redazionale: '088G0458', articolo: 13,
+        act_locator, article_reference: '13', snapshot_date: '2026-10-02',
       } });
       assert.equal(result.structuredContent.content.effective_from, '2009-07-04');
       assert.equal('effective_to' in result.structuredContent.content, false);
@@ -86,10 +89,10 @@ test('impossible calendar dates fail locally with a typed caller error', async (
   try {
     await connected(async client => {
       const result = await client.callTool({ name: 'read_article', arguments: {
-        data_gu: '2025-02-29', codice_redazionale: '088G0458', articolo: 13,
+        act_locator, article_reference: '13', snapshot_date: '2025-02-29',
       } });
       assert.equal(result.structuredContent.error.category, 'invalid_input');
-      assert.equal(result.structuredContent.error.code, 'invalid_calendar_date');
+      assert.equal(result.structuredContent.error.category, 'invalid_input');
     });
     assert.equal(attempts, 0);
   } finally { globalThis.fetch = originalFetch; }
@@ -101,7 +104,7 @@ test('a well-formed lookup with inconclusive official evidence is unresolved', a
   try {
     await connected(async client => {
       const result = await client.callTool({ name: 'read_article', arguments: {
-        data_gu: '1988-09-12', codice_redazionale: '088G0458', articolo: 13,
+        act_locator, article_reference: '13', snapshot_date: '2026-10-02',
       } });
       const data = result.structuredContent;
       assert.equal(data.outcome, 'unresolved');

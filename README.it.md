@@ -4,157 +4,142 @@
 
 [![Listed in italia-mcp-servers](https://img.shields.io/badge/listed%20in-italia--mcp--servers-blue)](https://github.com/bsab/italia-mcp-servers)
 
-Server [Model Context Protocol](https://modelcontextprotocol.io) leggero che espone l'API OpenData di [Normattiva](https://www.normattiva.it) — il portale ufficiale della legislazione italiana gestito da IPZS — a client LLM come Claude Desktop, Cursor e Claude Code.
-
-Wrappa gli endpoint sincroni di lettura (ricerca, dettaglio atto, atti aggiornati) e i cataloghi delle tipologiche statiche come **tools**, **resources** e **prompts** MCP.
-
-**Landing page & quickstart:** [`normattiva-mcp.adellorto.com`](https://normattiva-mcp.adellorto.com/) — config copia-incolla per Claude, ChatGPT, Cursor e stdio. Versione italiana su [`/it/`](https://normattiva-mcp.adellorto.com/it/).
+Un server [Model Context Protocol](https://modelcontextprotocol.io) per la normativa italiana ufficiale di [Normattiva](https://www.normattiva.it), gestito da IPZS. Ricerca di atti, indice degli articoli a una data precisa e lettura limitata sono condivisi dai trasporti stdio e Streamable HTTP.
 
 ## Stato dello sviluppo
 
-È iniziata l’implementazione del [passaggio di consegne approvato](https://github.com/adellorto/normattiva-mcp/issues/6#issuecomment-5992182865). Questa revisione introduce schemi dei risultati, errori tipizzati, una coda FIFO condivisa per processo, una scadenza di 50 secondi per chiamata, timeout di 20 secondi per tentativo e budget di due tentativi per chiamate dirette e sedici per quelle composte. Un solo retry è consentito per operazioni ripetibili con errore transitorio riconosciuto; un throttling senza `Retry-After` rallenta il traffico successivo senza retry immediato. La cancellazione ferma richieste attive e in coda.
+Questa revisione implementa le fasi 1–4 della [specifica accettata](https://github.com/adellorto/normattiva-mcp/issues/6#issuecomment-5992182865). Entrambi i server predefiniti espongono la nuova interfaccia descritta sotto. È **non pubblicata**: il pacchetto npm, l'endpoint ospitato e la pagina pubblica riflettono ancora la versione precedente. Gli esempi della nuova interfaccia valgono subito per una compilazione dai sorgenti e, dopo la pubblicazione, per il rilascio coordinato.
 
-Per chi usa il sorgente, `read_article` restituisce ora `outcome`, `reason`, `requested` ed `evidence`; il testo trovato è in `content.text`. Risposte inconcludenti del dettaglio, inclusi i 404 ambigui, restituiscono `outcome: "unresolved"`. Sono rimossi il booleano `found` e i precedenti campi del contenuto al primo livello. Gli errori operativi restituiscono `isError: true` e `structuredContent.error` con categoria, codice, messaggio sicuro e retryability a tre valori. Anche i tool riusciti espongono `structuredContent`. I corpi upstream decodificati sono limitati a 24 MiB; i risultati serializzati di tool e risorse a 128 KiB.
-
-Questa implementazione intermedia non è pubblicata. Gli export condivisi includono ora [navigazione verificata a data congelata e lettura paginata](docs/implementation/validated-reading.md) e [ricerca semplificata degli atti con continuazione](docs/implementation/act-discovery.md), con registrazioni intermedie testate tramite stdio e HTTP. Le registrazioni pubbliche predefinite usano ancora l’interfaccia esistente: i suoi sondamenti `list_articles` e `read_act` non verificano la completezza e non preservano i prefissi dopo un’interruzione. La prossima fase coordina migrazione pubblica degli strumenti, configurazione della fiducia nei riferimenti, prompt/risorse e smoke test; seguiranno i criteri finali di rilascio. I deployment hosted e npm non sono aggiornati.
+La fase 5 deve ancora verificare servizi ufficiali live, prestazioni e token nel runtime di produzione, modelli/client, portabilità tra pacchetti e server ospitato, e rilascio. I test offline non dimostrano accettazione in produzione o affidabilità dei modelli. Dettagli: [lettura validata](docs/implementation/validated-reading.md), [ricerca di atti](docs/implementation/act-discovery.md), [integrazione pubblica](docs/implementation/public-integration.md). La [guida alla migrazione incompatibile](docs/migration.md) elenca campi e chiamate rimossi.
 
 ## Funzionalità
 
-### Tools
+### Strumenti
 
-| Tool | Scopo |
+| Strumento | Scopo |
 | --- | --- |
-| `search_acts` | Ricerca atti normativi italiani per testo libero, titolo, denominazione atto, anno/numero, intervallo di date, classe provvedimento o data di vigenza. Restituisce i metadati di ciascun atto trovato, incluso `codice_redazionale` e `data_gu` (necessari a `read_article`). Per trovare atti **appena pubblicati** in Gazzetta Ufficiale in una finestra temporale, valorizza `data_pubblicazione_da` / `data_pubblicazione_a` — è questo lo strumento giusto per "cosa è stato pubblicato di recente?", non `recent_updates`. |
-| `list_articles` | Scopre i numeri degli articoli di un atto sondando in sequenza `read_article` a partire da `articolo=1`. Per default trova solo gli articoli base; con `include_suffixes: true` sonda anche `bis`/`ter`/`quater`/… per ognuno. Ogni voce porta i flag opzionali `is_preamble` e `is_abrogated` (informativi; nessun filtro lato server). Gli articoli interni a gruppi strutturati (`id_gruppo != 0`) non vengono enumerati automaticamente. |
-| `read_article` | Legge un articolo alla data fornita. Restituisce `outcome: "found"` con `content.text`, oppure `outcome: "unresolved"` ed evidenza quando le coordinate non permettono di stabilire la presenza. Un 404 ambiguo non prova l’assenza. Gli errori operativi seguono il contratto tipizzato. `format: "html"` conserva il markup; il testo semplice preserva marcatori di emendamento e riferimenti delle citazioni. |
-| `read_act` | Lettura aggregata di un intero atto: enumera internamente gli articoli e ne recupera ognuno, ritornandoli in ordine fino al limite `max_chars` (default 80 000 ≈ 20k token Claude). Onora `include_suffixes` e `id_gruppo` come `list_articles`. Quando il budget è esaurito la risposta include `truncated: true`, `truncated_reason` e `articolo_successivo` per riprendere con una chiamata successiva impostando `articolo_da` a quel valore. |
-| `recent_updates` | Elenca atti normativi il cui **testo consolidato è stato modificato** in una finestra temporale (max 12 mesi) — cioè la versione vigente è cambiata perché un altro atto l'ha modificata. **Non** elenca atti appena pubblicati in Gazzetta Ufficiale; per quelli usa `search_acts` con `data_pubblicazione_da` / `data_pubblicazione_a`. |
+| `find_acts` | Individua atti da un unico `request`: citazione, nome comune/acronimo verificato, argomento o vincoli espliciti di data/stato supportati. Restituisce `identified`, `candidates` o `no_candidates`, riferimenti agli atti e intenzione relativa all'articolo separata; mai il testo. Una ricerca vuota non prova assenza. |
+| `continue_acts` | Continua la ricerca con il solo `cursor` restituito, copiato letteralmente. Il corpus è live; il completamento non prova esaustività giuridica. |
+| `list_articles` | Restituisce pagine di occorrenze verificate, rubriche disponibili, gerarchia e riferimenti agli allegati per un `act_locator` a una `snapshot_date` precisa. Continua con solo `cursor` ed eventuale `page_size`; valuta la copertura separatamente dall'avanzamento. |
+| `read_article` | Legge un `article_locator` esatto, oppure `act_locator` e `article_reference`, senza indice obbligatorio. Restituisce `found`, `absent` sostenuto da prove, oppure `unresolved`. Continua all'interno del testo con solo `cursor` ed eventuale `max_chars`. |
+| `read_act` | Legge pagine limitate di testo e celle strutturate da un `act_locator`, eventualmente selezionando un `attachment_ref` elencato. Continua dentro testo/celle con solo `cursor` ed eventuale `max_chars`. Completamento e copertura del contenuto giuridico sono distinti. |
+| `recent_updates` | Elenca atti il cui **testo consolidato è stato modificato** in un intervallo inclusivo di massimo dodici mesi, fornendo riferimenti agli atti. Per **nuove pubblicazioni in Gazzetta**, usa `find_acts` con un intervallo esplicito di pubblicazione. I soli metadati non spiegano le modifiche. |
 
-### Resources
+### Risorse
 
 | URI | Contenuto |
 | --- | --- |
-| `normattiva://tipologiche/denominazioni` | Codici di denominazione atto (es. `PLE` → `LEGGE`, `PDL` → `DECRETO-LEGGE`). Usa il value come argomento `denominazione` di `search_acts`. |
-| `normattiva://tipologiche/classi-provvedimento` | Codici classe provvedimento: `1` = atto normativo senza aggiornamenti, `2` = aggiornato, `3` = abrogato. |
-| `normattiva://collezioni-predefinite` | Collezioni preconfezionate di atti con il numero di elementi di ciascuna. |
-| `normattiva://ricerche-predefinite` | Ricerche predefinite con i relativi filtri preimpostati. |
+| `normattiva://tipologiche/denominazioni` | Codici ufficiali dei tipi di atto e nomi italiani; metadati facoltativi di riferimento. |
+| `normattiva://tipologiche/classi-provvedimento` | Classi ufficiali: `1` = senza aggiornamenti, `2` = aggiornato, `3` = abrogato; non attestano lo stato attuale di un atto selezionato. |
+| `normattiva://collezioni-predefinite` | Collezioni ufficiali predefinite e conteggi. |
+| `normattiva://ricerche-predefinite` | Ricerche ufficiali predefinite e filtri upstream, per consultazione anziché come argomenti diretti degli strumenti. |
 
-### Prompts
+La ricerca accetta direttamente la richiesta dell'utente; consultare questi cataloghi è facoltativo.
+
+### Prompt
 
 | Nome | Argomenti | Scopo |
 | --- | --- | --- |
-| `ricerca-articolo` | `argomento` | Cerca la normativa italiana su un argomento e legge gli articoli più rilevanti. |
-| `monitoraggio-modifiche` | `giorni` (default `7`) | Riepiloga le modifiche al testo consolidato di atti esistenti negli ultimi *N* giorni (usa `recent_updates`; per atti appena pubblicati usa invece `search_acts` con `data_pubblicazione_da/a`). |
+| `ricerca-articolo` | `argomento` | Ricerca facoltativa: seleziona fino a 3 atti mediante ricerca e rubriche effettive dell'indice, legge fino a 10 articoli, cita solo testi letti e dichiara la copertura. Segue altri cursori per richieste esplicitamente esaustive. |
+| `monitoraggio-modifiche` | `giorni` (1–365, default `7`) | Raggruppa i metadati degli atti con testo consolidato modificato. Legge contenuti pertinenti e datati prima di descrivere le modifiche; usa `find_acts` per nuove pubblicazioni. |
 
-## Installazione e configurazione del client
+Le indicazioni essenziali sono nelle descrizioni e nei risultati degli strumenti. L'uso ordinario non richiede prompt, cataloghi allegati o istruzioni di inizializzazione.
 
-Eseguilo con `npx`:
+## Ricerca e lettura
 
-```bash
-npx normattiva-mcp
+Mantieni richiesta e vincoli insieme:
+
+```json
+{"name":"find_acts","arguments":{"request":"decreto legislativo 267/2000 articolo 13"}}
 ```
 
-### Claude Desktop / Claude Code
+Seleziona l'`act_locator` del candidato restituito. La ricerca separa `article_reference`. Sostituisci il riferimento nell'esempio con il valore effettivo:
 
-Aggiungi alla configurazione del tuo client MCP (`claude_desktop_config.json` per Claude Desktop, oppure `~/.claude.json` / `.mcp.json` per Claude Code):
+```json
+{"name":"read_article","arguments":{"act_locator":"<act_locator restituito>","article_reference":"13","snapshot_date":"2026-10-02"}}
+```
+
+Per suffissi, atti strutturati o occorrenze ripetute, scegli l'`article_locator` esatto da `list_articles`. Non ricostruire coordinate interne e non scegliere una generazione dalla memoria del modello. `candidates` richiede ancora selezione. Alias controllati e identità verificata live non provano la vigenza attuale: i candidati indicano al momento `current: "unknown"`.
+
+La ricerca prosegue con `continue_acts({cursor})`. Indice e lettura proseguono richiamando lo stesso strumento con `{cursor}` ed eventuale nuovo limite. Copia il cursore letteralmente e ometti riferimenti/data originali. `find_acts` e `continue_acts` non espongono un limite pubblico di candidati.
+
+La lettura risolve una data omessa alla data UTC concreta della prima chiamata. I riferimenti mantengono istantanea e rappresentazione anche dopo riavvio o svuotamento della cache. Per cambiare data, avvia una nuova richiesta. Le pagine di ricerca restano live e possono cambiare ordine o appartenenza; modifiche durante una continuazione interna alla pagina producono errore esplicito.
+
+## Esiti, avanzamento e limiti
+
+Gli strumenti riusciti espongono JSON concordante in `structuredContent` e nel contenuto testuale. L'`outcome` dell'articolo è distinto dall'esecuzione: `found` contiene `content.text`; `absent` richiede prove positive e `absence_basis`; `unresolved` non stabilisce presenza o assenza. Un 404 upstream ambiguo non prova assenza.
+
+Indice, lettura dell'atto e ricerca usano `traversal`; l'articolo singolo usa `progress` al livello principale. `pending` indica preparazione senza contenuti utili (solo indice/atto), `more` un'altra pagina, `complete` la fine dell'attraversamento osservato. `interrupted` conserva il prefisso utile con cursore, `failure.error` e posizione incompiuta. Un errore prima di progressi utili usa `isError: true` e `structuredContent.error`: categoria, codice, messaggio sicuro, `retryability` (`true`, `false` o `"unknown"`) e dettagli applicabili di provider/HTTP/trasporto/attesa. Ripetibilità sconosciuta non autorizza tentativi automatici. Input incompatibili con lo schema possono ricevere l'errore di validazione dell'SDK MCP.
+
+| Limite | Predefinito | Massimo |
+| --- | --- | --- |
+| Candidati per pagina | 5 | 20 configurati internamente; chiamate pubbliche con valore predefinito |
+| Voci dell'indice per pagina | 30 | 50 |
+| Caratteri di testo per pagina | 16.000 | 64.000 |
+| Risposta serializzata completa, entrambe le rappresentazioni MCP | — | 128 KiB UTF-8 |
+| Acquisizione della fonte decodificata | — | 24 MiB |
+
+I limiti testuali contano punti di codice Unicode; gli offset dei segmenti sono posizioni UTF-16. Identità, dimensioni, celle, span, intestazioni e offset delle tabelle persistono tra pagine. Il limite in byte può ridurre ulteriormente una pagina: il contenuto supportato continua anziché essere saltato. Voci non rappresentabili e limiti di fonte/parser producono errori espliciti.
+
+Una sola richiesta upstream attiva per processo; scadenza condivisa di 50 secondi, massimo 20 secondi per tentativo, due tentativi per letture dirette o sedici per operazioni composte. I ritentativi richiedono ripetibilità sicura e prove di errore transitorio noto; la continuazione ha un nuovo budget. Client e hosting devono lasciare tempo per restituire la risposta dopo la scadenza; HTTP consente 60 secondi. La cancellazione interrompe lavoro in coda e attivo.
+
+## Configurazione e fiducia nei riferimenti
+
+I nuovi server richiedono `NORMATTIVA_REFERENCE_KEY`: esattamente 64 caratteri esadecimali per una chiave di 32 byte generata crittograficamente. Generala **una volta**, poi conservala nell'ambiente del client o nei segreti del deployment:
+
+```bash
+openssl rand -hex 32
+export NORMATTIVA_REFERENCE_KEY='<incolla la chiave persistente di 64 caratteri hex>'
+```
+
+Il server legge l'ambiente del processo; non carica automaticamente `.env`, non crea chiavi e non include un segreto condiviso. Configurazione assente o malformata fallisce esplicitamente. Processi compatibili con la stessa chiave conservata verificano riferimenti firmati dopo riavvio; trasferimenti tra hosting e npm richiedono anche fiducia condivisa e versioni compatibili. Perdere/cambiare chiave invalida riferimenti firmati e richiede nuove ricerche/letture. Deployment con fiducia diversa rifiutano i riferimenti.
+
+Formati: `a1_` riferimenti portabili alla pubblicazione validata (non prove di esistenza); `n1_` riferimenti esatti e cursori firmati di lettura; `d1_` cursori firmati della ricerca live. Riferimenti non supportati/manomessi/non fidati falliscono senza riavvii silenziosi o richieste a host scelti dal chiamante. Nessun database dei cursori.
+
+Le destinazioni sono host ufficiali fissi dell'API e del sito Normattiva in produzione. L'API aperta non richiede autenticazione. L'ambiente PRE con mTLS è escluso.
+
+## Client e HTTP
+
+Dopo il rilascio coordinato, i client stdio potranno eseguire `npx normattiva-mcp` con la chiave persistente. Finché questa fase non è pubblicata, usa il percorso dei sorgenti compilati:
 
 ```json
 {
   "mcpServers": {
     "normattiva": {
-      "command": "npx",
-      "args": ["-y", "normattiva-mcp"]
+      "command": "node",
+      "args": ["/percorso/assoluto/normattiva-mcp/packages/stdio-server/dist/index.js"],
+      "env": { "NORMATTIVA_REFERENCE_KEY": "<chiave persistente di 64 caratteri hex>" }
     }
   }
 }
 ```
 
-### Cursor
+L'endpoint esistente `https://normattiva-mcp.adellorto.com/api/mcp` non ha ancora questa migrazione. I client remoti non ricevono il segreto; lo configura il gestore. Copie compatibili ospitate autonomamente espongono gli stessi sei strumenti via Streamable HTTP, con CORS permissivo e senza autenticazione predefinita.
 
-In `.cursor/mcp.json`:
+Per Vercel configura la chiave persistente nell'ambiente del deployment, compila i pacchetti e distribuisci dalla **radice del repository** dove risiede `.vercel/project.json`. Esegui `vercel deploy --prod` solo quando pronto a pubblicare. Push, pubblicazione npm e deployment restano all'utente. Pagine e configurazioni attualmente pubblicate: [inglese](https://normattiva-mcp.adellorto.com/), [italiano](https://normattiva-mcp.adellorto.com/it/).
 
-```json
-{
-  "mcpServers": {
-    "normattiva": {
-      "command": "npx",
-      "args": ["-y", "normattiva-mcp"]
-    }
-  }
-}
-```
+## Compilazione e verifiche
 
-## Configurazione
-
-Il server dialoga sempre con l'**ambiente di esercizio dell'API OpenData** di Normattiva (`https://api.normattiva.it/t/normattiva.api`). L'endpoint è hard-coded — non c'è alcuna variabile d'ambiente per sovrascriverlo. L'ambiente di test (PRE) non è supportato di proposito perché protetto da mTLS.
-
-L'API OpenData è aperta e non richiede autenticazione.
-
-## Trasporto HTTP
-
-Oltre al binario stdio pubblicato su npm, il repo include anche `packages/http-server/` — un deploy su Vercel dello stesso server MCP sul trasporto Streamable HTTP. Utile per i client che hanno bisogno di un endpoint remoto invece di un sottoprocesso locale.
-
-**Endpoint hosted:** `https://normattiva-mcp.adellorto.com/api/mcp` — gratuito, nessuna registrazione, nessuna autenticazione.
-
-Configurazione client:
-
-```json
-{
-  "mcpServers": {
-    "normattiva": {
-      "url": "https://normattiva-mcp.adellorto.com/api/mcp"
-    }
-  }
-}
-```
-
-### Self-hosting
-
-Per eseguire una propria copia su un account Vercel:
+Node.js ≥20 e pnpm. I test deterministici sono attualmente eseguiti su Node 24; il test del vero handler HTTP usa il supporto TypeScript di Node.
 
 ```bash
-git clone https://github.com/adellorto/normattiva-mcp.git
-cd normattiva-mcp
-pnpm install
-cd packages/http-server
-npx vercel deploy
-```
-
-L'handler espone solo Streamable HTTP (SSE è rimosso dalla spec MCP 2025-03-26). Nessuna autenticazione di default — chiunque conosca l'URL può chiamarlo.
-
-## Build da sorgente
-
-Richiede Node.js ≥ 20.
-
-```bash
-git clone <repo>
-cd normattiva-mcp
 pnpm install
 pnpm build
-pnpm start  # parla MCP via stdio
+# Configura prima NORMATTIVA_REFERENCE_KEY con la chiave persistente.
+pnpm start
+pnpm test
 ```
 
-Smoke test live (chiama l'API pubblica):
+`pnpm test` non contatta API pubbliche. Con una chiave configurata, `node tests/smoke.mjs` esegue un piccolo controllo stdio live: handshake, ricerca e lettura, continuazione letterale, pagine indice/atto, risorse/prompt, aggiornamenti ed errori tipizzati. Un disservizio upstream fallisce il controllo; non è mai una prova positiva di assenza. Non sostituisce l'accettazione finale del rilascio.
 
-```bash
-node tests/smoke.mjs
-```
+## Copertura e limitazioni
 
-## Note e limitazioni
+AKN datato e indirizzi di navigazione sono verificati contro contenuti indipendenti dell'endpoint di dettaglio. Non si inferisce appartenenza storica da navigazione, date radice o conteggi. Conflitti sostanziali impediscono risultati; differenze identificate nelle sole note esplicative sono dichiarate. Le rubriche sono fornite quando disponibili e validate, mai inventate dal titolo di una legge.
 
-- **Nessun endpoint di indice articoli.** Normattiva OpenData non espone un sommario sincrono. `list_articles` è un sondaggio best-effort: chiama `read_article` per `articolo=1,2,3,…` finché smette di trovare risultati. Per default scopre solo gli **articoli base**; `include_suffixes: true` estende il sondaggio a `bis`/`ter`/`quater`/… (round-by-round, fermando ciascuna catena al primo miss) ma non può trovare sotto-articoli il cui base manca, né articoli interni a gruppi strutturati (`id_gruppo != 0`).
-- **`id_gruppo` è opaco.** Alcuni atti — tipicamente codici strutturati (codici, testi unici, leggi articolate) — restituiscono contenuto solo quando `read_article` viene chiamato con un `id_gruppo` non zero. L'API OpenData non offre alcun modo sincrono per scoprire il valore corretto. Strategia pratica: provare prima con `id_gruppo=0`; se i risultati appaiono vuoti o errati, provare interi piccoli (1, 2, 3, …) finché l'articolo non torna.
-- **Un articolo per chiamata upstream.** L'endpoint `dettaglio-atto` di Normattiva serve un articolo alla volta. `read_article` lo espone direttamente; le chiamate concorrenti del client condividono una sola coda upstream.  `read_act` nasconde l'orchestrazione e restituisce un payload aggregato unico, limitato da `max_chars` e ripristinabile via `articolo_successivo`.
-- **Stripping dell'HTML.** Il default `format: "text"` collassa il markup HTML di Normattiva ma preserva i marcatori italiani di emendamento `(( ... ))` (inserimenti) e `[ ... ]` (cancellazioni), che hanno valore semantico. I link verso altri atti normativi sono inlinati come `<testo> [urn:nir:…]` così l'URN Akoma Ntoso sopravvive in formato testo.
-- **Versioning degli articoli non scopribile.** Ogni chiamata `read_article` ritorna la versione dell'articolo in vigore alla `data_vigenza` (default `versione=0` dell'API). L'API OpenData non espone quante versioni storiche esistano per un articolo, quindi i testi precedenti possono essere recuperati solo variando `data_vigenza` (o tentando `versione=1, 2, …`).
-- **`is_abrogated` è euristico.** Il flag riconosce il marcatore canonico `((ARTICOLO ABROGATO …))` che gli emendamenti successivi inseriscono in testa a un articolo interamente abrogato. Articoli con singoli commi abrogati ma articolo nel complesso vivo (es. `((COMMA ABROGATO …))` in alcune sottosezioni) **non** vengono segnalati.
-- **Export asincrono e ambiente PRE** (protetto da mTLS) **non** sono wrappati — il server resta leggero e sincrono.
-- **`recent_updates`** tratta `data_fine` come fine giornata inclusiva (UTC). La finestra è limitata dall'API a 12 mesi e 7000 atti; entrambi i limiti emergono come codici di errore IPZS (`1501`, `1502`).
+Controlla `coverage.article_inventory_complete`, `coverage.legal_content_complete` e riferimenti agli allegati non letti anche con attraversamento `complete`. Grafica/PDF non letti restano visibili e collegati quando la fonte fornisce un link; non vengono interpretati automaticamente né garantiti come link storici. Lettura di prefazione, preambolo e conclusioni priva di controlli indipendenti resta dichiarata fuori copertura supportata. Nessun fallback automatico all'intera storia né cambio di fonte.
+
+Usa `read_act` per tabelle; un articolo con tabelle restituisce unresolved nella lettura testuale diretta con indicazioni per il percorso strutturato. Il testo conserva struttura supportata di modifiche e citazioni. La restituzione non garantisce che un modello esterno riproduca tutte le parole. Vincoli upstream e comportamento dei modelli sono distinti dai difetti verificati del connettore nella [mappa di pianificazione](https://github.com/adellorto/normattiva-mcp/issues/1).
 
 ## Licenza
 
-Il codice sorgente di questo server è MIT — vedi [LICENSE](./LICENSE).
-
-I contenuti normativi recuperati tramite questo server sono pubblicati da IPZS con licenza [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Il server è un pass-through e non rilicenzia il contenuto: qualunque uso o redistribuzione a valle deve attribuire Normattiva / IPZS come fonte.
-
-Normattiva è un marchio dell'Istituto Poligrafico e Zecca dello Stato Italiano (IPZS); questo progetto non è affiliato né sponsorizzato da IPZS.
+Sorgenti: [MIT](./LICENSE). Contenuti normativi: IPZS [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); gli usi successivi devono attribuire Normattiva / IPZS. Normattiva è un marchio IPZS; il progetto non è affiliato né approvato da IPZS.

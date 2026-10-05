@@ -12,7 +12,7 @@ const resultSchema = z.object(discoveryPageSchema.shape).partial().extend({ erro
   if (!schema.safeParse(value).success) ctx.addIssue({ code: "custom", message: "Use a discovery page or a typed error envelope." });
 });
 
-/** Staged registration; both default transports migrate together in stage 4. */
+/** Shared discovery registration for both default transports. */
 export function registerDiscoveryTools(server: McpServer, finder: ActDiscovery, context: ToolContext = {}): void {
   server.registerTool("find_acts", {
     description: "Find official Italian acts from the user's citation, common name or topic. Preserve dates, constraints and article references in request. Returns act locators and candidates, without article text. Empty discovery does not prove legal absence.",

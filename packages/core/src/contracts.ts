@@ -103,7 +103,7 @@ export const articleToolResultSchema = articlePageBaseSchema.partial().extend({
 });
 
 const hierarchy = z.array(z.object({ kind: z.string(), label: z.string(), occurrence: z.string() }));
-const entryFields = { label: z.string(), hierarchy, official_urn: z.string().optional() };
+const entryFields = { label: z.string(), heading: z.string().optional(), hierarchy, official_urn: z.string().optional() };
 export const indexEntrySchema = z.discriminatedUnion("kind", [
   z.object({ ...entryFields, kind: z.literal("article"), article_locator: locator }),
   z.object({ ...entryFields, kind: z.literal("attachment"), attachment_ref: locator,
