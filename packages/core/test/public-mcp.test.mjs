@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { readFileSync } from 'node:fs';
+import { gunzipSync } from 'node:zlib';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
@@ -103,6 +105,25 @@ test('malformed update identities remain upstream errors rather than invalid cal
       assert.equal(result.isError, true);
       assert.equal(result.structuredContent.error.category, 'upstream_failure');
       assert.equal(result.structuredContent.error.code, 'malformed_upstream_response');
+    });
+  } finally { globalThis.fetch = original; }
+});
+
+test('the live TUEL detail without editorial identity remains unresolved rather than proving absence', async () => {
+  const original = globalThis.fetch;
+  const capture = gunzipSync(readFileSync(new URL('./fixtures/acts/tuel-direct-2026-10-05.json.gz', import.meta.url))).toString();
+  globalThis.fetch = async () => new Response(capture, { headers: { 'Content-Type': 'application/json' } });
+  try {
+    await connected(async client => {
+      const result = await client.callTool({ name: 'read_article', arguments: {
+        act_locator: new ActTraversal({ signingKey }).actLocator({ data_gu: '2000-09-28', codice_redazionale: '000G0304' }),
+        article_reference: '13', snapshot_date: '2026-10-02',
+      } });
+      assert.equal(result.structuredContent.outcome, 'unresolved');
+      assert.equal(result.structuredContent.reason, 'source_identity_conflict');
+      assert.equal(result.structuredContent.content, undefined);
+      assert.equal(result.structuredContent.absence_basis, undefined);
+      assert.deepEqual(JSON.parse(result.content[0].text), result.structuredContent);
     });
   } finally { globalThis.fetch = original; }
 });

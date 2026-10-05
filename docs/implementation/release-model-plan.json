@@ -1,0 +1,197 @@
+{
+  "recorded_at": "2026-10-05T14:49:30.510Z",
+  "scope": "OpenRouter function-tool adapter, production MCP schemas and synthetic caller-visible text. Not named UI/client or deployed acceptance.",
+  "acceptance": "pending; automated routing checks cannot establish semantic honesty",
+  "models": [
+    {
+      "id": "qwen/qwen3-14b",
+      "pricing": {
+        "prompt": "0.00000012",
+        "completion": "0.00000024"
+      }
+    },
+    {
+      "id": "deepseek/deepseek-v4.1-flash",
+      "pricing": {
+        "prompt": "0.0000003",
+        "completion": "0.0000012",
+        "input_cache_read": "0.000000006"
+      }
+    },
+    {
+      "id": "meta-llama/llama-3.1-8b-instruct",
+      "pricing": {
+        "prompt": "0.00000005",
+        "completion": "0.00000008",
+        "input_cache_read": "0.000000025"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "civil-code-2043",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "nonexistent-article-320",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "contracts-article-119",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "cad-article-52",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "contracts-current-article-108",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "exact-law-241",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "topic-transparency",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "publication-window",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "faceted-contracts",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "conflicting-civil-code",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-law-short-year",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-dpr-full-date",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-regio-decreto",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-decreto-legge",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-cad-unknown",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-tuel-common-name",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-current-contracts",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-faceted-contracts",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-ai-topic",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-publication-window",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-issuance-window",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-in-force-on",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-repealed-codes",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-conflicting-code",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-reversed-range",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-nonexistent-law",
+      "expected_tool": "find_acts"
+    },
+    {
+      "id": "edge-cursor",
+      "expected_tool": "continue_acts"
+    },
+    {
+      "id": "edge-missing-cursor"
+    },
+    {
+      "id": "no_candidates"
+    },
+    {
+      "id": "article_unresolved"
+    },
+    {
+      "id": "suffix_unresolved"
+    },
+    {
+      "id": "index_pending",
+      "expected_tool": "list_articles"
+    },
+    {
+      "id": "index_more",
+      "expected_tool": "list_articles"
+    },
+    {
+      "id": "index_interrupted",
+      "expected_tool": "list_articles"
+    },
+    {
+      "id": "article_more",
+      "expected_tool": "read_article"
+    },
+    {
+      "id": "reading_more",
+      "expected_tool": "read_act"
+    },
+    {
+      "id": "changed_snapshot"
+    },
+    {
+      "id": "attachment_coverage"
+    },
+    {
+      "id": "identified_currentness_unknown"
+    }
+  ],
+  "input_sha256": "908761cf78e4fe13208635f84ee28f63ac1fc741eb469bc0b9b2e10efb7c1dc3",
+  "schema_sha256": "6fc10e5bb6e9c16d85122a2b66b993f4ee2b4f6a32f2fddb09611909a2b8efc5",
+  "settings": {
+    "repetitions": 2,
+    "max_tokens": 1536,
+    "temperature": 0,
+    "parallel_tool_calls": false,
+    "opt_in_prompts": false,
+    "initialization_instructions": false
+  },
+  "max_cost_usd": 1,
+  "total_plan_reserve_usd": 0.8927722800000006,
+  "recorded_cost_usd": 0,
+  "accounted_upper_bound_usd": 0,
+  "planned_calls": 234,
+  "runs": []
+}

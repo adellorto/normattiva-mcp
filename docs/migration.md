@@ -1,6 +1,6 @@
 # Coordinated pre-1.0 migration
 
-This guide describes the unpublished replacement source interface. Stages 1–4 are implemented locally; final release acceptance and a version bump belong to [Validate coordinated release and prepare publication handoff](https://github.com/adellorto/normattiva-mcp/issues/22). Existing npm/hosted deployments remain on the previous interface until the user publishes. No permanent compatibility tools or v2 variants are added.
+This guide describes the unpublished replacement source interface. Stages 1–4 are implemented locally and candidate 0.2.0 is aligned; [release acceptance remains incomplete](implementation/release-acceptance.md) in [Validate coordinated release and prepare publication handoff](https://github.com/adellorto/normattiva-mcp/issues/22). Existing npm/hosted deployments remain on the previous interface until the user publishes. No permanent compatibility tools or v2 variants are added.
 
 ## Before starting
 
@@ -51,4 +51,4 @@ Defaults/maxima: discovery 5/20 (maximum internal only), index 30/50 entries, te
 
 A completed traversal does not automatically imply complete legal content. Inspect coverage and unread attachment references. Unread graphics/PDFs are not interpreted; preface/preamble/conclusion content lacks independent reading controls; source conflicts cannot be overwritten by a successful transport response. Tables require structured `read_act` output. Search remains live across pages, unlike frozen reading snapshots.
 
-The opt-in research prompt selects actual headings, bounds normal research to 3 acts/10 articles, cites only read content and reports coverage. Essential guidance also works without prompts/resources. The smoke command is now `node tests/smoke.mjs` after building and configuring the preserved key. It fails on upstream unavailability. Final model/client/latency/package/trust-transfer/live acceptance, deployed guidance, versioning and publication remain stage 5.
+The opt-in research prompt selects actual headings, bounds normal research to 3 acts/10 articles, cites only read content and reports coverage. Essential guidance also works without prompts/resources. The smoke command is now `node tests/smoke.mjs` after building and configuring the preserved key. It fails on upstream unavailability. Stage 5 has passed isolated npm packaging and local fresh-process HTTP trust-transfer checks; deployed packaging, live-source and full model/runtime acceptance remain open. Candidate version preparation does not authorize publication.

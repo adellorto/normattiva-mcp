@@ -1,0 +1,44 @@
+{
+  "id": "normattiva-mcp@0.2.0",
+  "name": "normattiva-mcp",
+  "version": "0.2.0",
+  "size": 126302,
+  "unpackedSize": 539647,
+  "shasum": "f9ddda051efafbf82eac10ea17f16d2ce0e849e1",
+  "integrity": "sha512-FAYJm5HyhBvfHYmDr/5brmqiWycEp211C5ESq1jX78OV3UbIHBESsqHWe2gV0iJixEV26/fcds8+j8DEnkBbFA==",
+  "filename": "normattiva-mcp-0.2.0.tgz",
+  "files": [
+    {
+      "path": "LICENSE",
+      "size": 1084,
+      "mode": 420
+    },
+    {
+      "path": "README.md",
+      "size": 13168,
+      "mode": 420
+    },
+    {
+      "path": "dist/act-parser-worker.js",
+      "size": 156599,
+      "mode": 420
+    },
+    {
+      "path": "dist/index.d.ts",
+      "size": 31,
+      "mode": 420
+    },
+    {
+      "path": "dist/index.js",
+      "size": 367421,
+      "mode": 493
+    },
+    {
+      "path": "package.json",
+      "size": 1344,
+      "mode": 420
+    }
+  ],
+  "entryCount": 6,
+  "bundled": []
+}

@@ -38,15 +38,17 @@
 
     <main>
       <section class="hero">
-        <div class="hero__overline">remote · model context protocol · v0.1.4</div>
+        <div class="hero__overline">remote · model context protocol · v0.2.0</div>
         <div class="section-mark" aria-hidden="true">§</div>
         <h1 class="hero__title">Italian law,<br />served to your agents.</h1>
         <p class="hero__lead">
           A Model Context Protocol server for
           <a href="https://www.normattiva.it" target="_blank" rel="noopener">Normattiva</a>,
           the official Italian legislation portal run by IPZS. Connect any MCP-compatible client and
-          read consolidated act text with stable URN citations. Free, no signup, no auth.
+          read bounded legal text and resume with literal references. Free, no signup, no auth.
         </p>
+        <p class="hero__lead">Source for release 0.2.0, awaiting acceptance and publication. The public deployment remains on the previous release until validation is complete.</p>
+        <p class="hero__lead"><code>find_acts</code> discovers the act; <code>list_articles</code> lists occurrences; <code>read_article</code> and <code>read_act</code> return bounded pages. Copy <code>cursor</code> values literally. <code>unresolved</code> does not prove absence, and traversal completion does not prove complete coverage. Unread images and attachments remain disclosed.</p>
         <div class="button-row">
           <a class="btn btn--primary" href="#quickstart">Quickstart →</a>
           <a class="btn btn--ghost" href="https://github.com/adellorto/normattiva-mcp" target="_blank" rel="noopener">
@@ -165,7 +167,7 @@
               <div class="step">
                 <span class="step__num">3</span>
                 <div class="step__body">
-                  Run a prompt or call the connector from <strong>Deep Research</strong>. Note: without Developer Mode, ChatGPT's Deep Research expects MCP servers that expose <code>search</code> and <code>fetch</code> tools — this server uses domain-specific tools (<code>search_acts</code>, <code>read_article</code>, <code>read_act</code>, <code>list_articles</code>, <code>recent_updates</code>), so Developer Mode is required.
+                  Run a prompt or call the connector from <strong>Deep Research</strong>. Note: without Developer Mode, ChatGPT's Deep Research expects MCP servers that expose <code>search</code> and <code>fetch</code> tools — this server uses domain-specific tools (<code>find_acts</code>, <code>continue_acts</code>, <code>read_article</code>, <code>read_act</code>, <code>list_articles</code>, <code>recent_updates</code>), so Developer Mode is required.
                 </div>
               </div>
             </div>
@@ -186,7 +188,10 @@
   <span class="k">"mcpServers"</span>: {
     <span class="name">"normattiva"</span>: {
       <span class="k">"command"</span>: <span class="v">"npx"</span>,
-      <span class="k">"args"</span>: [<span class="v">"-y"</span>, <span class="v">"normattiva-mcp"</span>]
+      <span class="k">"args"</span>: [<span class="v">"-y"</span>, <span class="v">"normattiva-mcp@0.2.0"</span>],
+      <span class="k">"env"</span>: {
+        <span class="k">"NORMATTIVA_REFERENCE_KEY"</span>: <span class="v">"&lt;preserved 64-character hexadecimal key&gt;"</span>
+      }
     }
   }
 }</pre>
@@ -195,7 +200,7 @@
               <div class="step">
                 <span class="step__num">2</span>
                 <div class="step__body">
-                  Requires Node.js ≥ 20. No native dependencies; the Normattiva OpenData API is open and needs no API key.
+                  Requires Node.js ≥ 20. Generate the key once with <code>openssl rand -hex 32</code>, replace the placeholder and preserve it on every restart. This local key protects references; remote clients do not need it.
                 </div>
               </div>
             </div>

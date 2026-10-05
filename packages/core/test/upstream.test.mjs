@@ -189,18 +189,26 @@ test('in-flight timeout differs from the shared deadline while queueing', async 
 
   const queuedRuntime = new UpstreamRuntime({ deadlineMs: 35, attemptTimeoutMs: 500 });
   let started = 0;
+  let releaseHeld;
+  // Hold the lane through cancellation so the queued deadline expires before
+  // release; adjacent Date.now() deadlines can otherwise differ by a millisecond.
   const slow = queuedRuntime.call('direct', undefined, () => executeUpstream({
-    operation: 'held', replaySafe: false, execute: signal => new Promise((_, reject) => {
+    operation: 'held', replaySafe: false, execute: () => new Promise(resolve => {
       started++;
-      signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+      releaseHeld = resolve;
     }),
   }));
   const queued = queuedRuntime.call('direct', undefined, () => executeUpstream({
     operation: 'queued', replaySafe: true, execute: async () => { started++; },
   }));
-  const results = await Promise.allSettled([slow, queued]);
-  assert.equal(started, 1);
-  assert.equal(results[1].reason.detail.code, 'operation_deadline_exceeded');
+  const slowResult = assert.rejects(slow, error => error.detail.code === 'upstream_timeout');
+  try {
+    await assert.rejects(queued, error => error.detail.code === 'operation_deadline_exceeded');
+    assert.equal(started, 1);
+  } finally {
+    releaseHeld();
+    await slowResult;
+  }
 });
 
 test('caller cancellation stops queued traffic and aborts the active request', async () => {

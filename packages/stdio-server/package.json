@@ -1,6 +1,6 @@
 {
   "name": "normattiva-mcp",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "MCP server wrapping the Normattiva OpenData API for Italian legislation (search, read articles, monitor recent updates).",
   "type": "module",
   "main": "./dist/index.js",
@@ -17,7 +17,7 @@
   },
   "scripts": {
     "build": "tsc && chmod +x dist/index.js",
-    "bundle": "./node_modules/esbuild/bin/esbuild dist/index.js --bundle --platform=node --format=esm --outfile=dist/index.bundled.mjs --external:zod --external:@modelcontextprotocol/sdk --external:@modelcontextprotocol/sdk/* && mv dist/index.bundled.mjs dist/index.js && chmod +x dist/index.js",
+    "bundle": "node bundle.mjs",
     "start": "node dist/index.js",
     "prepack": "npm run build && npm run bundle && cp ../../README.md ../../LICENSE .",
     "postpack": "rm README.md LICENSE && npm run build"
