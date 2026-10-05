@@ -1,7 +1,8 @@
-import { createHash, createHmac, timingSafeEqual } from "node:crypto";
+import { createHash } from "node:crypto";
 import { z } from "zod";
 import { calendarDateSchema, publicationSchema } from "./contracts.js";
-import { OperationError, internalError } from "./errors.js";
+import { OperationError } from "./errors.js";
+import { AuthenticatedTokens } from "./authenticated-tokens.js";
 import { ARTICLE_DETAIL_URL } from "./api.js";
 
 export const digest = (value: string) => createHash("sha256").update(value).digest("hex");
@@ -33,10 +34,9 @@ export function referenceError(cursor: boolean): OperationError {
 
 /** No session database or per-process random key. The configured key survives restart. */
 export class ReferenceCodec {
-  private readonly key: Buffer;
+  private readonly tokens: AuthenticatedTokens;
   constructor(key: Uint8Array) {
-    if (key.byteLength < 32) throw internalError("reference_trust_unconfigured", "Configure a signing key of at least 32 bytes.", false);
-    this.key = Buffer.from(key);
+    this.tokens = new AuthenticatedTokens(key);
   }
   act(publication: z.infer<typeof publicationSchema>): string {
     return "a1_" + Buffer.from(JSON.stringify(publicationSchema.parse(publication))).toString("base64url");
@@ -50,19 +50,11 @@ export class ReferenceCodec {
     } catch { throw referenceError(false); }
   }
   issue(data: Reference): string {
-    const body = Buffer.from(JSON.stringify(referenceSchema.parse(data))).toString("base64url");
-    const mac = createHmac("sha256", this.key).update(body).digest("base64url");
-    const token = `n1_${body}.${mac}`;
-    if (token.length > (data.kind === "cursor" ? 16384 : 4096)) throw internalError("reference_limit_exceeded", "The exact reference exceeds its format limit.", false);
-    return token;
+    return this.tokens.issue("n1_", referenceSchema.parse(data), data.kind === "cursor" ? 16384 : 4096);
   }
   decode(token: string, kind: Reference["kind"], operation?: string): Reference {
     try {
-      if (token.length > (kind === "cursor" ? 16384 : 4096) || !/^n1_[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{43}$/.test(token)) throw referenceError(kind === "cursor");
-      const [body, mac] = token.slice(3).split(".") as [string, string];
-      const expected = createHmac("sha256", this.key).update(body).digest();
-      if (mac !== expected.toString("base64url") || !timingSafeEqual(expected, Buffer.from(mac, "base64url"))) throw referenceError(kind === "cursor");
-      const data = referenceSchema.parse(JSON.parse(Buffer.from(body, "base64url").toString("utf8")));
+      const data = referenceSchema.parse(this.tokens.decode("n1_", token, kind === "cursor" ? 16384 : 4096));
       if (data.kind !== kind || (data.kind === "cursor" && data.operation !== operation)) throw referenceError(kind === "cursor");
       const source = new URL(data.source);
       const direct = source.href === ARTICLE_DETAIL_URL

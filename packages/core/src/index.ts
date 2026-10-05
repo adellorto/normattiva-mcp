@@ -7,3 +7,5 @@ export * from "./contracts.js";
 export { errorSchema, OperationError, type ErrorDetail } from "./errors.js";
 export { ActTraversal } from "./traversal.js";
 export { registerTraversalTools } from "./traversal-tools.js";
+export { ActDiscovery } from "./discovery.js";
+export { registerDiscoveryTools } from "./discovery-tools.js";

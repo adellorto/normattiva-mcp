@@ -1,0 +1,301 @@
+[
+  {
+    "id": "civil-code-2043",
+    "prompt": "Cosa dice l'articolo 2043 del codice civile?",
+    "route": "discover",
+    "article": "2043"
+  },
+  {
+    "id": "nonexistent-article-320",
+    "prompt": "Cosa dice l'articolo 320 del D.Lgs 36/2023?",
+    "route": "exact",
+    "exact": {
+      "actType": "DECRETO LEGISLATIVO",
+      "year": 2023,
+      "number": "36"
+    },
+    "article": "320"
+  },
+  {
+    "id": "contracts-article-119",
+    "prompt": "Passami l'art. 119 del D.Lgs 36/2023",
+    "route": "exact",
+    "exact": {
+      "actType": "DECRETO LEGISLATIVO",
+      "year": 2023,
+      "number": "36"
+    },
+    "article": "119"
+  },
+  {
+    "id": "cad-article-52",
+    "prompt": "Mi serve l'articolo 52 del CAD, non so il numero della legge",
+    "route": "discover",
+    "article": "52"
+  },
+  {
+    "id": "contracts-current-article-108",
+    "prompt": "E se cerco l'articolo 108 del codice dei contratti?",
+    "route": "discover",
+    "article": "108"
+  },
+  {
+    "id": "exact-law-241",
+    "prompt": "Trova la legge 241 del 1990.",
+    "route": "exact",
+    "exact": {
+      "actType": "LEGGE",
+      "year": 1990,
+      "number": "241"
+    }
+  },
+  {
+    "id": "topic-transparency",
+    "prompt": "Quali norme riguardano la trasparenza amministrativa?",
+    "route": "discover"
+  },
+  {
+    "id": "publication-window",
+    "prompt": "Quali atti sono stati pubblicati in Gazzetta Ufficiale tra il 1° e il 7 settembre 2026?",
+    "route": "research"
+  },
+  {
+    "id": "faceted-contracts",
+    "prompt": "Cerca decreti legislativi del 2023 sui contratti pubblici.",
+    "route": "discover"
+  },
+  {
+    "id": "conflicting-civil-code",
+    "prompt": "Cerca l'articolo 2043 del Codice civile come LEGGE n. 2043 del 1942.",
+    "route": "discover",
+    "article": "2043",
+    "conflict": true
+  },
+  {
+    "id": "edge-law-short-year",
+    "edge": true,
+    "prompt": "Mi serve l’art. 3, comma 1, della L. 241/90.",
+    "route": "exact",
+    "exact": {
+      "actType": "LEGGE",
+      "year": 1990,
+      "yearAliases": [
+        "1990",
+        "90"
+      ],
+      "number": "241"
+    },
+    "articleTokens": [
+      "3",
+      "COMMA 1"
+    ]
+  },
+  {
+    "id": "edge-dpr-full-date",
+    "edge": true,
+    "prompt": "Mostrami l’articolo 46 del D.P.R. 28 dicembre 2000, n. 445.",
+    "route": "exact",
+    "exact": {
+      "actType": "DECRETO DEL PRESIDENTE DELLA REPUBBLICA",
+      "year": 2000,
+      "number": "445"
+    },
+    "articleTokens": [
+      "46"
+    ]
+  },
+  {
+    "id": "edge-regio-decreto",
+    "edge": true,
+    "prompt": "R.D. 16 marzo 1942, n. 262: cosa prevede l’art. 2043?",
+    "route": "exact",
+    "exact": {
+      "actType": "REGIO DECRETO",
+      "year": 1942,
+      "number": "262"
+    },
+    "articleTokens": [
+      "2043"
+    ]
+  },
+  {
+    "id": "edge-decreto-legge",
+    "edge": true,
+    "prompt": "Cerca l’articolo 7-bis del decreto-legge n. 76/2020.",
+    "route": "exact",
+    "exact": {
+      "actType": "DECRETO-LEGGE",
+      "year": 2020,
+      "number": "76"
+    },
+    "articleTokens": [
+      "7-BIS"
+    ]
+  },
+  {
+    "id": "edge-cad-unknown",
+    "edge": true,
+    "prompt": "Mi serve l’articolo 52 del CAD, ma non conosco il numero del decreto.",
+    "route": "discover",
+    "referenceTokens": [
+      "CAD"
+    ],
+    "articleTokens": [
+      "52"
+    ],
+    "forbiddenCitationTokens": [
+      "82",
+      "2005"
+    ]
+  },
+  {
+    "id": "edge-tuel-common-name",
+    "edge": true,
+    "prompt": "Cosa dice l’art. 42 del TUEL?",
+    "route": "discover",
+    "referenceTokens": [
+      "TUEL"
+    ],
+    "articleTokens": [
+      "42"
+    ],
+    "forbiddenCitationTokens": [
+      "267",
+      "2000"
+    ]
+  },
+  {
+    "id": "edge-current-contracts",
+    "edge": true,
+    "prompt": "Cerco l’articolo 108 del codice dei contratti oggi vigente.",
+    "route": "discover",
+    "referenceTokens": [
+      "CODICE",
+      "CONTRATTI",
+      "VIGENTE"
+    ],
+    "articleTokens": [
+      "108"
+    ],
+    "forbiddenCitationTokens": [
+      "36",
+      "2023"
+    ],
+    "forbidVersionClass": true
+  },
+  {
+    "id": "edge-faceted-contracts",
+    "edge": true,
+    "prompt": "Cerca decreti legislativi del 2023 sui contratti pubblici.",
+    "route": "discover",
+    "referenceTokens": [
+      "CONTRATTI",
+      "PUBBLICI"
+    ],
+    "facetType": "DECRETO LEGISLATIVO",
+    "facetYear": 2023
+  },
+  {
+    "id": "edge-ai-topic",
+    "edge": true,
+    "prompt": "Quali norme italiane disciplinano l’uso dell’intelligenza artificiale nelle pubbliche amministrazioni?",
+    "route": "discover",
+    "referenceTokens": [
+      "INTELLIGENZA ARTIFICIALE",
+      "PUBBLICHE AMMINISTRAZIONI"
+    ]
+  },
+  {
+    "id": "edge-publication-window",
+    "edge": true,
+    "prompt": "Quali atti sono stati pubblicati in Gazzetta Ufficiale dal 1° al 7 settembre 2026?",
+    "route": "research",
+    "published": {
+      "from": "2026-09-01",
+      "to": "2026-09-07"
+    }
+  },
+  {
+    "id": "edge-issuance-window",
+    "edge": true,
+    "prompt": "Quali decreti legislativi sono stati emanati tra il 1° e il 31 marzo 2023?",
+    "route": "research",
+    "issued": {
+      "from": "2023-03-01",
+      "to": "2023-03-31"
+    },
+    "facetType": "DECRETO LEGISLATIVO"
+  },
+  {
+    "id": "edge-in-force-on",
+    "edge": true,
+    "prompt": "Quali norme sulla protezione dei dati risultavano in vigore il 25 maggio 2018?",
+    "route": "research",
+    "referenceTokens": [
+      "PROTEZIONE",
+      "DATI"
+    ],
+    "inForceOn": "2018-05-25"
+  },
+  {
+    "id": "edge-repealed-codes",
+    "edge": true,
+    "prompt": "Trova i codici dei contratti pubblici abrogati.",
+    "route": "research",
+    "referenceTokens": [
+      "CODICI",
+      "CONTRATTI",
+      "PUBBLICI"
+    ],
+    "versionClass": "repealed"
+  },
+  {
+    "id": "edge-conflicting-code",
+    "edge": true,
+    "prompt": "Cerca l’art. 2043 del Codice civile, cioè della Legge 262/1942.",
+    "route": "reject",
+    "referenceTokens": [
+      "CODICE CIVILE",
+      "LEGGE",
+      "262",
+      "1942"
+    ],
+    "articleTokens": [
+      "2043"
+    ]
+  },
+  {
+    "id": "edge-reversed-range",
+    "edge": true,
+    "prompt": "Cerca gli atti emanati dal 31 dicembre 2024 al 1° gennaio 2024.",
+    "route": "reject",
+    "issued": {
+      "from": "2024-12-31",
+      "to": "2024-01-01"
+    }
+  },
+  {
+    "id": "edge-nonexistent-law",
+    "edge": true,
+    "prompt": "Cerca la Legge 99999/1990.",
+    "route": "exact",
+    "exact": {
+      "actType": "LEGGE",
+      "year": 1990,
+      "number": "99999"
+    }
+  },
+  {
+    "id": "edge-cursor",
+    "edge": true,
+    "prompt": "Continua con il cursore eyJxIjoiVFVFTCIsInAiOjJ9.",
+    "route": "continue",
+    "cursor": "eyJxIjoiVFVFTCIsInAiOjJ9"
+  },
+  {
+    "id": "edge-missing-cursor",
+    "edge": true,
+    "prompt": "Vai alla pagina successiva dei risultati sul TUEL.",
+    "route": "clarify"
+  }
+]

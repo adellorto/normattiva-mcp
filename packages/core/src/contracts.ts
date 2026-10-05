@@ -155,6 +155,7 @@ export const discoveryPageSchema = z.object({
   interpretation: z.string(), article_reference: z.string().optional(),
   ordering: z.enum(["reviewed_alias", "exact_citation", "observed_relevance", "chronological", "degraded_chronological"]),
   corpus: z.literal("live"),
+  explanation: z.string().max(300).optional(),
   traversal: pageSchema(actCandidateSchema),
 }).superRefine((value, ctx) => {
   if (value.traversal.progress === "pending") ctx.addIssue({ code: "custom", message: "Discovery has no preparation state." });

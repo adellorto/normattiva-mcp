@@ -1,5 +1,5 @@
 export interface AttoListItem {
-  annoProvvedimento?: number;
+  annoProvvedimento?: number | string;
   numeroProvvedimento?: string;
   denominazioneAtto?: string;
   descrizioneAtto?: string;
@@ -11,6 +11,12 @@ export interface AttoListItem {
   classeProvvedimento?: string;
   dataUltimaModifica?: string;
   ultimiAttiModificanti?: string;
+}
+
+export interface RicercaSempliceBody {
+  testoRicerca: string;
+  orderType: "rilevante";
+  paginazione: { paginaCorrente: number; numeroElementiPerPagina: number };
 }
 
 export interface RicercaResponse {

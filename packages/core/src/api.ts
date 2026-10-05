@@ -3,6 +3,7 @@ import { executeUpstream } from "./upstream.js";
 import { RESPONSE_LIMITS, calendarDateSchema, articleContentSchema } from "./contracts.js";
 import type {
   RicercaAvanzataBody,
+  RicercaSempliceBody,
   RicercaResponse,
   DettaglioAttoBody,
   DettaglioAttoResponse,
@@ -194,6 +195,11 @@ function normalizeArticleResponse(body: DettaglioAttoResponse): DettaglioAttoRes
 
 export function ricercaAvanzata(body: RicercaAvanzataBody): Promise<RicercaResponse> {
   return postJson("/bff-opendata/v1/api/v1/ricerca/avanzata", body, searchResponse);
+}
+
+/** Observed official simple-search ordering; not a documented relevance guarantee. */
+export function ricercaSemplice(body: RicercaSempliceBody): Promise<RicercaResponse> {
+  return postJson("/bff-opendata/v1/api/v1/ricerca/semplice", body, searchResponse);
 }
 
 export function dettaglioAtto(body: DettaglioAttoBody): Promise<DettaglioAttoResponse> {
