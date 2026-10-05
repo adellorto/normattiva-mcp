@@ -8,7 +8,7 @@ import {
 import { runTool } from "./execution.js";
 import { jsonContent } from "./serialization.js";
 import { OperationError } from "./errors.js";
-import { articlePageSchema } from "./contracts.js";
+import { articleToolResultSchema } from "./contracts.js";
 import { htmlToText } from "./html.js";
 import type { RicercaAvanzataBody } from "./types.js";
 import type { ToolContext } from "./context.js";
@@ -116,7 +116,7 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
   server.registerTool(
     "read_article",
     {
-      outputSchema: articlePageSchema,
+      outputSchema: articleToolResultSchema,
       title: "Read one article of an Italian act",
       description:
         "Read one article at a concrete date of vigenza. Returns outcome=found with content or outcome=unresolved with evidence; a failed coordinate lookup does not establish legal absence. Operational failures return typed errors. Plain text is the default; format=html preserves markup. Coordinate inputs remain during implementation of the coordinated locator interface.",

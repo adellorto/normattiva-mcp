@@ -12,6 +12,7 @@ async function connected(work) {
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await server.connect(serverTransport);
   await client.connect(clientTransport);
+  await client.listTools();
   try { await work(client); }
   finally { await client.close(); await server.close(); }
 }

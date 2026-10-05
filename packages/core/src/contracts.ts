@@ -78,7 +78,7 @@ const articleProgressSchema = z.discriminatedUnion("progress", [
     cursor, failure: z.object({ error: errorSchema, position: z.string().min(1) }),
     explanation: z.string().max(300) }).strict(),
 ]);
-export const articlePageSchema = z.object({
+const articlePageBaseSchema = z.object({
   ...lookupFields, outcome: z.enum(["found", "absent", "unresolved"]),
   content: articleContentSchema.optional(),
   absence_basis: z.enum(["verified_index", "unambiguous_official_result"]).optional(),
@@ -86,10 +86,20 @@ export const articlePageSchema = z.object({
   cursor: cursor.optional(),
   failure: z.object({ error: errorSchema, position: z.string().min(1) }).optional(),
   explanation: z.string().max(300).optional(),
-}).strict().superRefine((value, ctx) => {
+}).strict();
+export const articlePageSchema = articlePageBaseSchema.superRefine((value, ctx) => {
   const schema = value.outcome === "found" ? articleProgressSchema : lookupOutcomeSchema;
   const result = schema.safeParse(value);
   if (!result.success) ctx.addIssue({ code: "custom", message: "Article outcome and continuation fields conflict." });
+});
+
+// SDK clients can validate even isError responses against outputSchema. Keep
+// one object-root JSON schema while enforcing the exclusive branches here.
+export const articleToolResultSchema = articlePageBaseSchema.partial().extend({
+  error: errorSchema.optional(),
+}).superRefine((value, ctx) => {
+  const schema = value.error ? z.object({ error: errorSchema }).strict() : articlePageSchema;
+  if (!schema.safeParse(value).success) ctx.addIssue({ code: "custom", message: "Use an article page or a typed error envelope." });
 });
 
 const hierarchy = z.array(z.object({ kind: z.string(), label: z.string(), occurrence: z.string() }));
