@@ -31,6 +31,8 @@ export interface DettaglioAttoBody {
   idGruppo: number;
   progressivo: number;
   versione: number;
+  flagTipoArticolo?: string;
+  tipoDettaglio?: "singolavigenza";
 }
 
 export interface DettaglioAttoResponse {
@@ -38,6 +40,10 @@ export interface DettaglioAttoResponse {
   data?: {
     atto?: {
       titolo?: string;
+      sottoTitolo?: string;
+      annoGU?: number;
+      meseGU?: number;
+      giornoGU?: number;
       tipoProvvedimentoDescrizione?: string;
       tipoProvvedimentoCodice?: string;
       articoloHtml?: string;

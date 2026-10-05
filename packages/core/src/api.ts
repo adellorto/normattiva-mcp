@@ -16,6 +16,8 @@ import type {
 // Hard-coded to the production OpenData environment. The PRE environment
 // requires mTLS and is intentionally unsupported here.
 export const BASE_URL = "https://api.normattiva.it/t/normattiva.api";
+const ARTICLE_DETAIL_PATH = "/bff-opendata/v1/api/v1/atto/dettaglio-atto";
+export const ARTICLE_DETAIL_URL = BASE_URL + ARTICLE_DETAIL_PATH;
 
 const COMMON_HEADERS: Record<string, string> = {
   Accept: "application/json, text/plain, */*",
@@ -39,7 +41,7 @@ function retryAfter(value: string | null): number | undefined {
   return Number.isFinite(date) ? Math.max(0, date - Date.now()) : undefined;
 }
 
-async function boundedBody(response: Response, limit: number, truncate = false): Promise<string> {
+export async function boundedBody(response: Response, limit: number, truncate = false): Promise<string> {
   if (!response.body) return "";
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
@@ -67,7 +69,7 @@ async function boundedBody(response: Response, limit: number, truncate = false):
   }
 }
 
-function transportError(error: unknown, operation: string): OperationError {
+export function transportError(error: unknown, operation: string): OperationError {
   const cause = (error as { cause?: { code?: string } } | undefined)?.cause?.code;
   const mapping: Record<string, ErrorDetail["transport_cause"]> = {
     ENOTFOUND: "dns", EAI_AGAIN: "dns", ECONNRESET: "connection_reset",
@@ -195,7 +197,44 @@ export function ricercaAvanzata(body: RicercaAvanzataBody): Promise<RicercaRespo
 }
 
 export function dettaglioAtto(body: DettaglioAttoBody): Promise<DettaglioAttoResponse> {
-  return postJson("/bff-opendata/v1/api/v1/atto/dettaglio-atto", body, articleResponse, normalizeArticleResponse);
+  return postJson(ARTICLE_DETAIL_PATH, body, articleResponse, normalizeArticleResponse);
+}
+
+/** Only the official website is allowed; redirects consume separate attempts. */
+export async function officialText(url: string): Promise<{ text: string; url: string }> {
+  for (let redirects = 0; redirects <= 4; redirects++) {
+    const target = new URL(url);
+    if (target.origin !== "https://www.normattiva.it" || target.username || target.password) {
+      throw new OperationError({ category: "upstream_failure", code: "untrusted_source_address",
+        message: "The supplied source address is not on the official website.", retryability: false });
+    }
+    const result = await executeUpstream({ operation: target.pathname, replaySafe: true, execute: async signal => {
+      let response: Response;
+      try { response = await fetch(url, { signal, redirect: "manual", headers: COMMON_HEADERS }); }
+      catch (error) { throw transportError(error, target.pathname); }
+      if ([301, 302, 303, 307, 308].includes(response.status)) {
+        const location = response.headers.get("location");
+        await response.body?.cancel();
+        if (!location) throw new OperationError({ category: "upstream_failure", code: "malformed_upstream_response",
+          message: "The official redirect has no destination.", retryability: false });
+        return { redirect: new URL(location, url).href };
+      }
+      if (!response.ok) {
+        await response.body?.cancel();
+        throw new OperationError({ category: response.status === 429 ? "rate_limited" : "upstream_failure",
+          code: response.status === 429 ? "upstream_rate_limited" : "upstream_http_error",
+          message: `Normattiva returned HTTP ${response.status}. This does not establish legal absence.`,
+          retryability: response.status === 429 ? true : [400, 422].includes(response.status) ? false : "unknown",
+          retry_after_ms: retryAfter(response.headers.get("retry-after")), provider: "normattiva", http_status: response.status });
+      }
+      try { return { text: await boundedBody(response, MAX_SOURCE_BYTES) }; }
+      catch (error) { if (error instanceof OperationError) throw error; throw transportError(error, target.pathname); }
+    } });
+    if (result.redirect) { url = result.redirect; continue; }
+    return { text: result.text!, url };
+  }
+  throw new OperationError({ category: "upstream_failure", code: "source_redirect_limit",
+    message: "The official source exceeded the redirect limit.", retryability: false });
 }
 
 export function ricercaAggiornati(body: AggiornatiBody): Promise<RicercaResponse> {

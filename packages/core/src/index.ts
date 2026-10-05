@@ -5,3 +5,5 @@ export type { ToolContext } from "./context.js";
 export * from "./types.js";
 export * from "./contracts.js";
 export { errorSchema, OperationError, type ErrorDetail } from "./errors.js";
+export { ActTraversal } from "./traversal.js";
+export { registerTraversalTools } from "./traversal-tools.js";

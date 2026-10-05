@@ -16,6 +16,11 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
+    "parse5-sax-parser": "^8.0.0",
+    "saxes": "^6.0.0",
     "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "parse5": "^8.0.1"
   }
 }
