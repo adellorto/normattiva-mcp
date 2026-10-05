@@ -10,6 +10,14 @@ It wraps the synchronous read endpoints (search, article detail, recent updates)
 
 **Landing page & quickstart:** [`normattiva-mcp.adellorto.com`](https://normattiva-mcp.adellorto.com/) — copy-paste client configs for Claude, ChatGPT, Cursor and stdio. Italian version at [`/it/`](https://normattiva-mcp.adellorto.com/it/).
 
+## Development status
+
+Implementation of the [accepted remediation handoff](https://github.com/adellorto/normattiva-mcp/issues/6#issuecomment-5992182865) has started. This source revision establishes result schemas, typed failures, a process-wide FIFO upstream lane, a shared 50-second call deadline, 20-second attempt timeouts, and budgets of two attempts for direct calls and sixteen for composed calls. Only replay-safe, known-transient failures may receive one retry; throttling without `Retry-After` cools later traffic without retrying immediately. Caller cancellation stops queued and active work.
+
+For source consumers, `read_article` now returns `outcome`, `reason`, `requested`, and `evidence`; found content is in `content.text`, and inconclusive detail responses (including ambiguous 404s) return `outcome: "unresolved"`. The `found` Boolean and old top-level article content fields are removed. Operational failures return `isError: true` and `structuredContent.error` with a category, code, safe message and three-state retryability. Successful tools also expose `structuredContent`. Decoded upstream bodies are limited to 24 MiB and serialized tool/resource results to 128 KiB.
+
+This is an intermediate, unpublished implementation. The existing `list_articles` and `read_act` probes still cannot establish completeness or preserve interrupted prefixes, and may exhaust the new shared budget before responding. Verified source acquisition, frozen-snapshot traversal, durable references, within-content pagination, `find_acts`/`continue_acts`, and the remaining release gates follow in later stages. The schemas are groundwork for those stages; their presence does not establish source verification. Hosted and npm deployments have not been updated.
+
 ## Capabilities
 
 ### Tools
@@ -18,7 +26,7 @@ It wraps the synchronous read endpoints (search, article detail, recent updates)
 | --- | --- |
 | `search_acts` | Search Italian legislation by free text, title, act type, year/number, date range, vigenza class, or in-force date. Returns metadata for each matching atto including `codice_redazionale` and `data_gu` (which `read_article` needs). To find acts **newly published** in Gazzetta Ufficiale within a window, set `data_pubblicazione_da` / `data_pubblicazione_a` — this is the right tool for "what was published recently?", not `recent_updates`. |
 | `list_articles` | Discover the article numbers of an atto by sequentially probing `read_article` from `articolo=1`. Finds base articles by default; pass `include_suffixes: true` to also probe `bis`/`ter`/`quater`/… for each one. Each entry carries optional `is_preamble` and `is_abrogated` flags (informational; nothing is filtered server-side). Articles inside structured groups (`id_gruppo != 0`) are still not enumerated automatically. |
-| `read_article` | Fetch the text of a single article of a specific atto at a given date of vigenza. Returns plain text by default; pass `format: "html"` for the original markup (preserves amendment markers). In text mode, hyperlink targets are inlined as `L. 5/2003 [urn:nir:stato:legge:2003-06-05;131]` so URN citations survive the conversion. Successful responses include `found: true`; non-existent articles (wrong `sotto_articolo`, `id_gruppo`, or out-of-range `articolo`) return `{ found: false, reason, richiesta }` instead of throwing — so probing is exception-free. The LLM can call this in parallel for several articles of the same atto. |
+| `read_article` | Read one article at a supplied date. Returns `outcome: "found"` with `content.text`, or `outcome: "unresolved"` with evidence when the supplied detail coordinates cannot establish presence. An ambiguous 404 does not prove absence. Operational failures use the typed error contract. `format: "html"` preserves upstream markup; plain text preserves amendment markers and citation targets. |
 | `read_act` | Aggregate-read of an entire atto: internally enumerates articles and fetches each one, returning them in order capped by `max_chars` (default 80 000 ≈ 20k Claude tokens). Honors `include_suffixes` and `id_gruppo` like `list_articles`. When the budget is exhausted the response includes `truncated: true`, `truncated_reason`, and `articolo_successivo` for resuming via a follow-up call with `articolo_da` set to that value. |
 | `recent_updates` | Lists atti normativi whose **consolidated text was amended** within a date window (max 12 months) — i.e. the in-force version changed because another act modified it. Does **not** list acts newly published in Gazzetta Ufficiale; for those, use `search_acts` with `data_pubblicazione_da` / `data_pubblicazione_a`. |
 
@@ -121,9 +129,15 @@ Requires Node.js ≥ 20.
 ```bash
 git clone <repo>
 cd normattiva-mcp
-npm install
-npm run build
-node dist/index.js  # speaks MCP on stdio
+pnpm install
+pnpm build
+pnpm start  # speaks MCP on stdio
+```
+
+Offline regression tests (no public API requests):
+
+```bash
+pnpm test
 ```
 
 A live smoke test (hits the public API):
@@ -136,7 +150,7 @@ node tests/smoke.mjs
 
 - **No table-of-contents endpoint.** Normattiva OpenData has no synchronous TOC. `list_articles` is a best-effort probe: it calls `read_article` for `articolo=1,2,3,…` until it stops finding results. By default it discovers **base articles** only; `include_suffixes: true` extends the probe to `bis`/`ter`/`quater`/… (round-by-round, stopping each chain at the first miss) but cannot find sub-articles whose base is missing, nor articles inside structured groups (`id_gruppo != 0`).
 - **`id_gruppo` is opaque.** Some atti — typically structured codes (codici, testi unici, leggi articolate) — return content only when `read_article` is called with a non-zero `id_gruppo`. The OpenData API offers no way to discover the right value synchronously. Practical strategy: try `id_gruppo=0` first; if results look empty or wrong, try small integers (1, 2, 3, …) until the article comes back.
-- **One article per call upstream.** Normattiva's `dettaglio-atto` endpoint serves one article at a time. `read_article` exposes that directly (parallelize from the client when reading several articles); `read_act` hides the orchestration and returns a single aggregated payload, capped by `max_chars` and resumable via `articolo_successivo`.
+- **One article per call upstream.** Normattiva's `dettaglio-atto` endpoint serves one article at a time. `read_article` exposes that directly; concurrent client calls share one upstream lane.  `read_act` hides the orchestration and returns a single aggregated payload, capped by `max_chars` and resumable via `articolo_successivo`.
 - **HTML stripping.** The default `format: "text"` collapses Normattiva's HTML markup but preserves the Italian-law amendment markers `(( ... ))` (insertions) and `[ ... ]` (deletions), which carry semantic meaning. Hyperlinks to other normative acts are inlined as `<text> [urn:nir:…]` so the Akoma Ntoso URN survives in plain text.
 - **Article versioning is non-discoverable.** Each `read_article` call returns the version of the article in force on `data_vigenza` (the API's `versione=0` default). The OpenData API does not expose how many historical versions exist for an article, so previous texts can only be retrieved by varying `data_vigenza` (or by guessing `versione=1, 2, …`).
 - **`is_abrogated` is heuristic.** The flag matches the canonical `((ARTICOLO ABROGATO …))` marker that successive amendments insert at the head of a wholly-abrogated article. Articles where individual commi are abrogated but the article itself is alive (e.g. `((COMMA ABROGATO …))` in a few subsections) are **not** flagged.

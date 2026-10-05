@@ -41,12 +41,13 @@ function send(method, params) {
   return new Promise((resolveP, rejectP) => {
     pending.set(id, { resolve: resolveP, reject: rejectP });
     proc.stdin.write(JSON.stringify({ jsonrpc: "2.0", id, method, params }) + "\n");
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       if (pending.has(id)) {
         pending.delete(id);
         rejectP(new Error(`timeout waiting for ${method}`));
       }
-    }, 30000);
+    }, 60000);
+    timer.unref();
   });
 }
 
@@ -110,9 +111,10 @@ try {
     },
   });
   const articleData = JSON.parse(article.content[0].text);
-  console.log(`  titolo: ${articleData.titolo}`);
-  console.log(`  text len: ${articleData.articolo.length} chars`);
-  console.log(`  preview: ${articleData.articolo.slice(0, 120).replace(/\n/g, " ⏎ ")}...`);
+  if (article.isError || articleData.outcome !== "found") throw new Error(`article lookup did not succeed: ${articleData.outcome ?? 'typed error'}`);
+  console.log(`  titolo: ${articleData.content.title}`);
+  console.log(`  text len: ${articleData.content.text.length} chars`);
+  console.log(`  preview: ${articleData.content.text.slice(0, 120).replace(/\n/g, " ⏎ ")}...`);
 
   console.log("→ tools/call recent_updates (last 7 days)");
   const today = new Date();

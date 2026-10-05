@@ -6,9 +6,11 @@ import {
   getRicerchePredefinite,
 } from "./api.js";
 import type { ToolContext } from "./context.js";
+import { runResource } from "./execution.js";
+import { assertResponseSize } from "./serialization.js";
 
 function jsonResource(uri: URL, data: unknown) {
-  return {
+  const result = {
     contents: [
       {
         uri: uri.href,
@@ -17,6 +19,8 @@ function jsonResource(uri: URL, data: unknown) {
       },
     ],
   };
+  assertResponseSize(result);
+  return result;
 }
 
 export function registerResources(server: McpServer, _ctx: ToolContext): void {
@@ -29,7 +33,7 @@ export function registerResources(server: McpServer, _ctx: ToolContext): void {
         "List of valid act-type codes accepted by Normattiva (label = code, value = full Italian description). Use the value (e.g. 'LEGGE') for the denominazione parameter of search_acts.",
       mimeType: "application/json",
     },
-    async (uri) => jsonResource(uri, await getDenominazioni()),
+    async (uri, extra) => runResource(extra.signal, _ctx, async () => jsonResource(uri, await getDenominazioni())),
   );
 
   server.registerResource(
@@ -41,7 +45,7 @@ export function registerResources(server: McpServer, _ctx: ToolContext): void {
         "Vigenza class codes: 1 = atto senza aggiornamenti, 2 = aggiornato, 3 = abrogato. Use the label as the classe parameter of search_acts.",
       mimeType: "application/json",
     },
-    async (uri) => jsonResource(uri, await getClassiProvvedimento()),
+    async (uri, extra) => runResource(extra.signal, _ctx, async () => jsonResource(uri, await getClassiProvvedimento())),
   );
 
   server.registerResource(
@@ -53,7 +57,7 @@ export function registerResources(server: McpServer, _ctx: ToolContext): void {
         "Predefined collections of acts available on Normattiva, with the number of acts in each.",
       mimeType: "application/json",
     },
-    async (uri) => jsonResource(uri, await getCollezioniPredefinite()),
+    async (uri, extra) => runResource(extra.signal, _ctx, async () => jsonResource(uri, await getCollezioniPredefinite())),
   );
 
   server.registerResource(
@@ -65,6 +69,6 @@ export function registerResources(server: McpServer, _ctx: ToolContext): void {
         "Predefined searches with their preset filters (date ranges, classe, etc.).",
       mimeType: "application/json",
     },
-    async (uri) => jsonResource(uri, await getRicerchePredefinite()),
+    async (uri, extra) => runResource(extra.signal, _ctx, async () => jsonResource(uri, await getRicerchePredefinite())),
   );
 }

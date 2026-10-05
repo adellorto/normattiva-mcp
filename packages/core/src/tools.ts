@@ -1,11 +1,13 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { McpError, ErrorCode } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import {
   ricercaAvanzata,
   dettaglioAtto,
   ricercaAggiornati,
 } from "./api.js";
+import { runTool } from "./execution.js";
+import { jsonContent } from "./serialization.js";
+import { OperationError } from "./errors.js";
 import { htmlToText } from "./html.js";
 import type { RicercaAvanzataBody } from "./types.js";
 import type { ToolContext } from "./context.js";
@@ -16,12 +18,6 @@ const dateString = z
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
-}
-
-function jsonContent(data: unknown) {
-  return {
-    content: [{ type: "text" as const, text: JSON.stringify(data, null, 2) }],
-  };
 }
 
 export function registerTools(server: McpServer, _ctx: ToolContext): void {
@@ -40,7 +36,7 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
           .describe(
             "Italian act-type label, e.g. 'LEGGE', 'DECRETO LEGISLATIVO', 'DECRETO DEL PRESIDENTE DELLA REPUBBLICA'.",
           ),
-        anno: z.number().int().optional().describe("Year of the provvedimento."),
+        anno: z.number().int().min(1).max(9999).optional().describe("Year of the provvedimento."),
         numero: z.string().optional().describe("Number of the provvedimento."),
         mese: z.number().int().min(1).max(12).optional(),
         giorno: z.number().int().min(1).max(31).optional(),
@@ -72,7 +68,7 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
         order: z.enum(["recente", "vecchio"]).default("recente"),
       },
     },
-    async (args) => {
+    async (args, extra) => runTool("direct", extra.signal, _ctx, args, async () => {
       const body: RicercaAvanzataBody = {
         orderType: args.order,
         paginazione: {
@@ -113,7 +109,7 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
           classe: a.classeProvvedimento,
         })),
       });
-    },
+    }),
   );
 
   server.registerTool(
@@ -121,26 +117,27 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
     {
       title: "Read one article of an Italian act",
       description:
-        "Fetches the text of a single article of a specific atto, at a given date of vigenza. Prefer calling search_acts first to obtain codice_redazionale and data_gu, then list_articles to discover which article numbers exist, and finally read_article on the relevant ones (you may call it in parallel for multiple articles of the same atto). Returns plain text by default; pass format='html' for the original markup (which preserves amendment markers). The text format inlines URN citations as 'L. 5/2003 [urn:nir:stato:legge:2003-06-05;131]'. When the article does not exist (wrong sotto_articolo, id_gruppo or articolo number) the tool returns {found:false, reason, ...} instead of throwing — successful responses include {found:true}. Note: 'bis'/'ter' suffixes require sotto_articolo (1=base, 2=bis, 3=ter, ...), and some atti (e.g. structured codes) require a non-zero id_gruppo whose value is not synchronously discoverable.",
+        "Read one article at a concrete date of vigenza. Returns outcome=found with content or outcome=unresolved with evidence; a failed coordinate lookup does not establish legal absence. Operational failures return typed errors. Plain text is the default; format=html preserves markup. Coordinate inputs remain during implementation of the coordinated locator interface.",
       inputSchema: {
         data_gu: dateString.describe("Publication date in Gazzetta Ufficiale (from search_acts)."),
-        codice_redazionale: z.string().describe("Editorial code of the atto (from search_acts)."),
-        articolo: z.number().int().describe("Article number."),
+        codice_redazionale: z.string().min(1).max(80).describe("Editorial code of the atto (from search_acts)."),
+        articolo: z.number().int().min(0).describe("Article number."),
         sotto_articolo: z
           .number()
           .int()
           .min(1)
           .default(1)
           .describe("Article suffix index. 1 = base article (e.g. 'art. 13'), 2 = bis, 3 = ter, 4 = quater, ..."),
-        sotto_articolo_1: z.number().int().default(0),
+        sotto_articolo_1: z.number().int().min(0).default(0),
         data_vigenza: dateString
           .default(todayIso)
           .describe("Date at which to read the article (defaults to today)."),
-        id_gruppo: z.number().int().default(0),
-        progressivo: z.number().int().default(0),
+        id_gruppo: z.number().int().min(0).default(0),
+        progressivo: z.number().int().min(0).default(0),
         versione: z
           .number()
           .int()
+          .min(0)
           .default(0)
           .describe(
             "Version selector. 0 (default) is the standard choice and pairs with data_vigenza to return the in-force text on that date.",
@@ -148,8 +145,22 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
         format: z.enum(["text", "html"]).default("text"),
       },
     },
-    async (args) => {
-      const data = await dettaglioAtto({
+    async (args, extra) => runTool("direct", extra.signal, _ctx, args, async () => {
+      const requested = {
+        publication: { data_gu: args.data_gu, codice_redazionale: args.codice_redazionale },
+        snapshot_date: args.data_vigenza,
+        article_reference: `${args.articolo} (suffix ${args.sotto_articolo}/${args.sotto_articolo_1}, group ${args.id_gruppo}, occurrence ${args.progressivo}, version ${args.versione})`,
+      };
+      const evidence = [{
+        source: "official_detail",
+        checked_at: new Date().toISOString(),
+        snapshot_date: args.data_vigenza,
+        publication: requested.publication,
+        explanation: "Only the supplied detail coordinates were checked; no complete article inventory was acquired.",
+      }];
+      const unresolved = () => jsonContent({ outcome: "unresolved", reason: "upstream_lookup_inconclusive", requested, evidence });
+      let data;
+      try { data = await dettaglioAtto({
         dataGU: args.data_gu,
         codiceRedazionale: args.codice_redazionale,
         idArticolo: args.articolo,
@@ -159,22 +170,15 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
         idGruppo: args.id_gruppo,
         progressivo: args.progressivo,
         versione: args.versione,
-      });
-
-      if (!data.success || !data.data?.atto) {
-        return jsonContent({
-          found: false,
-          reason: "no-such-article",
-          message: data.message ?? null,
-          richiesta: {
-            articolo: args.articolo,
-            sotto_articolo: args.sotto_articolo,
-            codice_redazionale: args.codice_redazionale,
-            data_gu: args.data_gu,
-            data_vigenza: args.data_vigenza,
-            id_gruppo: args.id_gruppo,
-          },
-        });
+      }); } catch (error) {
+        if (error instanceof OperationError && error.detail.http_status === 404) {
+          evidence[0]!.explanation = "The detail endpoint returned HTTP 404 for these coordinates; this cannot establish article absence.";
+          return unresolved();
+        }
+        throw error;
+      }
+      if (!data.success || !data.data?.atto?.articoloHtml) {
+        return unresolved();
       }
 
       const atto = data.data.atto;
@@ -182,16 +186,14 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
       const articolo_testo = args.format === "html" ? html : htmlToText(html);
 
       return jsonContent({
-        found: true,
-        titolo: atto.titolo,
-        tipo: atto.tipoProvvedimentoDescrizione,
-        codice_tipo: atto.tipoProvvedimentoCodice,
-        format: args.format,
-        articolo: articolo_testo,
-        data_inizio_vigenza: atto.articoloDataInizioVigenza,
-        data_fine_vigenza: atto.articoloDataFineVigenza,
+        outcome: "found", reason: "official_detail_returned", requested, evidence,
+        content: {
+          title: atto.titolo, format: args.format, text: articolo_testo,
+          effective_from: atto.articoloDataInizioVigenza,
+          effective_to: atto.articoloDataFineVigenza,
+        },
       });
-    },
+    }),
   );
 
   server.registerTool(
@@ -202,7 +204,7 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
         "Discovers which articles exist in an atto by probing dettaglio-atto sequentially from articolo=1. Normattiva OpenData has no synchronous table-of-contents endpoint, so this is a best-effort enumeration. By default only base articles (sotto_articolo=1) are discovered; pass include_suffixes=true to also probe bis/ter/quater/... for each base article (extra round-trips, stops at the first miss per article). Articles inside structured groups (id_gruppo!=0) are not discovered automatically. Each probe is a real API call. The base probe stops early once a full chunk yields no results after at least one article has been found. Use this before read_article when you need to know the article range.",
       inputSchema: {
         data_gu: dateString.describe("Publication date in Gazzetta Ufficiale (from search_acts)."),
-        codice_redazionale: z.string().describe("Editorial code of the atto (from search_acts)."),
+        codice_redazionale: z.string().min(1).max(80).describe("Editorial code of the atto (from search_acts)."),
         data_vigenza: dateString
           .default(todayIso)
           .describe("Date at which to test article existence (defaults to today)."),
@@ -216,6 +218,7 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
         id_gruppo: z
           .number()
           .int()
+          .min(0)
           .default(0)
           .describe("Article-group id (default 0). Non-zero values target a specific group inside a structured atto."),
         include_suffixes: z
@@ -226,7 +229,7 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
           ),
       },
     },
-    async (args) => {
+    async (args, extra) => runTool("composed", extra.signal, _ctx, args, async () => {
       const CHUNK = 5;
       type ArticleEntry = {
         articolo: number;
@@ -261,49 +264,39 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
         const end = Math.min(start + CHUNK - 1, args.max_articoli);
         const batch = await Promise.all(
           Array.from({ length: end - start + 1 }, (_, i) => start + i).map(async (n) => {
-            try {
-              const data = await dettaglioAtto({
-                dataGU: args.data_gu,
-                codiceRedazionale: args.codice_redazionale,
-                idArticolo: n,
-                sottoArticolo: 1,
-                sottoArticolo1: 0,
-                dataVigenza: args.data_vigenza,
-                idGruppo: args.id_gruppo,
-                progressivo: 0,
-                versione: 0,
-              });
-              if (!data.success || !data.data?.atto?.articoloHtml) {
-                return { articolo: n, ok: false as const };
-              }
-              const html = data.data.atto.articoloHtml;
-              // Detect the canonical "Art. N" header. Atti often expose the
-              // promulgation preamble at idArticolo=1 with no article header.
-              const isArticle = /<h2[^>]*class="[^"]*article-num-akn[^"]*"[^>]*>\s*Art\.\s/i.test(html);
-              const text = htmlToText(html);
-              const preview = text
-                .split("\n")
-                .map((l) => l.trim())
-                .filter((l) => l.length > 0)
-                .slice(0, 4)
-                .join(" — ")
-                .slice(0, 200);
-              return {
-                articolo: n,
-                ok: true as const,
-                titolo: preview,
-                is_preamble: !isArticle,
-                is_abrogated: ABROGATED_RE.test(text),
-              };
-            } catch (err) {
-              // Treat "article not found" (client-error) as a miss; let
-              // network/5xx errors surface so the caller sees the failure
-              // instead of getting a silently truncated list.
-              if (err instanceof McpError && err.code === ErrorCode.InvalidRequest) {
-                return { articolo: n, ok: false as const };
-              }
-              throw err;
+            const data = await dettaglioAtto({
+              dataGU: args.data_gu,
+              codiceRedazionale: args.codice_redazionale,
+              idArticolo: n,
+              sottoArticolo: 1,
+              sottoArticolo1: 0,
+              dataVigenza: args.data_vigenza,
+              idGruppo: args.id_gruppo,
+              progressivo: 0,
+              versione: 0,
+            });
+            if (!data.success || !data.data?.atto?.articoloHtml) {
+              return { articolo: n, ok: false as const };
             }
+            const html = data.data.atto.articoloHtml;
+            // Detect the canonical "Art. N" header. Atti often expose the
+            // promulgation preamble at idArticolo=1 with no article header.
+            const isArticle = /<h2[^>]*class="[^"]*article-num-akn[^"]*"[^>]*>\s*Art\.\s/i.test(html);
+            const text = htmlToText(html);
+            const preview = text
+              .split("\n")
+              .map((l) => l.trim())
+              .filter((l) => l.length > 0)
+              .slice(0, 4)
+              .join(" — ")
+              .slice(0, 200);
+            return {
+              articolo: n,
+              ok: true as const,
+              titolo: preview,
+              is_preamble: !isArticle,
+              is_abrogated: ABROGATED_RE.test(text),
+            };
           }),
         );
         probedUpTo = end;
@@ -336,41 +329,34 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
         for (let sa = 2; sa <= MAX_SUFFIX_INDEX && live.length > 0; sa++) {
           const round = await Promise.all(
             live.map(async (n) => {
-              try {
-                const data = await dettaglioAtto({
-                  dataGU: args.data_gu,
-                  codiceRedazionale: args.codice_redazionale,
-                  idArticolo: n,
-                  sottoArticolo: sa,
-                  sottoArticolo1: 0,
-                  dataVigenza: args.data_vigenza,
-                  idGruppo: args.id_gruppo,
-                  progressivo: 0,
-                  versione: 0,
-                });
-                if (!data.success || !data.data?.atto?.articoloHtml) {
-                  return { articolo: n, hit: false as const };
-                }
-                const text = htmlToText(data.data.atto.articoloHtml);
-                const preview = text
-                  .split("\n")
-                  .map((l) => l.trim())
-                  .filter((l) => l.length > 0)
-                  .slice(0, 4)
-                  .join(" — ")
-                  .slice(0, 200);
-                return {
-                  articolo: n,
-                  hit: true as const,
-                  titolo: preview,
-                  is_abrogated: ABROGATED_RE.test(text),
-                };
-              } catch (err) {
-                if (err instanceof McpError && err.code === ErrorCode.InvalidRequest) {
-                  return { articolo: n, hit: false as const };
-                }
-                throw err;
+              const data = await dettaglioAtto({
+                dataGU: args.data_gu,
+                codiceRedazionale: args.codice_redazionale,
+                idArticolo: n,
+                sottoArticolo: sa,
+                sottoArticolo1: 0,
+                dataVigenza: args.data_vigenza,
+                idGruppo: args.id_gruppo,
+                progressivo: 0,
+                versione: 0,
+              });
+              if (!data.success || !data.data?.atto?.articoloHtml) {
+                return { articolo: n, hit: false as const };
               }
+              const text = htmlToText(data.data.atto.articoloHtml);
+              const preview = text
+                .split("\n")
+                .map((l) => l.trim())
+                .filter((l) => l.length > 0)
+                .slice(0, 4)
+                .join(" — ")
+                .slice(0, 200);
+              return {
+                articolo: n,
+                hit: true as const,
+                titolo: preview,
+                is_abrogated: ABROGATED_RE.test(text),
+              };
             }),
           );
           const nextLive: number[] = [];
@@ -412,7 +398,7 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
         articoli_trovati: articoli.length,
         articoli,
       });
-    },
+    }),
   );
 
   server.registerTool(
@@ -426,7 +412,8 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
         data_fine: dateString.describe("End of the amendment window (YYYY-MM-DD), max 12 months after data_inizio."),
       },
     },
-    async ({ data_inizio, data_fine }) => {
+    async (args, extra) => runTool("direct", extra.signal, _ctx, args, async () => {
+      const { data_inizio, data_fine } = args;
       const data = await ricercaAggiornati({
         dataInizioAggiornamento: `${data_inizio}T00:00:00.000Z`,
         dataFineAggiornamento: `${data_fine}T23:59:59.999Z`,
@@ -444,7 +431,7 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
             : [],
         })),
       });
-    },
+    }),
   );
 
   server.registerTool(
@@ -455,7 +442,7 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
         "Fetches every article of an atto sequentially and returns them aggregated, capped by max_chars (default 80000 ≈ 20k Claude tokens). Useful when you want the whole law text without orchestrating list_articles + N parallel read_article calls. Probes from articolo_da onward, includes bis/ter when include_suffixes=true, and stops at the first empty chunk or when adding the next unit would exceed max_chars. Truncation is reported via {truncated, truncated_reason, articolo_successivo} so the caller can resume by re-invoking with articolo_da set to that value. Each article entry mirrors read_article output (testo + vigenza dates + is_abrogated flag).",
       inputSchema: {
         data_gu: dateString.describe("Publication date in Gazzetta Ufficiale (from search_acts)."),
-        codice_redazionale: z.string().describe("Editorial code of the atto (from search_acts)."),
+        codice_redazionale: z.string().min(1).max(80).describe("Editorial code of the atto (from search_acts)."),
         data_vigenza: dateString
           .default(todayIso)
           .describe("Date at which to read the atto (defaults to today)."),
@@ -491,11 +478,12 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
         id_gruppo: z
           .number()
           .int()
+          .min(0)
           .default(0)
           .describe("Article-group id. Non-zero values target a specific group inside a structured atto."),
       },
     },
-    async (args) => {
+    async (args, extra) => runTool("composed", extra.signal, _ctx, args, async () => {
       const CHUNK = 5;
       const SUFFIX_LABELS = [
         "base",
@@ -534,40 +522,35 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
       let articoloSuccessivo: number | null = null;
 
       const fetchUnit = async (n: number, sa: number) => {
-        try {
-          const data = await dettaglioAtto({
-            dataGU: args.data_gu,
-            codiceRedazionale: args.codice_redazionale,
-            idArticolo: n,
-            sottoArticolo: sa,
-            sottoArticolo1: 0,
-            dataVigenza: args.data_vigenza,
-            idGruppo: args.id_gruppo,
-            progressivo: 0,
-            versione: 0,
-          });
-          if (!data.success || !data.data?.atto?.articoloHtml) return null;
-          const atto = data.data.atto;
-          const html = atto.articoloHtml;
-          // Narrow for TS: the guard above already excluded undefined.
-          if (typeof html !== "string") return null;
-          attoTitolo ??= atto.titolo;
-          attoTipo ??= atto.tipoProvvedimentoDescrizione;
-          attoCodiceTipo ??= atto.tipoProvvedimentoCodice;
-          const isArticle = /<h2[^>]*class="[^"]*article-num-akn[^"]*"[^>]*>\s*Art\.\s/i.test(html);
-          const testo = args.format === "html" ? html : htmlToText(html);
-          return {
-            testo,
-            isArticle,
-            // The '((ARTICOLO ABROGATO' marker is plain text in both formats —
-            // test on the raw HTML to avoid an extra conversion when format=html.
-            isAbrogated: ABROGATED_RE.test(html),
-            atto,
-          };
-        } catch (err) {
-          if (err instanceof McpError && err.code === ErrorCode.InvalidRequest) return null;
-          throw err;
-        }
+        const data = await dettaglioAtto({
+          dataGU: args.data_gu,
+          codiceRedazionale: args.codice_redazionale,
+          idArticolo: n,
+          sottoArticolo: sa,
+          sottoArticolo1: 0,
+          dataVigenza: args.data_vigenza,
+          idGruppo: args.id_gruppo,
+          progressivo: 0,
+          versione: 0,
+        });
+        if (!data.success || !data.data?.atto?.articoloHtml) return null;
+        const atto = data.data.atto;
+        const html = atto.articoloHtml;
+        // Narrow for TS: the guard above already excluded undefined.
+        if (typeof html !== "string") return null;
+        attoTitolo ??= atto.titolo;
+        attoTipo ??= atto.tipoProvvedimentoDescrizione;
+        attoCodiceTipo ??= atto.tipoProvvedimentoCodice;
+        const isArticle = /<h2[^>]*class="[^"]*article-num-akn[^"]*"[^>]*>\s*Art\.\s/i.test(html);
+        const testo = args.format === "html" ? html : htmlToText(html);
+        return {
+          testo,
+          isArticle,
+          // The '((ARTICOLO ABROGATO' marker is plain text in both formats —
+          // test on the raw HTML to avoid an extra conversion when format=html.
+          isAbrogated: ABROGATED_RE.test(html),
+          atto,
+        };
       };
 
       const upperBound = args.articolo_da + args.max_articoli - 1;
@@ -654,6 +637,6 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
         include_suffixes: args.include_suffixes,
         articoli,
       });
-    },
+    }),
   );
 }

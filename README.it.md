@@ -10,6 +10,14 @@ Wrappa gli endpoint sincroni di lettura (ricerca, dettaglio atto, atti aggiornat
 
 **Landing page & quickstart:** [`normattiva-mcp.adellorto.com`](https://normattiva-mcp.adellorto.com/) — config copia-incolla per Claude, ChatGPT, Cursor e stdio. Versione italiana su [`/it/`](https://normattiva-mcp.adellorto.com/it/).
 
+## Stato dello sviluppo
+
+È iniziata l’implementazione del [passaggio di consegne approvato](https://github.com/adellorto/normattiva-mcp/issues/6#issuecomment-5992182865). Questa revisione introduce schemi dei risultati, errori tipizzati, una coda FIFO condivisa per processo, una scadenza di 50 secondi per chiamata, timeout di 20 secondi per tentativo e budget di due tentativi per chiamate dirette e sedici per quelle composte. Un solo retry è consentito per operazioni ripetibili con errore transitorio riconosciuto; un throttling senza `Retry-After` rallenta il traffico successivo senza retry immediato. La cancellazione ferma richieste attive e in coda.
+
+Per chi usa il sorgente, `read_article` restituisce ora `outcome`, `reason`, `requested` ed `evidence`; il testo trovato è in `content.text`. Risposte inconcludenti del dettaglio, inclusi i 404 ambigui, restituiscono `outcome: "unresolved"`. Sono rimossi il booleano `found` e i precedenti campi del contenuto al primo livello. Gli errori operativi restituiscono `isError: true` e `structuredContent.error` con categoria, codice, messaggio sicuro e retryability a tre valori. Anche i tool riusciti espongono `structuredContent`. I corpi upstream decodificati sono limitati a 24 MiB; i risultati serializzati di tool e risorse a 128 KiB.
+
+Questa implementazione intermedia non è pubblicata. I sondamenti esistenti di `list_articles` e `read_act` non verificano ancora la completezza e non preservano i prefissi dopo un’interruzione; possono esaurire il nuovo budget prima di rispondere. Acquisizione verificata delle fonti, navigazione a data congelata, riferimenti durevoli, paginazione interna ai contenuti, `find_acts`/`continue_acts` e gli altri criteri di rilascio seguiranno nelle prossime fasi. Gli schemi preparano queste fasi senza attestare la verifica delle fonti. I deployment hosted e npm non sono aggiornati.
+
 ## Funzionalità
 
 ### Tools
@@ -18,7 +26,7 @@ Wrappa gli endpoint sincroni di lettura (ricerca, dettaglio atto, atti aggiornat
 | --- | --- |
 | `search_acts` | Ricerca atti normativi italiani per testo libero, titolo, denominazione atto, anno/numero, intervallo di date, classe provvedimento o data di vigenza. Restituisce i metadati di ciascun atto trovato, incluso `codice_redazionale` e `data_gu` (necessari a `read_article`). Per trovare atti **appena pubblicati** in Gazzetta Ufficiale in una finestra temporale, valorizza `data_pubblicazione_da` / `data_pubblicazione_a` — è questo lo strumento giusto per "cosa è stato pubblicato di recente?", non `recent_updates`. |
 | `list_articles` | Scopre i numeri degli articoli di un atto sondando in sequenza `read_article` a partire da `articolo=1`. Per default trova solo gli articoli base; con `include_suffixes: true` sonda anche `bis`/`ter`/`quater`/… per ognuno. Ogni voce porta i flag opzionali `is_preamble` e `is_abrogated` (informativi; nessun filtro lato server). Gli articoli interni a gruppi strutturati (`id_gruppo != 0`) non vengono enumerati automaticamente. |
-| `read_article` | Recupera il testo di un singolo articolo di uno specifico atto a una data di vigenza. Per default ritorna testo semplice; con `format: "html"` restituisce il markup originale (preserva i marcatori di emendamento). In modalità testo i target dei link sono inlinati come `L. 5/2003 [urn:nir:stato:legge:2003-06-05;131]` così le citazioni URN sopravvivono alla conversione. Le risposte di successo includono `found: true`; articoli inesistenti (`sotto_articolo`, `id_gruppo` errato o `articolo` fuori range) ritornano `{ found: false, reason, richiesta }` senza sollevare eccezioni — il sondaggio è exception-free. L'LLM può chiamarlo in parallelo per più articoli dello stesso atto. |
+| `read_article` | Legge un articolo alla data fornita. Restituisce `outcome: "found"` con `content.text`, oppure `outcome: "unresolved"` ed evidenza quando le coordinate non permettono di stabilire la presenza. Un 404 ambiguo non prova l’assenza. Gli errori operativi seguono il contratto tipizzato. `format: "html"` conserva il markup; il testo semplice preserva marcatori di emendamento e riferimenti delle citazioni. |
 | `read_act` | Lettura aggregata di un intero atto: enumera internamente gli articoli e ne recupera ognuno, ritornandoli in ordine fino al limite `max_chars` (default 80 000 ≈ 20k token Claude). Onora `include_suffixes` e `id_gruppo` come `list_articles`. Quando il budget è esaurito la risposta include `truncated: true`, `truncated_reason` e `articolo_successivo` per riprendere con una chiamata successiva impostando `articolo_da` a quel valore. |
 | `recent_updates` | Elenca atti normativi il cui **testo consolidato è stato modificato** in una finestra temporale (max 12 mesi) — cioè la versione vigente è cambiata perché un altro atto l'ha modificata. **Non** elenca atti appena pubblicati in Gazzetta Ufficiale; per quelli usa `search_acts` con `data_pubblicazione_da` / `data_pubblicazione_a`. |
 
@@ -121,9 +129,9 @@ Richiede Node.js ≥ 20.
 ```bash
 git clone <repo>
 cd normattiva-mcp
-npm install
-npm run build
-node dist/index.js  # parla MCP via stdio
+pnpm install
+pnpm build
+pnpm start  # parla MCP via stdio
 ```
 
 Smoke test live (chiama l'API pubblica):
@@ -136,7 +144,7 @@ node tests/smoke.mjs
 
 - **Nessun endpoint di indice articoli.** Normattiva OpenData non espone un sommario sincrono. `list_articles` è un sondaggio best-effort: chiama `read_article` per `articolo=1,2,3,…` finché smette di trovare risultati. Per default scopre solo gli **articoli base**; `include_suffixes: true` estende il sondaggio a `bis`/`ter`/`quater`/… (round-by-round, fermando ciascuna catena al primo miss) ma non può trovare sotto-articoli il cui base manca, né articoli interni a gruppi strutturati (`id_gruppo != 0`).
 - **`id_gruppo` è opaco.** Alcuni atti — tipicamente codici strutturati (codici, testi unici, leggi articolate) — restituiscono contenuto solo quando `read_article` viene chiamato con un `id_gruppo` non zero. L'API OpenData non offre alcun modo sincrono per scoprire il valore corretto. Strategia pratica: provare prima con `id_gruppo=0`; se i risultati appaiono vuoti o errati, provare interi piccoli (1, 2, 3, …) finché l'articolo non torna.
-- **Un articolo per chiamata upstream.** L'endpoint `dettaglio-atto` di Normattiva serve un articolo alla volta. `read_article` lo espone direttamente (parallelizza dal client quando leggi più articoli); `read_act` nasconde l'orchestrazione e restituisce un payload aggregato unico, limitato da `max_chars` e ripristinabile via `articolo_successivo`.
+- **Un articolo per chiamata upstream.** L'endpoint `dettaglio-atto` di Normattiva serve un articolo alla volta. `read_article` lo espone direttamente; le chiamate concorrenti del client condividono una sola coda upstream.  `read_act` nasconde l'orchestrazione e restituisce un payload aggregato unico, limitato da `max_chars` e ripristinabile via `articolo_successivo`.
 - **Stripping dell'HTML.** Il default `format: "text"` collassa il markup HTML di Normattiva ma preserva i marcatori italiani di emendamento `(( ... ))` (inserimenti) e `[ ... ]` (cancellazioni), che hanno valore semantico. I link verso altri atti normativi sono inlinati come `<testo> [urn:nir:…]` così l'URN Akoma Ntoso sopravvive in formato testo.
 - **Versioning degli articoli non scopribile.** Ogni chiamata `read_article` ritorna la versione dell'articolo in vigore alla `data_vigenza` (default `versione=0` dell'API). L'API OpenData non espone quante versioni storiche esistano per un articolo, quindi i testi precedenti possono essere recuperati solo variando `data_vigenza` (o tentando `versione=1, 2, …`).
 - **`is_abrogated` è euristico.** Il flag riconosce il marcatore canonico `((ARTICOLO ABROGATO …))` che gli emendamenti successivi inseriscono in testa a un articolo interamente abrogato. Articoli con singoli commi abrogati ma articolo nel complesso vivo (es. `((COMMA ABROGATO …))` in alcune sottosezioni) **non** vengono segnalati.
