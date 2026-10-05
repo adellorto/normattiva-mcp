@@ -2,20 +2,20 @@
 
 Recorded on 5 October 2026, Node 24.15.0/Linux, against local stages 1–4 through `5be40d2` and the stage-5 working tree. [Validate coordinated release and prepare publication handoff](https://github.com/adellorto/normattiva-mcp/issues/22) remains open. The [accepted delivery specification](https://github.com/adellorto/normattiva-mcp/issues/6#issuecomment-5992182865) still governs acceptance. No push, tag, npm publication or deployment was performed.
 
-New prerequisites on the implementation map are [Restore verified live reading against current official sources](https://github.com/adellorto/normattiva-mcp/issues/23) and [Remedy the observed Terra literal-cursor failure](https://github.com/adellorto/normattiva-mcp/issues/24). They block final acceptance through native tracker dependencies.
+New prerequisites on the implementation map are [Restore verified live reading against current official sources](https://github.com/adellorto/normattiva-mcp/issues/23) and [Remedy observed model continuation-reference failures](https://github.com/adellorto/normattiva-mcp/issues/24). The new [Preserve complete requests and verified references in model-facing discovery](https://github.com/adellorto/normattiva-mcp/issues/25) prerequisite records the measured routing failures. All three block final acceptance through native tracker dependencies.
 
 ## Gate status
 
 | Gate | Result and limit of the evidence |
 | --- | --- |
-| Deterministic regressions, build and public contracts | 92/92 tests pass, including production stdio/HTTP registration and migration smoke with synthetic sources. A captured live-detail negative control was added. |
+| Deterministic regressions, build and public contracts | 96/96 tests pass, including production stdio/HTTP registration and migration smoke with synthetic sources. A captured live-detail negative control was added. |
 | Installed npm consumer | Passed after fixing an omitted parser-worker bundle. Real tarball installed outside the workspace, with runtime dependencies only. |
 | Restart and configured npm/HTTP reference transfer | Passed for article, index, whole-act and discovery continuations, including HTTP-to-npm article continuation and different-key rejection. HTTP tests execute fresh processes of the actual handler; this is not deployed Vercel verification. |
 | Runtime memory and serialization | Recorded representative saved/synthetic workloads meet the 256 MiB memory target. Full MCP bytes include both copies. This is sample evidence, not universal capacity or complete historical/attachment benchmarking. |
 | Direct-read processing overhead | Two paired warm samples remain below +10%; cold comparative distributions remain outstanding. Healthy synthetic direct reads use one upstream request. |
 | Schema/result guidance | Both prototype tokenizers pass: 2.00–2.08% schema overhead and at most 58 explanatory tokens counting both MCP copies. Client-native tokenization of individual results remains outstanding. |
 | Terminal clients | Sonnet: one passing sample. Terra: fails the literal-cursor gate, despite correct final text and absence explanation. |
-| Representative OpenRouter matrix | Prepared, not run: restored environment lacks the key. 234 planned calls, three families, two repetitions, $1 maximum and $0.893 conservative reservation at captured prices. |
+| Representative OpenRouter matrix | Failed/incomplete: 78 Qwen and 78 DeepSeek outputs reviewed; Llama first-call provider error 502. 81 rows have automated flags; manual review distinguishes scorer limitations. $0.05119 completion receipts; $0.05667 accounted upper bound including prior attempts, under the $1 software cap. |
 | Official-source live canaries | Blocked: five discovery checks pass; direct reading lacks independently verified editorial identity and three dated website requests return HTTP 409. |
 | Deployed packaging and transport cancellation/timeouts | Outstanding. Local Vercel build could not retrieve project settings because its saved token is invalid. Core cancellation/timeouts pass, but dedicated checks through both default transports remain required. |
 | Final release approval | Blocked. Version alignment and migration preparation do not establish release acceptance. |
@@ -60,11 +60,31 @@ Dated TUEL, Civil Code and 2017 Privacy website routes returned HTTP 409. The hi
 
 One earlier Codex model turn was blocked by MCP approval configuration; it is excluded from acceptance but its token usage is retained. For the final run, built-in apps were disabled and only this synthetic server was preapproved. Two earlier startup attempts produced no useful MCP work. An exploratory `gpt-4.1-mini` API request returned HTTP 429 and produced no completion; it is excluded too.
 
-The CLI runs used existing subscription logins. Separate API charges were not demonstrated, and Codex reported tokens rather than a monetary cost. This does not mean the sessions consumed no quota. No OpenRouter inference was run. The user's total ceiling is €10; future OpenRouter work is deliberately capped at $1, with a key spending limit as a second guard. No additional CLI runs were used to hide the Terra failure.
+The CLI runs used existing subscription logins. Separate API charges were not demonstrated, and Codex reported tokens rather than a monetary cost. This does not mean the sessions consumed no quota. OpenRouter inference was subsequently run after the user restored the key. The user's total ceiling is €10; the runner imposes a $1 software cap. The restored key has a separate $10 limit, so it is not the tighter spending guard. No additional CLI runs were used to hide the Terra failure.
 
-[OpenRouter plan](release-model-plan.json) and [frozen production MCP inputs](release-model-input.json.gz) cover the 28 accepted routing cases plus empty search, unresolved targets, pending/more/interrupted, literal cursor, changed-content rejection, unread attachment coverage and unknown currentness: Qwen3 14B, DeepSeek v4.1 Flash and Llama3.1 8B, two repetitions each, 1,536 maximum output tokens, temperature zero. The plan checks live model availability and prices before dispatch. It caps provider prices, reserves conservatively before each request, retains reservations for unknown billed failures and stops on an API failure. [OpenRouter documents price ceilings in USD per million tokens](https://github.com/OpenRouterTeam/docs/blob/main/guides/routing/provider-selection.mdx).
+[OpenRouter plan](release-model-plan.json) and [frozen production MCP inputs](release-model-input.json.gz) cover the 28 accepted routing cases plus empty search, unresolved targets, pending/more/interrupted, literal cursor, changed-content rejection, unread attachment coverage and unknown currentness: Qwen3 14B, DeepSeek v4.1 Flash and Llama3.1 8B, two repetitions each, 1,536 maximum output tokens, temperature zero. The plan checks live model availability and prices before dispatch. It caps provider prices, reserves conservatively before each request, retains reservations for unknown billed failures and stops dispatching further cases for a family after an API failure. Four concurrent workers checkpoint reservations atomically before dispatch; a 120-second per-request deadline bounds waiting. Offline provider fixtures verify the cap, credential redaction, unsupported-parameter omission and durable concurrent reservations. [OpenRouter documents price ceilings in USD per million tokens](https://github.com/OpenRouterTeam/docs/blob/main/guides/routing/provider-selection.mdx).
 
-Automatic checks cover routing, factual constraints and literal cursors. Every output still needs semantic review for false absence, fabricated references and false completion. A zero-error finite sample cannot guarantee arbitrary model behavior; any observed failure needs a measured correction and rerun, or an explicit acceptance revision.
+Automatic checks cover routing, factual constraints and literal cursors in the first tool call. The separate [model review](release-model-review.json) inspects caller-visible outputs and every tool call, with offline public-schema and literal-reference comparisons; generated tool calls were not executed against legal sources. A zero-error finite sample cannot guarantee arbitrary model behavior; any observed failure needs a measured correction and rerun, or an explicit acceptance revision.
+
+## Executed OpenRouter sample
+
+[Raw results](release-openrouter-results.json.gz) retain every output and billed usage, plus nested setup/timeout attempts. The [executed plan](release-model-plan.json) records the frozen input/schema hashes, live catalog prices and settings. Production tool definitions were unchanged by this evaluation.
+
+| Requested / resolved family | Completed outputs | Rows with automatic flags | Result |
+| --- | ---: | ---: | --- |
+| Qwen3 14B | 78/78 | 40 | Dropped article/paragraph and temporal constraints; invented a missing cursor; altered the long article cursor in both repetitions; incompatible continuation arguments. |
+| DeepSeek v4.1 Flash | 78/78 | 41 | Invented read locators before discovery; speculative multiple searches; changed issuance to publication intent; altered the pending-index cursor and selected the wrong continuation tool. |
+| Llama3.1 8B | 0/78 | — | First request returned provider completion error 502; remaining family calls were skipped. No model acceptance conclusion. |
+
+These are 28 routing cases and 11 caller-visible risk controls, repeated twice per completed family: 156 completed responses, not 234. Eligible providers varied; raw rows retain their names and resolved model IDs. Final completions consumed 264,206 prompt and 66,478 completion tokens, with `stop` or `tool_calls` endings throughout. The adapter sends input schemas only; full MCP schema token counts above also include output schemas and therefore differ from provider prompt usage. The 1,536-token output ceiling and single model turn limit what the sample demonstrates; this is not a multi-turn legal workflow or full client-path matrix.
+
+The two Qwen article continuations shortened the 1,695-character cursor to 1,663; two DeepSeek pending-index continuations shortened 547 to 546. Qwen also invented `next_page_cursor` twice. Literal cursors plus conflicting coordinates and wrong continuation tools are separately identified in the review. DeepSeek used human citations as read locators in 13 calls before any discovery reference was returned. The server's validation remains intact; this experiment does not execute or accept these fabricated references.
+
+All 12 targeted empty/unresolved/suffixed outputs reject proof of legal absence. Most incomplete/changed/attachment responses also acknowledge their limits, but Qwen's second attachment answer claims the main text is completed while the article inventory is incomplete; count this conservatively as unsupported completion language. DeepSeek's second unknown-currentness case starts a read without a final answer, so it remains inconclusive. Some prose proposes unsupported recovery, broadened exact searches or unverified sources. DeepSeek's clarification of a reversed range is semantically sound even though the automatic route scorer expects a call; retain the flag but do not call it silent constraint repair. Automatic flag totals are not counts of fabricated cursors or false legal claims.
+
+An initial strict request using `parallel_tool_calls:false` returned HTTP 404 because eligible providers did not support that parameter. The corrected serial attempt completed 15 Qwen outputs before a 60-second timeout. Both attempts remain nested in the final evidence. Removing the unsupported flag allows model responses with multiple tool calls; API worker concurrency is a separate setting. No automatic paid retry was made, and earlier outputs remain part of the ledger and review.
+
+Completion receipts across all attempts total **$0.0511943572**; retained failed-request reservations give **$0.0566696372** as the accounted upper bound. Post-run key usage is **$0.051474554**, including $0.0002801968 not itemized in returned completion receipts, still within that bound. The whole final plan reserved $0.89071932 plus $0.00831984 for prior attempts before dispatch. Prior Claude list-price usage adds $0.0711992; Codex used subscription quota without a monetary report. No further inference is needed to demonstrate the observed failures. Consult this ledger before any corrective rerun under the user's overall €10 ceiling.
 
 ## Reproduction and credential restoration
 
@@ -89,9 +109,11 @@ The current local-only wizard is `bash .private/setup-openrouter-release.sh`; it
 ```bash
 node packages/core/test/fixtures/release-model-input.mjs > /tmp/normattiva-release-model-input.json
 node --env-file=.env.openrouter.local packages/core/test/fixtures/release-openrouter.mjs /tmp/normattiva-release-model-input.json /tmp/normattiva-release-model-plan.json --plan
-# Paid sample, only after reviewing the plan and restoring the key:
+# Paid corrective sample, after reviewing the plan and retained spending ledger:
 node --env-file=.env.openrouter.local packages/core/test/fixtures/release-openrouter.mjs /tmp/normattiva-release-model-input.json /tmp/normattiva-release-model-results.json
 ```
+
+When continuing a partially billed evaluation, pass `--prior-report /path/to/previous-report.json` to carry its receipts, unknown-cost reservations and outputs into the next plan; do not reset the spending ledger. The key is now restored in the ignored local file.
 
 For an explicitly requested repeat of a single terminal sample, `node packages/core/test/fixtures/release-cli.mjs claude /tmp/claude-release.json` or the equivalent with `codex` uses the existing login, synthetic MCP fixture and bounded settings. Do not run these inference commands as offline tests. The original curated records remain the authority for the runs above.
 
@@ -124,6 +146,10 @@ Two independent reviewers inspected the staged stage-5 changes against completed
 
 No documented-standard breaches. Two harness findings were corrected: the Civil Code canary now requires a useful snapshot-bound index entry before recording success; terminal cursor checking now tracks both cursor locations and associates issued references with their continuation tool. No remaining material finding.
 
+The restored OpenRouter continuation was independently reviewed against local checkpoint `19bc790`. No remaining material standards or evidence-integrity finding: frozen hashes, receipt/reservation totals, every-call review coverage and credential exclusions reconcile. All nine staged files belong to this evaluation continuation; unrelated changes were excluded.
+
 ### Spec
 
 Two findings were corrected: the Civil canary could have falsely passed an unresolved response, and the Privacy probe's label overstated historical evidence. The latter is now explicitly a dated-route availability check; independent historical controls remain an open gate. No remaining material false-pass claim. The incomplete gates in the table are retained rather than reported as successful acceptance.
+
+The OpenRouter continuation review checked all 157 final rows and the retained 16 serial rows against the manual record. No remaining material spec finding. It confirmed the failed/incomplete gate status, unsupported completion statement, scorer exception, family/provider coverage and single-turn limitations; correction/rerun or explicit acceptance revision remains required. Neither reviewer made paid inference or live-source calls.

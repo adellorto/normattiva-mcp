@@ -1,18 +1,22 @@
 // Bounded release sample using the prototype's OpenRouter connection contract.
-// node --env-file=<saved-env> .../release-openrouter.mjs INPUT REPORT [--plan]
+// node --env-file=<saved-env> .../release-openrouter.mjs INPUT REPORT [--plan] [--prior-report REPORT]
 // No upstream legal calls: actual MCP schemas/results are replayed to models.
 import assert from 'node:assert/strict';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile, rename } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { planDiscovery } from '../../dist/discovery-plan.js';
 
 const input = JSON.parse(await readFile(process.argv[2], 'utf8'));
 const output = process.argv[3];
 const planOnly = process.argv.includes('--plan');
+const priorIndex = process.argv.indexOf('--prior-report');
+const prior = priorIndex < 0 ? undefined : JSON.parse(await readFile(process.argv[priorIndex + 1], 'utf8'));
 const models = (process.env.OPENROUTER_MODELS ?? 'qwen/qwen3-14b,deepseek/deepseek-v4.1-flash,meta-llama/llama-3.1-8b-instruct').split(',');
 const ceiling = Math.min(1, Number(process.env.OPENROUTER_MAX_COST_USD ?? 1));
 assert.ok(Number.isFinite(ceiling) && ceiling > 0);
 const repetitions = 2, maxTokens = 1536;
+const concurrency = Number(process.env.OPENROUTER_CONCURRENCY ?? 4);
+assert.ok(Number.isInteger(concurrency) && concurrency >= 1 && concurrency <= 4);
 const tools = input.schema.tools.map(tool => ({ type: 'function', function: {
   name: tool.name, description: tool.description, parameters: tool.inputSchema,
 } }));
@@ -48,8 +52,12 @@ for (const [id, [tool, prompt, continuation]] of Object.entries(risks)) {
       { role: 'tool', tool_call_id: 'fixture_call', content: sample.content[0].text }] });
 }
 async function json(url, options) {
-  const response = await fetch(url, { ...options, signal: AbortSignal.timeout(60_000) });
-  if (!response.ok) throw new Error(`OpenRouter HTTP ${response.status}`);
+  const response = await fetch(url, { ...options, signal: AbortSignal.timeout(120_000) });
+  if (!response.ok) {
+    const failure = await response.json().catch(() => ({}));
+    const message = String(failure.error?.message ?? '').replaceAll(process.env.OPENROUTER_API_KEY ?? '<no-key>', '<REDACTED>').slice(0, 500);
+    throw new Error(`OpenRouter HTTP ${response.status}${message ? ': ' + message : ''}`);
+  }
   const value = await response.json();
   if (value.error) throw new Error(`OpenRouter completion error ${value.error.code ?? 'unknown'}`);
   return value;
@@ -63,7 +71,7 @@ for (const id of models) {
   assert.ok(Number.isFinite(prompt) && Number.isFinite(completion) && prompt >= 0 && completion >= 0);
   for (let repetition = 1; repetition <= repetitions; repetition++) for (const sample of cases) {
     const body = { model: id, messages: sample.messages, tools, tool_choice: 'auto',
-      temperature: 0, max_tokens: maxTokens, parallel_tool_calls: false,
+      temperature: 0, max_tokens: maxTokens,
       provider: { require_parameters: true, max_price: { prompt: prompt * 1e6, completion: completion * 1e6 } } };
     // One byte per input token plus extra provider/template/output margin.
     const reserve = (Buffer.byteLength(JSON.stringify(body)) * 2 + 4096) * prompt + maxTokens * 2 * completion;
@@ -77,13 +85,17 @@ const report = { recorded_at: new Date().toISOString(), scope: 'OpenRouter funct
   cases: cases.map(sample => ({ id: sample.id, expected_tool: sample.expected_tool })),
   input_sha256: createHash('sha256').update(JSON.stringify(input)).digest('hex'),
   schema_sha256: createHash('sha256').update(JSON.stringify(input.schema)).digest('hex'),
-  settings: { repetitions, max_tokens: maxTokens, temperature: 0, parallel_tool_calls: false,
+  settings: { repetitions, max_tokens: maxTokens, temperature: 0, concurrency, request_timeout_ms: 120_000,
+    parallel_tool_calls: 'omitted; unsupported by eligible providers',
     opt_in_prompts: false, initialization_instructions: false },
-  max_cost_usd: ceiling, total_plan_reserve_usd: reserve, recorded_cost_usd: 0,
-  accounted_upper_bound_usd: 0, planned_calls: jobs.length, runs: [] };
+  max_cost_usd: ceiling, total_plan_reserve_usd: reserve, recorded_cost_usd: prior?.recorded_cost_usd ?? 0,
+  accounted_upper_bound_usd: prior?.accounted_upper_bound_usd ?? 0,
+  prior_attempts: prior,
+  planned_calls: jobs.length, runs: [] };
 await writeFile(output, JSON.stringify(report, null, 2));
 console.log(JSON.stringify({ models, planned_calls: jobs.length, reserve_usd: reserve, ceiling_usd: ceiling }));
-assert.ok(reserve <= ceiling, 'Full conservative plan exceeds spend limit; reduce models/cases before dispatch.');
+assert.ok(Number.isFinite(report.accounted_upper_bound_usd) && report.accounted_upper_bound_usd >= 0);
+assert.ok(reserve + report.accounted_upper_bound_usd <= ceiling, 'Full conservative plan including prior attempts exceeds spend limit; reduce models/cases before dispatch.');
 if (planOnly) process.exit(0);
 const key = process.env.OPENROUTER_API_KEY;
 assert.ok(key, 'Load the existing OpenRouter environment file; do not paste a key into source.');
@@ -125,14 +137,30 @@ function validate(sample, message) {
   }
   return errors;
 }
-for (const job of jobs) {
-  if (report.accounted_upper_bound_usd + job.reserve > ceiling) break;
+let checkpointQueue = Promise.resolve();
+function checkpoint() {
+  const serialized = JSON.stringify(report, null, 2) + '\n';
+  checkpointQueue = checkpointQueue.then(async () => {
+    await writeFile(output + '.tmp', serialized);
+    await rename(output + '.tmp', output);
+  });
+  return checkpointQueue;
+}
+let next = 0;
+const blockedModels = new Set();
+async function worker() {
+ while (next < jobs.length) {
+  const job = jobs[next++];
+  if (blockedModels.has(job.id)) continue;
+  if (report.accounted_upper_bound_usd + job.reserve > ceiling) return;
   const started = performance.now();
   const row = { requested_model: job.id, repetition: job.repetition, case: job.sample.id,
     input: job.sample.messages, expected_tool: job.sample.expected_tool, expected_cursor: job.sample.cursor };
   report.runs.push(row);
   // Reserve before dispatch; a timeout/unknown billed result never counts as free.
   report.accounted_upper_bound_usd += job.reserve;
+  row.reserved_cost_usd = job.reserve;
+  await checkpoint();
   try {
     const response = await json('https://openrouter.ai/api/v1/chat/completions', { method: 'POST',
       headers: { ...authorization, 'HTTP-Referer': 'https://github.com/adellorto/normattiva-mcp', 'X-Title': 'Normattiva release validation' },
@@ -144,14 +172,16 @@ for (const job of jobs) {
     row.automated_failures = validate(job.sample, choice.message);
     if (!['stop', 'tool_calls'].includes(choice.finish_reason)) row.automated_failures.push('incomplete_model_output');
     row.semantic_review = 'pending; inspect false absence and false completion';
-    if (typeof cost === 'number' && cost >= 0) {
+    if (Number.isFinite(cost) && cost >= 0) {
       row.cost_usd = cost; report.recorded_cost_usd += cost;
       report.accounted_upper_bound_usd += cost - job.reserve;
     }
   } catch (error) { row.blocked_error = error.message; }
   row.elapsed_ms = Math.round(performance.now() - started);
-  await writeFile(output, JSON.stringify(report, null, 2) + '\n');
+  await checkpoint();
   console.log(job.id, job.sample.id, row.blocked_error ?? row.automated_failures, `accounted $${report.accounted_upper_bound_usd.toFixed(4)}`);
-  if (row.blocked_error) break;
+  if (row.blocked_error) blockedModels.add(job.id);
+ }
 }
+await Promise.all(Array.from({ length: concurrency }, () => worker()));
 if (report.runs.length !== report.planned_calls || report.runs.some(r => r.blocked_error || r.automated_failures.length)) process.exitCode = 1;

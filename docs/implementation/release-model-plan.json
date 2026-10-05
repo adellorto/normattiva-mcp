@@ -1,7 +1,7 @@
 {
-  "recorded_at": "2026-10-05T14:49:30.510Z",
+  "recorded_at": "2026-10-05T16:58:24.557Z",
   "scope": "OpenRouter function-tool adapter, production MCP schemas and synthetic caller-visible text. Not named UI/client or deployed acceptance.",
-  "acceptance": "pending; automated routing checks cannot establish semantic honesty",
+  "acceptance": "Executed partially: two families completed, third provider failed. See release-model-review.json and raw results.",
   "models": [
     {
       "id": "qwen/qwen3-14b",
@@ -184,14 +184,14 @@
     "repetitions": 2,
     "max_tokens": 1536,
     "temperature": 0,
-    "parallel_tool_calls": false,
+    "concurrency": 4,
+    "request_timeout_ms": 120000,
+    "parallel_tool_calls": "omitted; unsupported by eligible providers",
     "opt_in_prompts": false,
     "initialization_instructions": false
   },
   "max_cost_usd": 1,
-  "total_plan_reserve_usd": 0.8927722800000006,
-  "recorded_cost_usd": 0,
-  "accounted_upper_bound_usd": 0,
+  "total_plan_reserve_usd": 0.89071932,
   "planned_calls": 234,
-  "runs": []
+  "prior_accounted_upper_bound_usd": 0.008319839999999998
 }
