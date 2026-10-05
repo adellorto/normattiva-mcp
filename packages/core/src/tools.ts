@@ -8,6 +8,7 @@ import {
 import { runTool } from "./execution.js";
 import { jsonContent } from "./serialization.js";
 import { OperationError } from "./errors.js";
+import { articlePageSchema } from "./contracts.js";
 import { htmlToText } from "./html.js";
 import type { RicercaAvanzataBody } from "./types.js";
 import type { ToolContext } from "./context.js";
@@ -115,6 +116,7 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
   server.registerTool(
     "read_article",
     {
+      outputSchema: articlePageSchema,
       title: "Read one article of an Italian act",
       description:
         "Read one article at a concrete date of vigenza. Returns outcome=found with content or outcome=unresolved with evidence; a failed coordinate lookup does not establish legal absence. Operational failures return typed errors. Plain text is the default; format=html preserves markup. Coordinate inputs remain during implementation of the coordinated locator interface.",
@@ -186,11 +188,12 @@ export function registerTools(server: McpServer, _ctx: ToolContext): void {
       const articolo_testo = args.format === "html" ? html : htmlToText(html);
 
       return jsonContent({
-        outcome: "found", reason: "official_detail_returned", requested, evidence,
+        outcome: "found", reason: "official_detail_returned", requested, evidence, progress: "complete",
         content: {
-          title: atto.titolo, format: args.format, text: articolo_testo,
-          effective_from: atto.articoloDataInizioVigenza,
-          effective_to: atto.articoloDataFineVigenza,
+          format: args.format, text: articolo_testo,
+          ...(atto.titolo !== undefined ? { title: atto.titolo } : {}),
+          ...(atto.articoloDataInizioVigenza !== undefined ? { effective_from: atto.articoloDataInizioVigenza } : {}),
+          ...(atto.articoloDataFineVigenza !== undefined ? { effective_to: atto.articoloDataFineVigenza } : {}),
         },
       });
     }),

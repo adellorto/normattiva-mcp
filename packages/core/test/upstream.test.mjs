@@ -221,3 +221,12 @@ test('caller cancellation stops queued traffic and aborts the active request', a
   assert.equal(started, 1);
   assert.equal(aborted, true);
 });
+
+test('expiry of the remaining time during an active attempt is an upstream timeout', async () => {
+  const runtime = new UpstreamRuntime({ deadlineMs: 25, attemptTimeoutMs: 100 });
+  await assert.rejects(runtime.call('direct', undefined, () => executeUpstream({
+    operation: 'last-attempt', replaySafe: false, execute: signal => new Promise((_, reject) => {
+      signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+    }),
+  })), error => error.detail.category === 'transport_failure' && error.detail.code === 'upstream_timeout');
+});

@@ -66,6 +66,32 @@ export const lookupOutcomeSchema = z.discriminatedUnion("outcome", [
   z.object({ ...lookupFields, outcome: z.literal("unresolved") }).strict(),
 ]);
 
+// Direct article pages keep the legal conclusion separate from execution
+// progress. Per-target outcomes in composed work use lookupOutcomeSchema.
+const foundArticleFields = { ...lookupFields, outcome: z.literal("found"), content: articleContentSchema };
+const usefulArticleContent = articleContentSchema.extend({ text: z.string().min(1) });
+const articleProgressSchema = z.discriminatedUnion("progress", [
+  z.object({ ...foundArticleFields, progress: z.literal("complete") }).strict(),
+  z.object({ ...foundArticleFields, content: usefulArticleContent, progress: z.literal("more"),
+    cursor, explanation: z.string().max(300) }).strict(),
+  z.object({ ...foundArticleFields, content: usefulArticleContent, progress: z.literal("interrupted"),
+    cursor, failure: z.object({ error: errorSchema, position: z.string().min(1) }),
+    explanation: z.string().max(300) }).strict(),
+]);
+export const articlePageSchema = z.object({
+  ...lookupFields, outcome: z.enum(["found", "absent", "unresolved"]),
+  content: articleContentSchema.optional(),
+  absence_basis: z.enum(["verified_index", "unambiguous_official_result"]).optional(),
+  progress: z.enum(["more", "complete", "interrupted"]).optional(),
+  cursor: cursor.optional(),
+  failure: z.object({ error: errorSchema, position: z.string().min(1) }).optional(),
+  explanation: z.string().max(300).optional(),
+}).strict().superRefine((value, ctx) => {
+  const schema = value.outcome === "found" ? articleProgressSchema : lookupOutcomeSchema;
+  const result = schema.safeParse(value);
+  if (!result.success) ctx.addIssue({ code: "custom", message: "Article outcome and continuation fields conflict." });
+});
+
 const hierarchy = z.array(z.object({ kind: z.string(), label: z.string(), occurrence: z.string() }));
 const entryFields = { label: z.string(), hierarchy, official_urn: z.string().optional() };
 export const indexEntrySchema = z.discriminatedUnion("kind", [
@@ -151,6 +177,7 @@ export const actInputSchema = z.union([
 ]);
 
 export type LookupOutcome = z.infer<typeof lookupOutcomeSchema>;
+export type ArticlePage = z.infer<typeof articlePageSchema>;
 export type IndexPage = z.infer<typeof indexPageSchema>;
 export type ReadingPage = z.infer<typeof readingPageSchema>;
 export type DiscoveryPage = z.infer<typeof discoveryPageSchema>;

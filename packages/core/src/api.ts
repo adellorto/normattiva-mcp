@@ -1,6 +1,6 @@
 import { OperationError, type ErrorDetail } from "./errors.js";
 import { executeUpstream } from "./upstream.js";
-import { RESPONSE_LIMITS } from "./contracts.js";
+import { RESPONSE_LIMITS, calendarDateSchema, articleContentSchema } from "./contracts.js";
 import type {
   RicercaAvanzataBody,
   RicercaResponse,
@@ -86,7 +86,7 @@ function transportError(error: unknown, operation: string): OperationError {
   }, { cause: error });
 }
 
-async function request<T>(path: string, init?: RequestInit, validate?: (body: unknown) => boolean): Promise<T> {
+async function request<T>(path: string, init?: RequestInit, validate?: (body: unknown) => boolean, normalize?: (body: T) => T): Promise<T> {
   return executeUpstream({
     operation: path,
     // These endpoints are searches, detail reads and metadata GETs. Export
@@ -139,17 +139,17 @@ async function request<T>(path: string, init?: RequestInit, validate?: (body: un
         message: "Normattiva returned an unexpected success shape.", retryability: false,
         provider: "normattiva", operation: path,
       });
-      return body as T;
+      return normalize ? normalize(body as T) : body as T;
     },
   });
 }
 
-function postJson<T>(path: string, body: unknown, validate: (body: unknown) => boolean): Promise<T> {
+function postJson<T>(path: string, body: unknown, validate: (body: unknown) => boolean, normalize?: (body: T) => T): Promise<T> {
   return request<T>(path, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
-  }, validate);
+  }, validate, normalize);
 }
 
 const object = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
@@ -159,12 +159,43 @@ const searchResponse = (value: unknown): boolean => object(value)
 const articleResponse = (value: unknown): boolean => object(value) && typeof value.success === "boolean"
   && (!value.success || (object(value.data) && object(value.data.atto) && typeof value.data.atto.articoloHtml === "string"));
 
+function malformedArticleMetadata(): OperationError {
+  return new OperationError({ category: "upstream_failure", code: "malformed_upstream_response",
+    message: "Normattiva returned malformed article metadata.", retryability: false,
+    provider: "normattiva", operation: "article_detail" });
+}
+
+function effectiveDate(value: unknown, openEnd = false): string | undefined {
+  if (value === undefined || value === null || (openEnd && value === "99999999")) return undefined;
+  const normalized = typeof value === "string" && /^\d{8}$/.test(value)
+    ? `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)}` : value;
+  const parsed = calendarDateSchema.safeParse(normalized);
+  if (!parsed.success) throw malformedArticleMetadata();
+  return parsed.data;
+}
+
+function normalizeArticleResponse(body: DettaglioAttoResponse): DettaglioAttoResponse {
+  if (!body.success || !body.data?.atto) return body;
+  const atto = body.data.atto;
+  const metadata = articleContentSchema.safeParse({
+    format: "html", text: atto.articoloHtml, title: atto.titolo ?? undefined,
+    effective_from: effectiveDate(atto.articoloDataInizioVigenza),
+    effective_to: effectiveDate(atto.articoloDataFineVigenza, true),
+  });
+  if (!metadata.success) throw malformedArticleMetadata();
+  return { ...body, data: { ...body.data, atto: { ...atto,
+    titolo: metadata.data.title,
+    articoloDataInizioVigenza: metadata.data.effective_from,
+    articoloDataFineVigenza: metadata.data.effective_to,
+  } } };
+}
+
 export function ricercaAvanzata(body: RicercaAvanzataBody): Promise<RicercaResponse> {
   return postJson("/bff-opendata/v1/api/v1/ricerca/avanzata", body, searchResponse);
 }
 
 export function dettaglioAtto(body: DettaglioAttoBody): Promise<DettaglioAttoResponse> {
-  return postJson("/bff-opendata/v1/api/v1/atto/dettaglio-atto", body, articleResponse);
+  return postJson("/bff-opendata/v1/api/v1/atto/dettaglio-atto", body, articleResponse, normalizeArticleResponse);
 }
 
 export function ricercaAggiornati(body: AggiornatiBody): Promise<RicercaResponse> {

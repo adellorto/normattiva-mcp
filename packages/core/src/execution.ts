@@ -2,16 +2,24 @@ import { OperationError, internalError } from "./errors.js";
 import { upstreamRuntime, type CallKind } from "./upstream.js";
 import type { ToolContext } from "./context.js";
 import { McpError, ErrorCode } from "@modelcontextprotocol/sdk/types.js";
+import { calendarDateSchema } from "./contracts.js";
 
 export function validateCalendarDates(args: Record<string, unknown>): void {
   for (const [key, value] of Object.entries(args)) {
     if (!key.startsWith("data_") || typeof value !== "string") continue;
-    const date = new Date(`${value}T00:00:00.000Z`);
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || value.startsWith("0000-")
-        || !Number.isFinite(date.getTime()) || date.toISOString().slice(0, 10) !== value) {
+    if (!calendarDateSchema.safeParse(value).success) {
       throw new OperationError({ category: "invalid_input", code: "invalid_calendar_date",
         message: `The ${key} field must be a real ISO calendar date.`, retryability: false });
     }
+  }
+  if (typeof args.mese === "number" && typeof args.giorno === "number") {
+    // Without a year, February 29 is possible; February 30 never is.
+    const year = typeof args.anno === "number" ? args.anno : 2000;
+    const date = `${String(year).padStart(4, "0")}-${String(args.mese).padStart(2, "0")}-${String(args.giorno).padStart(2, "0")}`;
+    if (!calendarDateSchema.safeParse(date).success) throw new OperationError({
+      category: "invalid_input", code: "invalid_calendar_date", retryability: false,
+      message: "The year/month/day fields must describe a possible calendar date.",
+    });
   }
   for (const [start, end] of [
     ["data_inizio", "data_fine"], ["data_emanazione_da", "data_emanazione_a"],

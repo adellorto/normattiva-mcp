@@ -157,15 +157,20 @@ export class UpstreamRuntime {
         });
         const timer = setTimeout(() => attempt.abort(timeout), Math.min(this.policy.attemptTimeoutMs, scope.deadline - Date.now()));
         const signal = AbortSignal.any([scope.signal, attempt.signal]);
+        const abortFailure = () => {
+          if (!scope.signal.aborted) return timeout;
+          const reason = cancelled(scope.signal);
+          // The remaining shared time is the active attempt's shorter timeout.
+          // Queueing/backoff expiry retains operation_deadline_exceeded.
+          return reason.detail.code === "operation_deadline_exceeded" ? timeout : reason;
+        };
         const startedAt = Date.now();
         try {
           const result = await operation.execute(signal);
-          if (scope.signal.aborted) throw cancelled(scope.signal);
-          if (attempt.signal.aborted) throw timeout;
+          if (signal.aborted) throw abortFailure();
           return result;
         } catch (error) {
-          if (scope.signal.aborted) throw cancelled(scope.signal);
-          if (attempt.signal.aborted) throw timeout;
+          if (signal.aborted) throw abortFailure();
           throw error;
         } finally {
           clearTimeout(timer);
