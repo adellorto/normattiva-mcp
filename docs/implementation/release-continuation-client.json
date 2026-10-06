@@ -1,0 +1,204 @@
+{
+  "recorded_at": "2026-10-06T12:52:54.826Z",
+  "client": "codex",
+  "version": "codex-cli 0.160.1",
+  "requested_model": "gpt-5.6-terra",
+  "scope": "One synthetic stdio terminal-client sample; semantic review required. No live source or general model acceptance.",
+  "settings": [
+    "exec",
+    "--ignore-user-config",
+    "--ignore-rules",
+    "--ephemeral",
+    "--json",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "read-only",
+    "-C",
+    "/tmp/normattiva-release-client-KIKsme",
+    "--model",
+    "gpt-5.6-terra",
+    "-c",
+    "model_reasoning_effort=\"low\"",
+    "-c",
+    "features.apps=false",
+    "-c",
+    "mcp_servers.normattiva.command=\"/home/adellorto/.nvm/versions/node/v24.15.0/bin/node\"",
+    "-c",
+    "mcp_servers.normattiva.args=[\"--import\",\"/home/adellorto/projects/normattiva-mcp/packages/core/test/fixtures/release-upstream.mjs\",\"/home/adellorto/projects/normattiva-mcp/packages/stdio-server/dist/index.js\"]",
+    "-c",
+    "mcp_servers.normattiva.env.NORMATTIVA_REFERENCE_KEY=\"0707070707070707070707070707070707070707070707070707070707070707\"",
+    "-c",
+    "mcp_servers.normattiva.default_tools_approval_mode=\"approve\"",
+    "Trova il decreto legislativo 267/2000 e leggine articolo 13, max_chars 4 prima, max_chars 100 seconda. Poi chiedi 999 stesso atto snapshot 2026-10-02, senza elencare tutti articoli. Riporta testo completo 13 e dimmi se 999 prova nonesistenza. Non altri servizi o file."
+  ],
+  "prompt": "Trova il decreto legislativo 267/2000 e leggine articolo 13, max_chars 4 prima, max_chars 100 seconda. Poi chiedi 999 stesso atto snapshot 2026-10-02, senza elencare tutti articoli. Riporta testo completo 13 e dimmi se 999 prova nonesistenza. Non altri servizi o file.",
+  "calls": [
+    {
+      "tool": "find_acts",
+      "arguments": {
+        "request": "decreto legislativo 267/2000"
+      },
+      "status": "completed",
+      "result": {
+        "match": "identified",
+        "interpretation": "decreto legislativo 267/2000",
+        "ordering": "exact_citation",
+        "corpus": "live",
+        "explanation": "Act identity is verified; current legal force is unknown.",
+        "traversal": {
+          "progress": "complete",
+          "items": [
+            {
+              "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjd9fQ.kvCT5Db79U77v4pyZenWO73bh-7hvvnOAy7ESBQAbeY",
+              "publication": {
+                "data_gu": "2000-09-28",
+                "codice_redazionale": "000G0304"
+              },
+              "title": "Synthetic TUEL control",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-06T12:51:57.545Z",
+                  "publication": {
+                    "data_gu": "2000-09-28",
+                    "codice_redazionale": "000G0304"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata"
+                }
+              ],
+              "current": "unknown"
+            }
+          ]
+        }
+      },
+      "error": null
+    },
+    {
+      "tool": "read_article",
+      "arguments": {
+        "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjd9fQ.kvCT5Db79U77v4pyZenWO73bh-7hvvnOAy7ESBQAbeY",
+        "article_reference": "13",
+        "max_chars": 4
+      },
+      "status": "completed",
+      "result": {
+        "reason": "verified_official_article",
+        "requested": {
+          "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjd9fQ.kvCT5Db79U77v4pyZenWO73bh-7hvvnOAy7ESBQAbeY",
+          "snapshot_date": "2026-10-06",
+          "article_reference": "13"
+        },
+        "evidence": [
+          {
+            "source": "official_detail",
+            "checked_at": "2026-10-06T12:52:14.768Z",
+            "snapshot_date": "2026-10-06",
+            "publication": {
+              "data_gu": "2000-09-28",
+              "codice_redazionale": "000G0304"
+            },
+            "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto"
+          }
+        ],
+        "outcome": "found",
+        "content": {
+          "format": "text",
+          "text": "Art.",
+          "effective_from": "2020-01-01"
+        },
+        "progress": "more",
+        "cursor": "n2_rZHBbtswDIZfZeDZriU5jhXdijUIChQosAW7FpREe8Icy5DpYG2Qdx_kbl2w804if5Diz48XOINRBfwIowcDbklzTFDAtNghOOQQRzAX8Mj40i9gQAkhSrErlYYCXPTB0Usij28hjjgQGBBCHEQtNnAtch-tTWpbSlGKLRQwxyW5rH5nnmZTVTiFuzGmEzKHM94Frri6yXEKle26Mk40Zh_VWeaW9WGOlSdm7IcQy5xCAT70NDMYkLVwO9SdbkSntZeIpJrWS1ReyFbsdthYv62lli3abd1K6rSyqtFCI7maoIDgaeTArxkCv07Z9sP-85f98fnT0_7w-PXp_vj47TkXzvNC_gOQLmUGNC4nSwmM2rYF9PhGnHko1V4LiBOl34AhEfoXTBzcsE4dPf0EIwqYqT_RyGscu24mBrMpYAin8B4xpj6Llz8n_PvLTAM5jgkM-JDIMRQwoKVhRbOeb2Qa-eE_8kLvE81z9hP8fbYShwhG1vnuzPFG-keR647dgP0xTDd1INYzHNIyTXGtmVLs85Bwfs_PlOYQRwIjrhmIHehjpU3X1M6j1E5ZROFE3Wysbbod1uQsNeSlQrvxmqS0qNvaqU5KuZVKKLvbNHC9_gI.T3Pd6YuGazs_MQfO9yMLeyDWtTB0bwtrNM_dDpa-q34",
+        "explanation": "Article part only. Continue read_article with only cursor; omit locators, article_reference and snapshot_date."
+      },
+      "error": null
+    },
+    {
+      "tool": "read_article",
+      "arguments": {
+        "cursor": "n2_rZHBbtswDIZfZeDZriU5jhXdijUIChQosAW7FpREe8Icy5DpYG2Qdx_kbl2w804if5Diz48XOINRBfwIowcDbklzTFDAtNghOOQQRzAX8Mj40i9gQAkhSrErlYYCXPTB0Usij28hjjgQGBBCHEQtNnAtch-tTWpbSlGKLRQwxyW5rH5nnmZTVTiFuzGmEzKHM94Frri6yXEKle26Mk40Zh_VWeaW9WGOlSdm7IcQy5xCAT70NDMYkLVwO9SdbkSntZeIpJrWS1ReyFbsdthYv62lli3abd1K6rSyqtFCI7maoIDgaeTArxkCv07Z9sP-85f98fnT0_7w-PXp_vj47TkXzvNC_gOQLmUGNC4nSwmM2rYF9PhGnHko1V4LiBOl34AhEfoXTBzcsE4dPf0EIwqYqT_RyGscu24mBrMpYAin8B4xpj6Llz8n_PvLTAM5jgkM-JDIMRQwoKVhRbOeb2Qa-eE_8kLvE81z9hP8fbYShwhG1vnuzPFG-keR647dgP0xTDd1INYzHNIyTXGtmVLs85Bwfs_PlOYQRwIjrhmIHehjpU3X1M6j1E5ZROFE3Wysbbod1uQsNeSlQrvxmqS0qNvaqU5KuZVKKLvbNHC9_gI.T3Pd6YuGazs_MQfO9yMLeyDWtTB0bwtrNM_dDpa-q34",
+        "max_chars": 100
+      },
+      "status": "completed",
+      "result": {
+        "reason": "verified_official_article",
+        "requested": {
+          "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjd9fQ.kvCT5Db79U77v4pyZenWO73bh-7hvvnOAy7ESBQAbeY",
+          "snapshot_date": "2026-10-06",
+          "article_reference": "13",
+          "article_locator": "n2_rZFBa9wwEIX_SpmzHUvy2pZ1C82yBAKBduk1jKSxI-pYRh4vJGH_e5ELYem5JzGPeei9bz7hAkYV8DvMHgxg4uAmggKWzU7BIYc4g_kEj4wv4wYGlBCiFH2pNBTgog-OXhJ5_AhxxonAgBDiJGpxgGuRfbSbVFtKUYoWCljjllxWX5mX1VQVLuFujukNmcMF7wJXXN3MuITKDkMZF5pzjuois2V_mGPliRnHKcQyj1CADyOtDAZkLVyPetCNGLT2EpFU03mJygvZib7Hxvq2llp2aNu6kzRoZVWjhUZydeYQPM0c-D1D4Pclx344fv9xPD9_ezqeHn8-3Z8ffz3nxXXdyH8B0qXMgObtzVICo9qugBE_iDMPpbprAStN5DgmMOBDIsdQwISWpj35TndmmvnhP9ZB7xOta24T_H2-dpwiGFnnszDHG-kfRYIRBQwTjuew3OyB2Cmd0rYscd9ZUhzzJ-Hyd75QWkOcCYy4FsBoJ_qqdBia2nmU2imLKJyom4O1zdBjTc5SQ14qtAevSUqLuqudGqSUrVRC2f7QwPUP.56NIm7IcI8WQM8sawMFwH-5COKvD0_z3b-PAmNEJUUc"
+        },
+        "evidence": [
+          {
+            "source": "official_detail",
+            "checked_at": "2026-10-06T12:52:31.462Z",
+            "snapshot_date": "2026-10-06",
+            "publication": {
+              "data_gu": "2000-09-28",
+              "codice_redazionale": "000G0304"
+            },
+            "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto"
+          }
+        ],
+        "outcome": "found",
+        "content": {
+          "format": "text",
+          "text": " 13. Fixture text 13.",
+          "effective_from": "2020-01-01"
+        },
+        "progress": "complete"
+      },
+      "error": null
+    },
+    {
+      "tool": "read_article",
+      "arguments": {
+        "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjd9fQ.kvCT5Db79U77v4pyZenWO73bh-7hvvnOAy7ESBQAbeY",
+        "article_reference": "999",
+        "snapshot_date": "2026-10-02"
+      },
+      "status": "completed",
+      "result": {
+        "outcome": "unresolved",
+        "reason": "upstream_http_error",
+        "requested": {
+          "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjd9fQ.kvCT5Db79U77v4pyZenWO73bh-7hvvnOAy7ESBQAbeY",
+          "snapshot_date": "2026-10-02",
+          "article_reference": "999"
+        },
+        "evidence": [
+          {
+            "source": "official_detail",
+            "checked_at": "2026-10-06T12:52:41.552Z",
+            "publication": {
+              "data_gu": "2000-09-28",
+              "codice_redazionale": "000G0304"
+            },
+            "snapshot_date": "2026-10-02",
+            "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+            "explanation": "Normattiva returned HTTP 404. This does not establish legal absence."
+          }
+        ]
+      },
+      "error": null
+    }
+  ],
+  "continuation_checks": [
+    {
+      "literal": true,
+      "status": "completed"
+    }
+  ],
+  "messages": [
+    "Cerco l’atto richiesto e interrogo esclusivamente il suo contenuto, con i limiti indicati per le due letture.",
+    "Art. 13 — **Fixture text 13.**\n\nLa richiesta dell’art. 999 sullo stesso atto, allo snapshot **2026-10-02**, è risultata irrisolta per HTTP 404 dell’upstream. No: non prova la nonesistenza dell’articolo."
+  ],
+  "usage": {
+    "input_tokens": 127299,
+    "cached_input_tokens": 107776,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 1283,
+    "reasoning_output_tokens": 195
+  },
+  "client_errors": [],
+  "billing": "Existing subscription login; no separate API charge demonstrated."
+}

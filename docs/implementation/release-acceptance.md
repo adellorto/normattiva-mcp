@@ -2,20 +2,20 @@
 
 Initial acceptance recorded on 5 October 2026; live-source correction recorded on 6 October 2026, Node 24.15.0/Linux, against local stages 1–4 through `5be40d2` and the stage-5 working tree. [Validate coordinated release and prepare publication handoff](https://github.com/adellorto/normattiva-mcp/issues/22) remains open. The [accepted delivery specification](https://github.com/adellorto/normattiva-mcp/issues/6#issuecomment-5992182865) still governs acceptance. No push, tag, npm publication or deployment was performed.
 
-New prerequisites on the implementation map are [Restore verified live reading against current official sources](https://github.com/adellorto/normattiva-mcp/issues/23) and [Remedy observed model continuation-reference failures](https://github.com/adellorto/normattiva-mcp/issues/24). The new [Preserve complete requests and verified references in model-facing discovery](https://github.com/adellorto/normattiva-mcp/issues/25) prerequisite records the measured routing failures. The live-source prerequisite now has a passing scoped corrective run recorded below. The continuation-reference and discovery prerequisites still block final acceptance through native tracker dependencies.
+Prerequisites on the implementation map include [Restore verified live reading against current official sources](https://github.com/adellorto/normattiva-mcp/issues/23) and [Remedy observed model continuation-reference failures](https://github.com/adellorto/normattiva-mcp/issues/24), each with passing scoped corrective samples recorded below. [Preserve complete requests and verified references in model-facing discovery](https://github.com/adellorto/normattiva-mcp/issues/25) still records unresolved routing failures and blocks final acceptance through native tracker dependencies. Scoped remedies do not establish final coordinated release acceptance.
 
 ## Gate status
 
 | Gate | Result and limit of the evidence |
 | --- | --- |
-| Deterministic regressions, build and public contracts | 102/102 tests pass after the live-source correction, including production stdio/HTTP registration with authenticated discovery identity and migration smoke with synthetic sources. Captured identity and preamble negative controls remain intact. |
+| Deterministic regressions, build and public contracts | 105/105 tests pass after the continuation-reference correction, including production stdio/HTTP registration, authenticated discovery identity, legacy-reference compatibility and bounded authenticated inflation. Captured identity and preamble negative controls remain intact. |
 | Installed npm consumer | Passed after fixing an omitted parser-worker bundle. Real tarball installed outside the workspace, with runtime dependencies only. |
 | Restart and configured npm/HTTP reference transfer | Passed for article, index, whole-act and discovery continuations, including HTTP-to-npm article continuation and different-key rejection. HTTP tests execute fresh processes of the actual handler; this is not deployed Vercel verification. |
 | Runtime memory and serialization | Recorded representative saved/synthetic workloads meet the 256 MiB memory target. Full MCP bytes include both copies. This is sample evidence, not universal capacity or complete historical/attachment benchmarking. |
-| Direct-read processing overhead | Two paired warm samples remain below +10%; cold comparative distributions remain outstanding. Healthy synthetic direct reads use one upstream request. |
-| Schema/result guidance | Both prototype tokenizers pass: 2.00–2.08% schema overhead and at most 58 explanatory tokens counting both MCP copies. Client-native tokenization of individual results remains outstanding. |
-| Terminal clients | Sonnet: one passing sample. Terra: fails the literal-cursor gate, despite correct final text and absence explanation. |
-| Representative OpenRouter matrix | Failed/incomplete: 78 Qwen and 78 DeepSeek outputs reviewed; Llama first-call provider error 502. 81 rows have automated flags; manual review distinguishes scorer limitations. $0.05119 completion receipts; $0.05667 accounted upper bound including prior attempts, under the $1 software cap. |
+| Direct-read processing overhead | Current continuation correction: +3.28% paired warm median versus stage 2, below +10%; cold comparative distributions remain outstanding. Healthy synthetic direct reads use one upstream request. |
+| Schema/result guidance | Current continuation correction: both prototype tokenizers pass, 4.27–4.45% schema overhead and at most 60 explanatory tokens counting both MCP copies. Client-native tokenization remains outstanding. |
+| Terminal clients | Sonnet: earlier passing sample. Terra: scoped corrective sample now passes literal continuation, exact joined text and unresolved-404 explanation. The original failure remains retained; final coordinated client acceptance is separate. |
+| Representative OpenRouter matrix | Original matrix remains failed/incomplete: 78 Qwen and 78 DeepSeek outputs reviewed; Llama first-call provider error 502. Scoped continuation corrections pass, including the final 4/4 conflicting-argument rerun; the 24-call precursor remains failed at 22/24. Latest cumulative OpenRouter upper bound is $0.387203023418, receipts $0.10055338982, under the $1 cap. Complete latest-schema model acceptance remains open. |
 | Official-source live canaries | Corrective run: 15/15 paced checks pass on 6 October, 18 attempts, including TUEL direct/index continuation, Civil 2043 and a Privacy historical/change-boundary control. This is local default MCP registration, not deployed transport or full-act/historical traversal acceptance. |
 | Deployed packaging and transport cancellation/timeouts | Outstanding. Local Vercel build could not retrieve project settings because its saved token is invalid. Core cancellation/timeouts pass, but dedicated checks through both default transports remain required. |
 | Final release approval | Blocked. Version alignment and migration preparation do not establish release acceptance. |
@@ -66,6 +66,16 @@ Earlier investigative runs retained HTTP 500/1000, HTML-instead-of-XML and sourc
 [Paired direct overhead](release-direct-overhead-2026-10-06.json) repeats the same truthful warm synthetic reads against stage 2 `3f75ff5`: 1,601 reads per revision, 3,202 total upstream attempts, full MCP serialization, alternating batches. The median comparison is +0.08%, below the +10% target; timing noise means this is not an optimization claim. Cold comparisons and the cost of the larger authenticated references remain to be evaluated in stage 5. The signed proof changes corrective model input payloads; the earlier frozen model sample remains failed/incomplete and must not be relabelled as a passing run.
 
 No paid inference, push, publication or deployment was performed during this correction. The previous spending ledger remains authoritative.
+
+## Continuation-reference correction
+
+The [remedy record](continuation-reference-remedy.md) documents compact authenticated `n2_` reading references, continued `n1_` decoding, shared target binding and authenticated inflation limited to 16 KiB. No trust, source, frozen-date or position checks are relaxed. Real-tarball restart and configured npm/fresh-HTTP transfer checks pass, with different-trust rejection; these are local synthetic controls.
+
+The bounded Terra correction passes literal continuation and exact joined article text. A 24-call Qwen/DeepSeek precursor copies all twenty returned references literally and clarifies all four missing-cursor cases, but **remains failed** because Qwen adds act/date arguments to both interrupted-index continuations. Initial-only field guidance remedies those observed failures in the final **4/4** focused rerun. Every compatible generated call is replayed through fresh production MCP, and every caller-visible response is manually inspected. These single-next-action samples do not establish complete autonomous traversal or a passing full latest-schema matrix. The final coordinated client/model matrix remains required.
+
+Current prototype guidance counts include nested input-field descriptions: 4.27–4.45% overhead, at most 60 explanatory tokens across both MCP copies. The same-source wire comparison reduces the article cursor from 2,057 to 765 characters and full MCP bytes from 8,430 to 4,986. Warm direct-read overhead is +3.28%; healthy direct reads remain one request. Full deterministic tests pass 105/105.
+
+Use [release-continuation-results.json.gz](release-continuation-results.json.gz) as the latest cumulative OpenRouter ledger, decompressed for `--prior-report`: **$0.387203023418 accounted upper bound**, **$0.10055338982 receipts**. It retains unknown-cost reservations and all earlier attempts, including conservatively reserved interrupted plans. Original failures below remain historical evidence, not current pass claims. No official legal-source requests, push, publication or deployment were made for this correction.
 
 ## Model/client evidence and spending
 
@@ -124,9 +134,10 @@ The current local-only wizard is `bash .private/setup-openrouter-release.sh`; it
 
 ```bash
 node packages/core/test/fixtures/release-model-input.mjs > /tmp/normattiva-release-model-input.json
-node --env-file=.env.openrouter.local packages/core/test/fixtures/release-openrouter.mjs /tmp/normattiva-release-model-input.json /tmp/normattiva-release-model-plan.json --plan
+gzip -dc docs/implementation/release-continuation-results.json.gz > /tmp/normattiva-release-prior.json
+node --env-file=.env.openrouter.local packages/core/test/fixtures/release-openrouter.mjs /tmp/normattiva-release-model-input.json /tmp/normattiva-release-model-plan.json --plan --prior-report /tmp/normattiva-release-prior.json
 # Paid corrective sample, after reviewing the plan and retained spending ledger:
-node --env-file=.env.openrouter.local packages/core/test/fixtures/release-openrouter.mjs /tmp/normattiva-release-model-input.json /tmp/normattiva-release-model-results.json
+node --env-file=.env.openrouter.local packages/core/test/fixtures/release-openrouter.mjs /tmp/normattiva-release-model-input.json /tmp/normattiva-release-model-results.json --prior-report /tmp/normattiva-release-prior.json
 ```
 
 When continuing a partially billed evaluation, pass `--prior-report /path/to/previous-report.json` to carry its receipts, unknown-cost reservations and outputs into the next plan; do not reset the spending ledger. The key is now restored in the ignored local file.
@@ -160,6 +171,8 @@ Two independent reviewers inspected the staged stage-5 changes against completed
 
 ### Standards
 
+The continuation-reference correction was independently reviewed against `b4f98fc`, including final retained evidence and bilingual documentation. No remaining documented-standard violation or actionable smell; hashes, guidance measurements and cumulative ledger reconcile.
+
 The live-source correction was independently reviewed against `5e0dd85`. No documented-standard breach or material new smell finding. Review confirmed external fixture seams, bilingual documentation, acquisition-only cookies, bounded parsing and evidence limitations.
 
 No documented-standard breaches. Two harness findings were corrected: the Civil Code canary now requires a useful snapshot-bound index entry before recording success; terminal cursor checking now tracks both cursor locations and associates issued references with their continuation tool. No remaining material finding.
@@ -167,6 +180,8 @@ No documented-standard breaches. Two harness findings were corrected: the Civil 
 The restored OpenRouter continuation was independently reviewed against local checkpoint `19bc790`. No remaining material standards or evidence-integrity finding: frozen hashes, receipt/reservation totals, every-call review coverage and credential exclusions reconcile. All nine staged files belong to this evaluation continuation; unrelated changes were excluded.
 
 ### Spec
+
+The continuation-reference correction has no remaining material Spec finding. Review confirms the failed 22/24 precursor is preserved, the measured 4/4 rerun satisfies the bounded failing-sample remedy requirement, and final coordinated acceptance remains open. Lost-control and earlier-terminal-schema limitations are explicit. Neither review made inference or official-source calls.
 
 The live-source correction review found that authenticated issuance fields could override an explicit conflicting editorial subtitle. A captured public MCP negative reproduced `found` for subtitle `(999G9999)`; the verifier now rejects conflicting observed editorial-code forms while retaining missing-code discovery proof. The reviewer verified missing/matching/conflicting code cases after correction. No remaining material spec finding; full release acceptance stays open.
 

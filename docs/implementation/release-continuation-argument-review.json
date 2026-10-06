@@ -1,0 +1,208 @@
+{
+  "scope": "Every generated continuation call checked literally; compatible calls executed through fresh production MCP with synthetic sources. Model prose and terminal absence explanation need manual review. No live/model-general acceptance.",
+  "rows": [
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-missing-cursor",
+      "caller_visible_text": "To proceed to the next page of results for TUEL, I need the **d1_ cursor** from a previous `find_acts` or `continue_acts` response. Could you provide this cursor? Without it, I cannot continue the search.",
+      "calls_checked": 0,
+      "failures": []
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "index_pending",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "index_more",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "index_interrupted",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": [
+        "conflicting_arguments"
+      ]
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "article_more",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "reading_more",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-missing-cursor",
+      "caller_visible_text": "To proceed to the next page of results for TUEL, I need the **d1_ cursor** from your previous search. Please provide it, and I’ll continue the discovery for you. \n\nIf you don’t have it, let me know, and I’ll guide you on how to retrieve it.",
+      "calls_checked": 0,
+      "failures": []
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "index_pending",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "index_more",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "index_interrupted",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": [
+        "conflicting_arguments"
+      ]
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "article_more",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "reading_more",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-missing-cursor",
+      "caller_visible_text": "Non ho un cursore di continuazione disponibile: per andare alla pagina successiva dei risultati sul TUEL, incolla qui il cursore `d1_...` restituito dalla ricerca precedente.",
+      "calls_checked": 0,
+      "failures": []
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "index_pending",
+      "caller_visible_text": " ",
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "index_more",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "index_interrupted",
+      "caller_visible_text": " ",
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "article_more",
+      "caller_visible_text": " ",
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "reading_more",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-missing-cursor",
+      "caller_visible_text": "Non ho un cursore di continuazione disponibile: per andare alla pagina successiva devo ricevere il cursore `d1_...` restituito dalla ricerca precedente. Puoi incollarmelo?",
+      "calls_checked": 0,
+      "failures": []
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "index_pending",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "index_more",
+      "caller_visible_text": " ",
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "index_interrupted",
+      "caller_visible_text": " ",
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "article_more",
+      "caller_visible_text": " ",
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "reading_more",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": []
+    }
+  ],
+  "terminal_checks": {
+    "execution_completed": true,
+    "literal_continuation": true,
+    "complete_text": true,
+    "unresolved_999": true
+  },
+  "gate": "failed"
+}

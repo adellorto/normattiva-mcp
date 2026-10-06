@@ -34,8 +34,27 @@ const args = client === 'claude' ? ['--print', '--model', 'sonnet', '--effort', 
     '-c', 'mcp_servers.normattiva.default_tools_approval_mode="approve"', prompt];
 const exec = promisify(execFile);
 const { stdout: version } = await exec(client, ['--version']);
-const { stdout } = await exec(client, args, { cwd: scratch, timeout: 120_000, maxBuffer: 4 * 1024 * 1024 });
-const events = stdout.trim().split('\n').map(line => JSON.parse(line));
+const execution = exec(client, args, { cwd: scratch, timeout: 120_000, maxBuffer: 4 * 1024 * 1024 });
+// Codex 0.160.1 also reads a piped stdin when a positional prompt exists.
+// execFile leaves that pipe open unless the parent explicitly ends it.
+execution.child.stdin.end();
+let stdout = '', executionError;
+function redact(value) {
+  let text = String(value ?? '');
+  for (const [name, secret] of Object.entries(process.env)) {
+    if (/(KEY|TOKEN|SECRET|PASSWORD)/i.test(name) && secret.length >= 8) text = text.replaceAll(secret, '<REDACTED>');
+  }
+  return text;
+}
+try { ({ stdout } = await execution); }
+catch (error) {
+  stdout = error.stdout ?? '';
+  executionError = { code: error.code, signal: error.signal, killed: error.killed,
+    message: 'Client execution failed; retained completed events and reported usage.',
+    diagnostics: redact(error.stderr).slice(-3000) };
+  process.exitCode = 1;
+}
+const events = stdout.trim().split('\n').filter(Boolean).map(line => JSON.parse(line));
 // Exclude initialization/account metadata, session IDs and unrelated config.
 const calls = [], messages = []; let usage, reportedCost, actualModels;
 if (client === 'codex') {
@@ -84,5 +103,7 @@ await writeFile(output, JSON.stringify({ recorded_at: new Date().toISOString(), 
   requested_model: client === 'claude' ? 'sonnet' : 'gpt-5.6-terra', actual_models: actualModels,
   scope: 'One synthetic stdio terminal-client sample; semantic review required. No live source or general model acceptance.',
   settings: args, prompt, calls, continuation_checks: continuationChecks, messages, usage,
-  reported_list_cost_usd: reportedCost, billing: 'Existing subscription login; no separate API charge demonstrated.' }, null, 2) + '\n');
+  reported_list_cost_usd: reportedCost, execution_error: executionError,
+  client_errors: events.filter(event => ['error', 'turn.failed'].includes(event.type)).map(event => redact(event.message ?? event.error?.message)),
+  billing: 'Existing subscription login; no separate API charge demonstrated.' }, null, 2) + '\n');
 console.log(`Recorded ${client} fixture session: ${output}`);

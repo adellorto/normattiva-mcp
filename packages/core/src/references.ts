@@ -22,12 +22,23 @@ const actReferenceSchema = z.object({ v: z.literal(2), publication: publicationS
 const binding = { publication: publicationSchema, date: calendarDateSchema, source: z.string().max(2048), digest: z.string().regex(/^[a-f0-9]{64}$/), identity: actIdentitySchema.optional() };
 const position = { index: z.number().int().nonnegative(), segment: z.number().int().nonnegative(), offset: z.number().int().nonnegative() };
 const targetFields = { selector: z.string().max(1024), label: z.string().max(300), contentDigest: z.string().regex(/^[a-f0-9]{64}$/) };
+const articleFields = { ...targetFields, address: addressSchema,
+  legalDigest: z.string().regex(/^[a-f0-9]{64}$/).optional(), tableDigest: z.string().regex(/^[a-f0-9]{64}$/).optional(), unread: z.boolean().optional() };
 const referenceSchema = z.discriminatedUnion("kind", [
-  z.object({ v: z.literal(1), kind: z.literal("article"), ...binding, ...targetFields, address: addressSchema,
-    legalDigest: z.string().regex(/^[a-f0-9]{64}$/).optional(), tableDigest: z.string().regex(/^[a-f0-9]{64}$/).optional(), unread: z.boolean().optional() }).strict(),
+  z.object({ v: z.literal(1), kind: z.literal("article"), ...binding, ...articleFields }).strict(),
   z.object({ v: z.literal(1), kind: z.literal("attachment"), ...binding, ...targetFields }).strict(),
   z.object({ v: z.literal(1), kind: z.literal("cursor"), ...binding, operation: z.enum(["list_articles", "read_act", "read_article"]),
     ...position, limit: z.number().int().positive(), target: z.string().max(4096).optional() }).strict(),
+]);
+const embeddedTargetSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("article"), ...articleFields }).strict(),
+  z.object({ kind: z.literal("attachment"), ...targetFields }).strict(),
+]);
+const compactReferenceSchema = z.discriminatedUnion("kind", [
+  z.object({ v: z.literal(2), kind: z.literal("article"), ...binding, ...articleFields }).strict(),
+  z.object({ v: z.literal(2), kind: z.literal("attachment"), ...binding, ...targetFields }).strict(),
+  z.object({ v: z.literal(2), kind: z.literal("cursor"), ...binding, operation: z.enum(["list_articles", "read_act", "read_article"]),
+    ...position, limit: z.number().int().positive(), target: embeddedTargetSchema.optional() }).strict(),
 ]);
 export type Reference = z.infer<typeof referenceSchema>;
 export type Binding = Pick<Reference, "publication" | "date" | "source" | "digest" | "identity">;
@@ -61,11 +72,34 @@ export class ReferenceCodec {
     } catch { throw referenceError(false); }
   }
   issue(data: Reference): string {
-    return this.tokens.issue("n1_", referenceSchema.parse(data), data.kind === "cursor" ? 16384 : 4096);
+    const parsed = referenceSchema.parse(data);
+    let target: z.infer<typeof embeddedTargetSchema> | undefined;
+    if (parsed.kind === "cursor" && parsed.target) {
+      const exact = this.decode(parsed.target, parsed.operation === "read_article" ? "article" : "attachment");
+      for (const key of ["publication", "date", "source", "digest", "identity"] as const) {
+        if (JSON.stringify(parsed[key]) !== JSON.stringify(exact[key])) throw referenceError(true);
+      }
+      // The outer MAC protects the target too; share its snapshot binding and
+      // avoid embedding a second base64 string, signature and publication.
+      const { v, publication, date, source, digest, identity, ...fields } = exact;
+      target = embeddedTargetSchema.parse(fields);
+    }
+    const compact = compactReferenceSchema.parse({ ...parsed, v: 2,
+      ...(parsed.kind === "cursor" ? { target } : {}) });
+    return this.tokens.issue("n2_", compact, parsed.kind === "cursor" ? 16384 : 4096, true);
   }
   decode(token: string, kind: Reference["kind"], operation?: string): Reference {
     try {
-      const data = referenceSchema.parse(this.tokens.decode("n1_", token, kind === "cursor" ? 16384 : 4096));
+      const limit = kind === "cursor" ? 16384 : 4096;
+      let value: unknown;
+      if (token.startsWith("n2_")) {
+        const compact = compactReferenceSchema.parse(this.tokens.decode("n2_", token, limit, true));
+        value = { ...compact, v: 1, ...(compact.kind === "cursor" ? { target: compact.target && this.issue({
+          v: 1, publication: compact.publication, date: compact.date, source: compact.source,
+          digest: compact.digest, identity: compact.identity, ...compact.target,
+        }) } : {}) };
+      } else value = this.tokens.decode("n1_", token, limit);
+      const data = referenceSchema.parse(value);
       if (data.kind !== kind || (data.kind === "cursor" && data.operation !== operation)) throw referenceError(kind === "cursor");
       const source = new URL(data.source);
       const direct = source.href === ARTICLE_DETAIL_URL

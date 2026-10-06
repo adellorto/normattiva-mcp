@@ -168,7 +168,8 @@ export const discoveryPageSchema = z.object({
 });
 
 export const discoveryInputSchema = z.object({ request: z.string().trim().min(1).max(4096) }).strict();
-export const discoveryContinuationInputSchema = z.object({ cursor }).strict();
+export const discoveryContinuationInputSchema = z.object({ cursor: cursor.describe(
+  "Copy an actual d1_ cursor returned by discovery, without changes. No placeholders or guesses. If none was returned, ask before calling this tool.") }).strict();
 export const indexInputSchema = z.union([
   z.object({ act_locator: locator, snapshot_date: calendarDateSchema.optional(),
     page_size: z.number().int().min(1).max(RESPONSE_LIMITS.indexMax).default(RESPONSE_LIMITS.indexDefault) }).strict(),

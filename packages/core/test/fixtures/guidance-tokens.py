@@ -18,8 +18,15 @@ def explanations(value):
     elif isinstance(value, list):
         for child in value:
             yield from explanations(child)
-baseline = {'tools': [{key: value for key, value in tool.items() if key != 'description'} for tool in data['schema']['tools']]}
-result = {'tiktoken_version': tiktoken.__version__, 'baseline': 'Same tools/list with every tool description removed; conservative guidance upper bound. No client wrappers or model evaluation.',
+def without_descriptions(value):
+    if isinstance(value, dict):
+        return {key: without_descriptions(child) for key, child in value.items()
+                if not (key == 'description' and isinstance(child, str))}
+    if isinstance(value, list):
+        return [without_descriptions(child) for child in value]
+    return value
+baseline = without_descriptions(data['schema'])
+result = {'tiktoken_version': tiktoken.__version__, 'baseline': 'Same tools/list with tool and nested schema descriptions removed; conservative guidance upper bound. No client wrappers or model evaluation.',
           'sample_basis': 'Synthetic default-registration MCP responses. Explanations plus error messages; both duplicated MCP representations counted. Full payload includes locators and metadata.', 'encodings': {}}
 for name in ('o200k_base', 'cl100k_base'):
     enc = tiktoken.get_encoding(name)

@@ -15,12 +15,12 @@ const resultSchema = z.object(discoveryPageSchema.shape).partial().extend({ erro
 /** Shared discovery registration for both default transports. */
 export function registerDiscoveryTools(server: McpServer, finder: ActDiscovery, context: ToolContext = {}): void {
   server.registerTool("find_acts", {
-    description: "Find official Italian acts from the user's citation, common name or topic. Preserve dates, constraints and article references in request. Returns act locators and candidates, without article text. Empty discovery does not prove legal absence.",
+    description: "Start discovery of official Italian acts from the user's citation, common name or topic. Preserve dates, constraints and article references in request. For a next-page request without a returned cursor, make no tool call: ask for that cursor instead of searching again. Returns act locators and candidates, without article text. Empty discovery does not prove legal absence.",
     inputSchema: discoveryInputSchema, outputSchema: resultSchema,
   }, async (args, extra) => runTool("composed", extra.signal, context, args,
     async () => jsonContent(await finder.findActs(args, extra.signal))));
   server.registerTool("continue_acts", {
-    description: "Continue act discovery using only the literal cursor returned by find_acts or continue_acts. Search uses a live corpus; completion describes this traversal, not exhaustive legal relevance.",
+    description: "Continue discovery only with an actual returned d1_ cursor from find_acts or continue_acts, copied literally. If none is available, make no tool call: ask for the cursor in one short sentence. Never invent a cursor or use article/index/whole-act cursors. Search uses a live corpus; completion describes this traversal, not exhaustive legal relevance.",
     inputSchema: discoveryContinuationInputSchema, outputSchema: resultSchema,
   }, async (args, extra) => runTool("composed", extra.signal, context, args,
     async () => jsonContent(await finder.continueActs(args, extra.signal))));

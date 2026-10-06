@@ -175,11 +175,11 @@ export class ActTraversal {
       const items: IndexPage["traversal"]["items"] = [];
       let failure: OperationError | undefined;
       const make = (): IndexPage => ({ ...this.envelope(act, index, items), traversal: !items.length && index < act.entries.length ? { progress: "pending", items: [],
-        cursor: this.continuation(act, "list_articles", index, 0, 0, limit), explanation: "Source acquisition completed; occurrence verification continues in the next call." }
+        cursor: this.continuation(act, "list_articles", index, 0, 0, limit), explanation: "Preparation only. Continue list_articles with only cursor; omit act_locator and snapshot_date." }
         : failure ? { progress: "interrupted", items,
-        cursor: this.continuation(act, "list_articles", index, 0, 0, limit), failure: { error: failure.detail, position: String(index) }, explanation: "Prefix preserved; continue with the literal cursor." }
+        cursor: this.continuation(act, "list_articles", index, 0, 0, limit), failure: { error: failure.detail, position: String(index) }, explanation: "Prefix preserved; continue list_articles with only cursor." }
         : index === act.entries.length ? { progress: "complete", items }
-        : { progress: "more", items, cursor: this.continuation(act, "list_articles", index, 0, 0, limit), explanation: "These entries are one index page. Continue with the literal cursor for the remaining entries." } });
+        : { progress: "more", items, cursor: this.continuation(act, "list_articles", index, 0, 0, limit), explanation: "Index page only. Continue list_articles with only cursor; omit act_locator and snapshot_date." } });
       while (index < act.entries.length && items.length < limit) {
         if (currentCall()!.attempts >= currentCall()!.maxAttempts && !act.verified.has(act.entries[index]!.selector)) break;
         try { await this.verifyEntry(act, act.entries[index]!); }
@@ -254,7 +254,7 @@ export class ActTraversal {
         content: { format: "text", text: text.slice(offset, end), ...(content.title ? { title: content.title } : {}),
           ...(content.from ? { effective_from: content.from } : {}), ...(content.to ? { effective_to: content.to } : {}) },
         ...(end === text.length ? { progress: "complete" as const } : { progress: "more" as const,
-          cursor: this.continuation(reference, "read_article", 0, 0, end, limit, content.notesOnly ? this.codec.issue(reference) : token ?? this.codec.issue(reference)), explanation: "This page contains part of the article. Continue with the literal cursor for the remaining text." }) });
+          cursor: this.continuation(reference, "read_article", 0, 0, end, limit, content.notesOnly ? this.codec.issue(reference) : token ?? this.codec.issue(reference)), explanation: "Article part only. Continue read_article with only cursor; omit locators, article_reference and snapshot_date." }) });
       while (!fits(make()) && end > offset) end = boundary(text, offset + Math.floor((end - offset) / 2));
       if (end === offset && text.length > offset) throw internalError("response_limit_exceeded", "The article envelope leaves no space for content.", false);
       return articlePageSchema.parse(make());
@@ -281,11 +281,11 @@ export class ActTraversal {
       let failure: OperationError | undefined;
       if (index > entries.length || (index === entries.length && (segment || offset))) throw invalidInput();
       const make = (): ReadingPage => ({ ...this.envelope(act, attachment ? 0 : index, items.map(i => i.entry)), traversal: !items.length && index < entries.length ? { progress: "pending", items: [],
-        cursor: this.continuation(act, "read_act", index, segment, offset, limit, attachmentToken), explanation: "Source acquisition completed; content verification continues in the next call." }
+        cursor: this.continuation(act, "read_act", index, segment, offset, limit, attachmentToken), explanation: "Preparation only. Continue read_act with only cursor; omit act_locator, attachment_ref and snapshot_date." }
         : failure ? { progress: "interrupted", items,
-        cursor: this.continuation(act, "read_act", index, segment, offset, limit, attachmentToken), failure: { error: failure.detail, position: `${index}:${segment}:${offset}` }, explanation: "Prefix preserved; continue with the literal cursor." }
+        cursor: this.continuation(act, "read_act", index, segment, offset, limit, attachmentToken), failure: { error: failure.detail, position: `${index}:${segment}:${offset}` }, explanation: "Prefix preserved; continue read_act with only cursor." }
         : index === entries.length ? { progress: "complete", items }
-        : { progress: "more", items, cursor: this.continuation(act, "read_act", index, segment, offset, limit, attachmentToken), explanation: "These entries are one reading page. Continue with the literal cursor for the remaining content." } });
+        : { progress: "more", items, cursor: this.continuation(act, "read_act", index, segment, offset, limit, attachmentToken), explanation: "Full reading requires continuing read_act with cursor alone; omit act_locator, attachment_ref and snapshot_date." } });
       while (index < entries.length && chars < limit && items.length < RESPONSE_LIMITS.indexMax) {
         const entry = entries[index]!;
         if (currentCall()!.attempts >= currentCall()!.maxAttempts && !act.verified.has(entry.selector)) break;

@@ -4,6 +4,7 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile, rename } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { setDefaultAutoSelectFamilyAttemptTimeout } from 'node:net';
 import { planDiscovery } from '../../dist/discovery-plan.js';
 
 const input = JSON.parse(await readFile(process.argv[2], 'utf8'));
@@ -15,6 +16,10 @@ const models = (process.env.OPENROUTER_MODELS ?? 'qwen/qwen3-14b,deepseek/deepse
 const ceiling = Math.min(1, Number(process.env.OPENROUTER_MAX_COST_USD ?? 1));
 assert.ok(Number.isFinite(ceiling) && ceiling > 0);
 const repetitions = 2, maxTokens = 1536;
+// Give each resolved address time to connect on this evaluation host. The
+// overall per-request deadline remains 120 seconds, including connection work.
+const connectionAttemptMs = 2000;
+setDefaultAutoSelectFamilyAttemptTimeout(connectionAttemptMs);
 const concurrency = Number(process.env.OPENROUTER_CONCURRENCY ?? 4);
 assert.ok(Number.isInteger(concurrency) && concurrency >= 1 && concurrency <= 4);
 const tools = input.schema.tools.map(tool => ({ type: 'function', function: {
@@ -51,6 +56,13 @@ for (const [id, [tool, prompt, continuation]] of Object.entries(risks)) {
         function: { name: tool, arguments: JSON.stringify(args) } }] },
       { role: 'tool', tool_call_id: 'fixture_call', content: sample.content[0].text }] });
 }
+// Corrective sessions can select just the observed failures without changing
+// the full-release default or dropping previous spending reservations.
+const selected = process.env.OPENROUTER_CASES?.split(',');
+if (selected) {
+  assert.ok(selected.length && selected.every(id => cases.some(sample => sample.id === id)), 'Unknown corrective case');
+  for (let i = cases.length - 1; i >= 0; i--) if (!selected.includes(cases[i].id)) cases.splice(i, 1);
+}
 async function json(url, options) {
   const response = await fetch(url, { ...options, signal: AbortSignal.timeout(120_000) });
   if (!response.ok) {
@@ -86,6 +98,7 @@ const report = { recorded_at: new Date().toISOString(), scope: 'OpenRouter funct
   input_sha256: createHash('sha256').update(JSON.stringify(input)).digest('hex'),
   schema_sha256: createHash('sha256').update(JSON.stringify(input.schema)).digest('hex'),
   settings: { repetitions, max_tokens: maxTokens, temperature: 0, concurrency, request_timeout_ms: 120_000,
+    connection_family_attempt_ms: connectionAttemptMs,
     parallel_tool_calls: 'omitted; unsupported by eligible providers',
     opt_in_prompts: false, initialization_instructions: false },
   max_cost_usd: ceiling, total_plan_reserve_usd: reserve, recorded_cost_usd: prior?.recorded_cost_usd ?? 0,
@@ -176,7 +189,10 @@ async function worker() {
       row.cost_usd = cost; report.recorded_cost_usd += cost;
       report.accounted_upper_bound_usd += cost - job.reserve;
     }
-  } catch (error) { row.blocked_error = error.message; }
+  } catch (error) {
+    row.blocked_error = error.message;
+    if (error.cause?.code) row.transport_code = error.cause.code;
+  }
   row.elapsed_ms = Math.round(performance.now() - started);
   await checkpoint();
   console.log(job.id, job.sample.id, row.blocked_error ?? row.automated_failures, `accounted $${report.accounted_upper_bound_usd.toFixed(4)}`);

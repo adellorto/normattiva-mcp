@@ -323,7 +323,7 @@ export function parseAct(xml: string, publication: Publication, date: string, po
       if (matches.length === 1 && !used.has(matches[0]!)) {
         entry.address = matches[0]!.address; used.add(matches[0]!);
       }
-      if (!entry.address) { entry.unread = true; entry.explanation = "The attachment's historical retrieval address could not be verified; its content is withheld."; inventoryComplete = false; }
+      if (!entry.address) { entry.unread = true; entry.explanation = "The historical attachment address is unverified; content is withheld."; inventoryComplete = false; }
     }
     const src = graphics[0]?.attrs.src;
     if (src) { const url = new URL(src, portal.source); if (url.origin === "https://www.normattiva.it") entry.officialUrl = url.href; }
