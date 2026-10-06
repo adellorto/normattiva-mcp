@@ -1,0 +1,236 @@
+{
+  "stdio_cancel_precursor": {
+    "recorded_at": "2026-10-06T15:29:03.900Z",
+    "node": "v24.15.0",
+    "transport": "stdio",
+    "mode": "cancellation",
+    "gate": "failed",
+    "elapsed_ms": 610.7692029999998,
+    "events": [
+      {
+        "event": "started",
+        "at": 1791300543310
+      },
+      {
+        "event": "aborted",
+        "at": 1791300543323
+      }
+    ],
+    "result": {
+      "error": "MCP error -32001: AbortError: This operation was aborted"
+    },
+    "healthy": {
+      "outcome": "unresolved",
+      "reason": "source_identity_conflict",
+      "requested": {
+        "act_locator": "a1_eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0",
+        "snapshot_date": "2026-10-02",
+        "article_reference": "13"
+      },
+      "evidence": [
+        {
+          "source": "official_detail",
+          "checked_at": "2026-10-06T15:29:03.826Z",
+          "publication": {
+            "data_gu": "2000-09-28",
+            "codice_redazionale": "000G0304"
+          },
+          "snapshot_date": "2026-10-02",
+          "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+          "explanation": "The article detail did not verify the exact publication."
+        }
+      ]
+    },
+    "scope": "Default built stdio / production HTTP handler; synthetic stalled upstream, production 20s attempt and 50s shared policy. Not deployed HTTP."
+  },
+  "http_cancel_precursor": {
+    "recorded_at": "2026-10-06T15:29:06.453Z",
+    "node": "v24.15.0",
+    "transport": "http",
+    "mode": "cancellation",
+    "gate": "failed",
+    "elapsed_ms": 2082.297745,
+    "events": [
+      {
+        "event": "started",
+        "at": 1791300544417
+      }
+    ],
+    "result": {
+      "error": "MCP error -32001: AbortError: This operation was aborted"
+    },
+    "healthy": {
+      "error": "MCP error -32001: Request timed out"
+    },
+    "scope": "Default built stdio / production HTTP handler; synthetic stalled upstream, production 20s attempt and 50s shared policy. Not deployed HTTP."
+  },
+  "stdio_cancel": {
+    "recorded_at": "2026-10-06T15:30:12.885Z",
+    "node": "v24.15.0",
+    "transport": "stdio",
+    "mode": "cancellation",
+    "gate": "passed",
+    "elapsed_ms": 565.0273120000002,
+    "events": [
+      {
+        "event": "started",
+        "at": 1791300612336
+      },
+      {
+        "event": "aborted",
+        "at": 1791300612349
+      }
+    ],
+    "result": {
+      "error": "MCP error -32001: AbortError: This operation was aborted"
+    },
+    "healthy": {
+      "reason": "verified_official_article",
+      "requested": {
+        "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjd9fQ.kvCT5Db79U77v4pyZenWO73bh-7hvvnOAy7ESBQAbeY",
+        "snapshot_date": "2026-10-02",
+        "article_reference": "13"
+      },
+      "evidence": [
+        {
+          "source": "official_detail",
+          "checked_at": "2026-10-06T15:30:12.852Z",
+          "snapshot_date": "2026-10-02",
+          "publication": {
+            "data_gu": "2000-09-28",
+            "codice_redazionale": "000G0304"
+          },
+          "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto"
+        }
+      ],
+      "outcome": "found",
+      "content": {
+        "format": "text",
+        "text": "Art. 13. Fixture text 13.",
+        "effective_from": "2020-01-01"
+      },
+      "progress": "complete"
+    },
+    "scope": "Default built stdio / production HTTP handler; synthetic stalled upstream, production 20s attempt and 50s shared policy. Not deployed HTTP."
+  },
+  "http_cancel": {
+    "recorded_at": "2026-10-06T15:30:15.027Z",
+    "node": "v24.15.0",
+    "transport": "http",
+    "mode": "cancellation",
+    "gate": "failed",
+    "elapsed_ms": 2066.339393,
+    "events": [
+      {
+        "event": "started",
+        "at": 1791300612983
+      }
+    ],
+    "result": {
+      "error": "MCP error -32001: AbortError: This operation was aborted"
+    },
+    "healthy": {
+      "error": "MCP error -32001: Request timed out"
+    },
+    "scope": "Default built stdio / production HTTP handler; synthetic stalled upstream, production 20s attempt and 50s shared policy. Not deployed HTTP."
+  },
+  "stdio_timeout": {
+    "recorded_at": "2026-10-06T15:30:20.816Z",
+    "node": "v24.15.0",
+    "transport": "stdio",
+    "mode": "timeout",
+    "gate": "passed",
+    "elapsed_ms": 40578.813012,
+    "events": [
+      {
+        "event": "started",
+        "at": 1791300580256
+      },
+      {
+        "event": "aborted",
+        "at": 1791300600259
+      },
+      {
+        "event": "started",
+        "at": 1791300600789
+      },
+      {
+        "event": "aborted",
+        "at": 1791300620792
+      }
+    ],
+    "result": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "upstream_timeout: The upstream attempt timed out."
+          }
+        ],
+        "structuredContent": {
+          "error": {
+            "category": "transport_failure",
+            "code": "upstream_timeout",
+            "retryability": true,
+            "message": "The upstream attempt timed out.",
+            "transport_cause": "timeout",
+            "provider": "normattiva",
+            "operation": "/bff-opendata/v1/api/v1/atto/dettaglio-atto"
+          }
+        },
+        "isError": true
+      }
+    },
+    "scope": "Default built stdio / production HTTP handler; synthetic stalled upstream, production 20s attempt and 50s shared policy. Not deployed HTTP."
+  },
+  "http_timeout": {
+    "recorded_at": "2026-10-06T15:30:22.073Z",
+    "node": "v24.15.0",
+    "transport": "http",
+    "mode": "timeout",
+    "gate": "passed",
+    "elapsed_ms": 40610.863892,
+    "events": [
+      {
+        "event": "started",
+        "at": 1791300581524
+      },
+      {
+        "event": "aborted",
+        "at": 1791300601527
+      },
+      {
+        "event": "started",
+        "at": 1791300602042
+      },
+      {
+        "event": "aborted",
+        "at": 1791300622054
+      }
+    ],
+    "result": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "upstream_timeout: The upstream attempt timed out."
+          }
+        ],
+        "structuredContent": {
+          "error": {
+            "category": "transport_failure",
+            "code": "upstream_timeout",
+            "retryability": true,
+            "message": "The upstream attempt timed out.",
+            "transport_cause": "timeout",
+            "provider": "normattiva",
+            "operation": "/bff-opendata/v1/api/v1/atto/dettaglio-atto"
+          }
+        },
+        "isError": true
+      }
+    },
+    "scope": "Default built stdio / production HTTP handler; synthetic stalled upstream, production 20s attempt and 50s shared policy. Not deployed HTTP."
+  },
+  "precursor_limit": "Cancellation precursors use a coordinate-only locator against a no-editorial-code control. Corrected runs first obtain authenticated identity through discovery; the precursor stdio follow-up is not a lane failure."
+}

@@ -6,19 +6,22 @@ Prerequisites on the implementation map include [Restore verified live reading a
 
 ## Gate status
 
+Latest evidence: [Final release validation checkpoint, 6 October 2026](final-release-validation.md). Earlier measurements and failed samples below remain historical evidence; the following table governs the current candidate.
+
 | Gate | Result and limit of the evidence |
 | --- | --- |
-| Deterministic regressions, build and public contracts | 109/109 tests pass after the complete-request correction, including production stdio/HTTP registration, authenticated discovery identity, legacy-reference compatibility and bounded authenticated inflation. Captured identity and preamble negative controls remain intact. |
-| Installed npm consumer | Passed after fixing an omitted parser-worker bundle. Real tarball installed outside the workspace, with runtime dependencies only. |
-| Restart and configured npm/HTTP reference transfer | Passed for article, index, whole-act and discovery continuations, including HTTP-to-npm article continuation and different-key rejection. HTTP tests execute fresh processes of the actual handler; this is not deployed Vercel verification. |
-| Runtime memory and serialization | Recorded representative saved/synthetic workloads meet the 256 MiB memory target. Full MCP bytes include both copies. This is sample evidence, not universal capacity or complete historical/attachment benchmarking. |
-| Direct-read processing overhead | Current discovery correction: +0.36% paired warm median versus stage 2, below +10%; cold comparative distributions remain outstanding. Healthy synthetic direct reads use one upstream request. |
-| Schema/result guidance | Current discovery correction: both prototype tokenizers pass, 5.32–5.54% schema overhead and at most 60 explanatory tokens counting both MCP copies. Client-native tokenization remains outstanding. |
-| Terminal clients | Sonnet: earlier passing sample. Terra: scoped corrective sample now passes literal continuation, exact joined text and unresolved-404 explanation. The original failure remains retained; final coordinated client acceptance is separate. |
-| Representative OpenRouter matrix | Original matrix remains failed/incomplete: 78 Qwen and 78 DeepSeek outputs reviewed; Llama first-call provider error 502. Scoped continuation corrections pass, including the final 4/4 conflicting-argument rerun; the 24-call precursor remains failed at 22/24. The initial discovery correction remains failed at 93/104; the eight-case stronger-field rerun passes 32/32. Latest cumulative OpenRouter upper bound is $0.421192806878, receipts $0.134543173280, under the $1 cap. Complete latest-schema model acceptance remains open. |
-| Official-source live canaries | Corrective run: 15/15 paced checks pass on 6 October, 18 attempts, including TUEL direct/index continuation, Civil 2043 and a Privacy historical/change-boundary control. This is local default MCP registration, not deployed transport or full-act/historical traversal acceptance. |
-| Deployed packaging and transport cancellation/timeouts | Outstanding. Local Vercel build could not retrieve project settings because its saved token is invalid. Core cancellation/timeouts pass, but dedicated checks through both default transports remain required. |
-| Final release approval | Blocked. Version alignment and migration preparation do not establish release acceptance. |
+| Deterministic regressions/build | 110/110 pass, including the red/green issued-discovery-reference evaluation control. |
+| Installed npm consumer and reference portability | Final 0.2.0 tarball passes outside the workspace: parser worker, contracts, configured restart/npm-HTTP transfer, different-key rejection. |
+| Vercel built-function packaging | User restored login; actual local Node 24/60-second output and its declared filesystem mappings pass isolated contracts/worker execution. Not deployed candidate verification. |
+| Direct-read processing overhead | Same truthful work/full serialization: warm legacy −7.81%; warm authenticated −1.90%; legacy process-cold +0.42%; authenticated process-cold +3.89%, all below +10%. Corrected cold setup and raw distributions are in the checkpoint. |
+| Runtime memory/serialized bytes | TUEL index and synthetic attachment/historical-first-occurrence samples pass. Full 295-occurrence TUEL reading **fails memory twice**, at 267.9/270.3 MiB versus 256 MiB; bytes remain bounded. Full official historical/attachment controls remain incomplete. |
+| Schema/result guidance | Prototype encodings pass. Native Qwen schema +5.11% passes but interrupted-result explanations/error messages total **64 tokens**, over the 60-token cap counting both MCP copies. |
+| Terminal client samples | Fresh Claude and restored Codex runs pass literal tool continuation and deny absence from unresolved 404. Finite stdio samples; complete coordinated named-client/HTTP matrix remains open. Claude's final quotation is not verbatim tool concatenation. |
+| Representative OpenRouter matrix | All 234 latest-schema outputs completed; six real-discovery-reference corrective outputs pass. **Failed**: Llama fabricated references and four false-absence statements; Qwen four literal handoff changes and two unnecessary continuation-confirmation prompts. DeepSeek's placeholder flags are classified separately from passing genuine-reference correction. |
+| Official-source canaries | Final rerun 15/15 checks pass, 18 paced attempts, including TUEL, Civil 2043 and Privacy historical/change boundaries. Local registration, not deployed revision or full-act historical acceptance. |
+| Default transport cancellation/timeouts | Both default transports pass real 20-second/two-attempt timeout probes. Stdio cancellation passes; **HTTP cancellation fails**, leaving upstream active and a healthy follow-up blocked. |
+| Spending | Newest prior ledger: `release-final-results.json.gz`; $0.487861267878 accounted upper bound, $0.201211634280 returned receipts, under unchanged $1 cap. All earlier reservations retained. |
+| Final release approval | **Blocked** by four native prerequisites; no release acceptance, push, publication or deployment. |
 
 ## Packaging correction and version preparation
 
@@ -134,7 +137,7 @@ The current local-only wizard is `bash .private/setup-openrouter-release.sh`; it
 
 ```bash
 node packages/core/test/fixtures/release-model-input.mjs > /tmp/normattiva-release-model-input.json
-gzip -dc docs/implementation/release-continuation-results.json.gz > /tmp/normattiva-release-prior.json
+gzip -dc docs/implementation/release-final-results.json.gz > /tmp/normattiva-release-prior.json
 node --env-file=.env.openrouter.local packages/core/test/fixtures/release-openrouter.mjs /tmp/normattiva-release-model-input.json /tmp/normattiva-release-model-plan.json --plan --prior-report /tmp/normattiva-release-prior.json
 # Paid corrective sample, after reviewing the plan and retained spending ledger:
 node --env-file=.env.openrouter.local packages/core/test/fixtures/release-openrouter.mjs /tmp/normattiva-release-model-input.json /tmp/normattiva-release-model-results.json --prior-report /tmp/normattiva-release-prior.json

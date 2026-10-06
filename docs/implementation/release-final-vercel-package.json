@@ -1,0 +1,12 @@
+{
+  "recorded_at": "2026-10-06T15:40:50.949Z",
+  "node": "v24.15.0",
+  "built_handler": "packages/http-server/api/mcp.js",
+  "runtime": "nodejs24.x",
+  "max_duration_seconds": 60,
+  "worker_present": true,
+  "declared_file_path_mappings": 45,
+  "isolated_built_function_contracts": "passed",
+  "package_version": "0.2.0",
+  "scope": "Dereferenced local Vercel output outside workspace; parser worker and default discovery/reading/resource/prompt contracts. Synthetic official boundaries; not deployed Vercel verification."
+}

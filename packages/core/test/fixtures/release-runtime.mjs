@@ -22,7 +22,7 @@ runtime.call = (kind, signal, work) => call(kind, signal, async scope => {
 const saved = name => new URL('./acts/' + name, import.meta.url);
 let pub = publication;
 if (mode === 'direct') installTraversalBoundary();
-else if (mode === 'tuel') {
+else if (mode === 'tuel' || mode === 'tuel-reading') {
   const controls = JSON.parse(gunzipSync(readFileSync(saved('tuel-details.json.gz'))));
   globalThis.fetch = async (url, init) => {
     if (init?.body) {
@@ -36,13 +36,14 @@ else if (mode === 'tuel') {
     stream.on('data', value => { bodyBytes += value.byteLength; });
     return new Response(Readable.toWeb(stream));
   };
-} else throw new Error('Use direct or tuel; Civil concurrent parser run has its own fixture.');
+} else throw new Error('Use direct, tuel or tuel-reading; Civil concurrent parser run has its own fixture.');
 
 const reader = new ActTraversal({ signingKey, upstream: runtime });
 const act_locator = reader.actLocator(pub), snapshot_date = '2026-10-02';
 const pages = [], started = performance.now();
 function page(value) {
   const result = jsonContent(value);
+  assert.ok(Buffer.byteLength(JSON.stringify(result)) <= 128 * 1024);
   pages.push({ serialized_bytes: Buffer.byteLength(JSON.stringify(result)),
     items: value.traversal?.items.length ?? 1, progress: value.traversal?.progress ?? value.progress,
     elapsed_ms: performance.now() - started });
@@ -54,25 +55,30 @@ if (mode === 'direct') {
   }
   assert.ok(calls.every(c => c.attempts === 1));
 } else {
-  let result = await reader.listArticles({ act_locator, snapshot_date });
+  const method = mode === 'tuel-reading' ? 'readAct' : 'listArticles';
+  let result = await reader[method]({ act_locator, snapshot_date });
   const labels = [];
   while (true) {
-    page(result); labels.push(...result.traversal.items.map(e => e.label));
+    page(result); labels.push(...result.traversal.items.filter(e => mode !== 'tuel-reading' || e.content_complete).map(e => mode === 'tuel-reading' ? e.entry.article_locator : e.label));
     if (result.traversal.progress === 'complete') break;
-    assert.ok(result.traversal.cursor); assert.ok(pages.length < 100);
-    result = await reader.listArticles({ cursor: result.traversal.cursor });
+    assert.ok(result.traversal.cursor); assert.ok(pages.length < 1000);
+    result = await reader[method]({ cursor: result.traversal.cursor });
   }
-  assert.equal(labels.length, 295); assert.equal(labels.at(-1), '275');
+  assert.equal(labels.length, 295);
+  if (mode === 'tuel-reading') assert.equal(new Set(labels).size, 295);
+  else assert.equal(labels.at(-1), '275');
   // Cached first page, then explicit eviction and reacquisition with old cursor.
-  page(await reader.listArticles({ act_locator, snapshot_date }));
-  const cursor = (await reader.listArticles({ act_locator, snapshot_date, page_size: 1 })).traversal.cursor;
+  page(await reader[method]({ act_locator, snapshot_date }));
+  const cursor = (await reader[method]({ act_locator, snapshot_date, ...(mode === 'tuel-reading' ? { max_chars: 4 } : { page_size: 1 }) })).traversal.cursor;
   reader.evict();
-  page(await reader.listArticles({ cursor }));
+  page(await reader[method]({ cursor }));
 }
 const sorted = calls.map(c => c.elapsed_ms).sort((a,b) => a-b);
 const percentile = fraction => sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * fraction))];
 console.log(JSON.stringify({ recorded_at: new Date().toISOString(), node: process.version, workload: mode,
-  source_basis: mode === 'tuel' ? 'Captured TUEL XML/portal; synthetic independently rendered details, not live historical API evidence.' : 'Synthetic ordinary article.',
+  source_basis: mode.startsWith('tuel') ? 'Captured TUEL XML/portal; synthetic independently rendered details, not live historical API evidence.' : 'Synthetic ordinary article.',
   calls, pages, total_ms: performance.now() - started, body_bytes: bodyBytes,
   attempts: calls.reduce((n,c) => n+c.attempts,0), max_rss_kib: process.resourceUsage().maxRSS,
-  median_ms: percentile(.5), p95_ms: percentile(.95), p99_ms: percentile(.99) }, null, 2));
+  median_ms: percentile(.5), p95_ms: percentile(.95), p99_ms: percentile(.99),
+  memory_target_kib: 256 * 1024, memory_gate: process.resourceUsage().maxRSS <= 256 * 1024 ? 'passed' : 'failed' }, null, 2));
+if (process.resourceUsage().maxRSS > 256 * 1024) process.exitCode = 1;

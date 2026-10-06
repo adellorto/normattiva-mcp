@@ -10,6 +10,16 @@ globalThis.fetch = async (url, init) => {
   writeFileSync(process.env.RELEASE_ATTEMPT_FILE, String(attempts));
   const body = JSON.parse(init.body);
   if ('parallel_tool_calls' in body) return Response.json({ error: { message: 'Unsupported provider parameter' } }, { status: 404 });
+  if (process.env.RELEASE_PROVIDER_MODE === 'discovery-continuation') {
+    const prior = body.messages.find(message => message.role === 'tool');
+    const cursor = prior && JSON.parse(prior.content).traversal.cursor;
+    if (!cursor || !body.messages.at(-1).content.includes(cursor)) return Response.json({ error: { message: 'Continuation must use an actual previously returned reference' } }, { status: 422 });
+    return Response.json({ model: 'fixture-model', choices: [{ finish_reason: 'tool_calls', message: {
+      role: 'assistant', content: null, tool_calls: [{ id: 'fixture_next', type: 'function', function: {
+        name: 'continue_acts', arguments: JSON.stringify({ cursor }),
+      } }],
+    } }], usage: { cost: 0 } });
+  }
   if (['clarify-invalid', 'repair-invalid'].includes(process.env.RELEASE_PROVIDER_MODE)) {
     const message = process.env.RELEASE_PROVIDER_MODE === 'clarify-invalid'
       ? { role: 'assistant', content: 'Il 31 dicembre 2024 è successivo al 1 gennaio 2024. Quale intervallo intendevi?' }

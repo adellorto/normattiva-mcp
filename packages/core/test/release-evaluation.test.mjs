@@ -93,3 +93,16 @@ test('silently repairing an inverted range remains a measured routing failure', 
   const report = JSON.parse(await readFile(f.output, 'utf8'));
   assert.ok(report.runs.every(run => run.automated_failures.includes('lost_invalid_constraint')));
 });
+
+test('discovery continuation evaluation supplies a reference actually returned in its tool history', async () => {
+  const f = await fixture('discovery-continuation');
+  f.env.OPENROUTER_CASES = 'edge-cursor';
+  await promisify(execFile)(process.execPath, f.args, { env: f.env });
+  const report = JSON.parse(await readFile(f.output, 'utf8'));
+  assert.equal(report.runs.length, 2);
+  assert.ok(report.runs.every(run => run.automated_failures.length === 0));
+  for (const run of report.runs) {
+    const history = run.input.find(message => message.role === 'tool');
+    assert.equal(run.expected_cursor, JSON.parse(history.content).traversal.cursor);
+  }
+});

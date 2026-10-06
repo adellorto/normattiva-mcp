@@ -39,9 +39,24 @@ const risks = {
   attachment_coverage: ['read_act', 'Questa risposta completa prova che hai letto anche tutti gli allegati e i PDF?', false],
   identified_currentness_unknown: ['find_acts', 'L’atto identificato è sicuramente oggi in vigore?', false],
 };
-const cases = scenarios.map(scenario => ({ id: scenario.id, scenario,
-  expected_tool: scenario.route === 'clarify' ? undefined : scenario.route === 'continue' ? 'continue_acts' : 'find_acts',
-  cursor: scenario.cursor, messages: [{ role: 'user', content: scenario.prompt }] }));
+const cases = scenarios.map(original => {
+  let scenario = original, messages = [{ role: 'user', content: scenario.prompt }];
+  if (scenario.route === 'continue') {
+    // The prototype's placeholder is not an issued production reference.
+    // Supply actual prior tool history rather than testing willingness to invent it.
+    const sample = input.samples.discovery_more, cursor = sample.structuredContent.traversal.cursor;
+    assert.ok(cursor);
+    scenario = { ...scenario, cursor, prompt: scenario.prompt.replace(scenario.cursor, cursor) };
+    messages = [{ role: 'user', content: 'trasparenza amministrativa' },
+      { role: 'assistant', content: null, tool_calls: [{ id: 'fixture_discovery', type: 'function',
+        function: { name: 'find_acts', arguments: JSON.stringify({ request: 'trasparenza amministrativa' }) } }] },
+      { role: 'tool', tool_call_id: 'fixture_discovery', content: sample.content[0].text },
+      { role: 'user', content: scenario.prompt }];
+  }
+  return { id: scenario.id, scenario,
+    expected_tool: scenario.route === 'clarify' ? undefined : scenario.route === 'continue' ? 'continue_acts' : 'find_acts',
+    cursor: scenario.cursor, messages };
+});
 for (const [id, [tool, prompt, continuation]] of Object.entries(risks)) {
   const sample = input.samples[id], value = sample.structuredContent;
   const cursor = continuation ? value.cursor ?? value.traversal?.cursor : undefined;
