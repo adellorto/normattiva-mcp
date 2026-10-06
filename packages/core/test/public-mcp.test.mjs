@@ -127,3 +127,132 @@ test('the live TUEL detail without editorial identity remains unresolved rather 
     });
   } finally { globalThis.fetch = original; }
 });
+
+test('independently discovered TUEL identity verifies the captured detail in one request and survives continuation restart', async () => {
+  const original = globalThis.fetch;
+  const detail = gunzipSync(readFileSync(new URL('./fixtures/acts/tuel-direct-2026-10-05.json.gz', import.meta.url))).toString();
+  const search = readFileSync(new URL('./fixtures/discovery/tuel-exact-2026-10-05.json', import.meta.url)).toString();
+  const requests = [];
+  globalThis.fetch = async (url, init) => {
+    requests.push({ url: String(url), body: JSON.parse(init.body) });
+    return new Response(String(url).endsWith('/ricerca/avanzata') ? search : detail, { headers: { 'Content-Type': 'application/json' } });
+  };
+  try {
+    let cursor, prefix;
+    await connected(async client => {
+      const found = (await client.callTool({ name: 'find_acts', arguments: { request: 'decreto legislativo 267/2000 articolo 13' } })).structuredContent;
+      const before = requests.length;
+      const result = await client.callTool({ name: 'read_article', arguments: {
+        act_locator: found.traversal.items[0].act_locator, article_reference: '13', snapshot_date: '2026-10-02', max_chars: 4,
+      } });
+      assert.equal(result.structuredContent.outcome, 'found');
+      assert.equal(requests.length, before + 1);
+      assert.equal(result.structuredContent.progress, 'more');
+      cursor = result.structuredContent.cursor;
+      prefix = result.structuredContent.content.text;
+    });
+    await connected(async client => {
+      const before = requests.length;
+      const result = (await client.callTool({ name: 'read_article', arguments: { cursor } })).structuredContent;
+      assert.equal(result.outcome, 'found');
+      assert.equal(requests.length, before + 1);
+      assert.equal(prefix + result.content.text, 'Art. 13.');
+      assert.equal(result.evidence[0].snapshot_date, '2026-10-02');
+    });
+  } finally { globalThis.fetch = original; }
+});
+
+test('discovery proof rejects conflicting or incomplete detail identity and forged act locators', async () => {
+  const original = globalThis.fetch;
+  const capture = JSON.parse(gunzipSync(readFileSync(new URL('./fixtures/acts/tuel-direct-2026-10-05.json.gz', import.meta.url))));
+  const search = readFileSync(new URL('./fixtures/discovery/tuel-exact-2026-10-05.json', import.meta.url)).toString();
+  let returned = capture, attempts = 0;
+  globalThis.fetch = async url => {
+    attempts++;
+    return String(url).endsWith('/ricerca/avanzata') ? new Response(search) : Response.json(returned);
+  };
+  try {
+    await connected(async client => {
+      const found = (await client.callTool({ name: 'find_acts', arguments: { request: 'decreto legislativo 267/2000' } })).structuredContent;
+      const act_locator = found.traversal.items[0].act_locator;
+      for (const changed of [
+        { numeroProvvedimento: 268 }, { giornoProvvedimento: 19 }, { tipoProvvedimentoDescrizione: 'LEGGE' },
+        { numeroGU: 228 }, { numeroSupplemento: 163 }, { tipoSupplementoCode: 'SE' }, { numeroProvvedimento: undefined }, { giornoGU: 29 },
+        { sottoTitolo: '(999G9999)' },
+      ]) {
+        // Even a matching editorial subtitle cannot override a conflicting authenticated identity.
+        returned = { ...capture, data: { atto: { ...capture.data.atto, sottoTitolo: '(000G0304)', ...changed } } };
+        const result = (await client.callTool({ name: 'read_article', arguments: { act_locator, article_reference: '13', snapshot_date: '2026-10-02' } })).structuredContent;
+        assert.equal(result.outcome, 'unresolved', JSON.stringify(changed));
+        assert.equal(result.reason, 'source_identity_conflict');
+        assert.equal(result.content, undefined);
+      }
+      const before = attempts;
+      const forged = act_locator.slice(0, -1) + (act_locator.endsWith('A') ? 'B' : 'A');
+      const error = await client.callTool({ name: 'read_article', arguments: { act_locator: forged, article_reference: '13' } });
+      assert.equal(error.structuredContent.error.category, 'invalid_locator');
+      await assert.rejects(new ActTraversal({ signingKey: Buffer.alloc(32, 99) }).readArticle({ act_locator, article_reference: '13' }),
+        error => error.detail.category === 'invalid_locator');
+      assert.equal(attempts, before);
+    });
+  } finally { globalThis.fetch = original; }
+});
+
+test('the independently rendered dated TUEL first occurrence verifies its index without discarding API preamble content', async () => {
+  const original = globalThis.fetch;
+  const saved = name => gunzipSync(readFileSync(new URL('./fixtures/acts/' + name, import.meta.url))).toString();
+  const search = readFileSync(new URL('./fixtures/discovery/tuel-exact-2026-10-05.json', import.meta.url)).toString();
+  let detailAttempts = 0;
+  globalThis.fetch = async url => {
+    if (String(url).endsWith('/ricerca/avanzata')) return new Response(search);
+    if (String(url).includes('dettaglio-atto')) { detailAttempts++; return new Response(saved('tuel-enactment-direct-2026-10-06.json.gz')); }
+    return new Response(saved(String(url).includes('caricaAKN') ? 'tuel-public.xml.gz' : 'tuel-current-portal.html.gz'));
+  };
+  try {
+    await connected(async client => {
+      const found = (await client.callTool({ name: 'find_acts', arguments: { request: 'decreto legislativo 267/2000' } })).structuredContent;
+      const index = (await client.callTool({ name: 'list_articles', arguments: {
+        act_locator: found.traversal.items[0].act_locator, snapshot_date: '2026-10-02', page_size: 1,
+      } })).structuredContent;
+      assert.equal(index.traversal.items[0].label, '1');
+      assert.equal(index.traversal.progress, 'more');
+      assert.ok(index.snapshot.evidence.some(e => e.source === 'official_detail' && e.official_url.includes('/eli/id/')));
+      assert.equal(detailAttempts, 0);
+      const read = (await client.callTool({ name: 'read_article', arguments: {
+        article_locator: index.traversal.items[0].article_locator,
+      } })).structuredContent;
+      assert.equal(read.outcome, 'unresolved');
+      assert.equal(read.reason, 'source_content_conflict');
+      assert.equal(read.content, undefined);
+      assert.equal(detailAttempts, 1);
+    });
+  } finally { globalThis.fetch = original; }
+});
+
+test('conflicting content or validity in the dated rendered first occurrence withholds its index', async () => {
+  const original = globalThis.fetch;
+  const saved = name => gunzipSync(readFileSync(new URL('./fixtures/acts/' + name, import.meta.url))).toString();
+  const search = readFileSync(new URL('./fixtures/discovery/tuel-exact-2026-10-05.json', import.meta.url)).toString();
+  const page = saved('tuel-current-portal.html.gz');
+  try {
+    for (const [mutated, code] of [
+      [page.replaceAll('composto di 275 articoli', 'composto di 274 articoli'), 'source_content_conflict'],
+      [page.replaceAll('13-10-2000', '13-10-2027'), 'snapshot_conflict'],
+    ]) {
+      assert.notEqual(mutated, page);
+      globalThis.fetch = async url => {
+        if (String(url).endsWith('/ricerca/avanzata')) return new Response(search);
+        assert.equal(String(url).includes('dettaglio-atto'), false, 'source conflict must not trigger another representation');
+        return new Response(String(url).includes('caricaAKN') ? saved('tuel-public.xml.gz') : mutated);
+      };
+      await connected(async client => {
+        const found = (await client.callTool({ name: 'find_acts', arguments: { request: 'decreto legislativo 267/2000' } })).structuredContent;
+        const result = await client.callTool({ name: 'list_articles', arguments: {
+          act_locator: found.traversal.items[0].act_locator, snapshot_date: '2026-10-02', page_size: 1,
+        } });
+        assert.equal(result.isError, true);
+        assert.equal(result.structuredContent.error.code, code);
+      });
+    }
+  } finally { globalThis.fetch = original; }
+});

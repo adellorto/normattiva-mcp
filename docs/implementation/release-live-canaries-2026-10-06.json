@@ -1,0 +1,1052 @@
+{
+  "recorded_at": "2026-10-06T11:07:59.630Z",
+  "node": "v24.15.0",
+  "scope": "Live official sources through local default MCP registration; no deployed/npm/model acceptance.",
+  "calls": [
+    {
+      "name": "TUEL exact discovery",
+      "tool": "find_acts",
+      "input": {
+        "request": "decreto legislativo 267/2000 articolo 13"
+      },
+      "result": {
+        "match": "identified",
+        "interpretation": "decreto legislativo 267/2000 articolo 13",
+        "article_reference": "13",
+        "ordering": "exact_citation",
+        "corpus": "live",
+        "explanation": "Act identity is verified; current legal force is unknown.",
+        "traversal": {
+          "progress": "complete",
+          "items": [
+            {
+              "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjcsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxNjJ9fX0.KbBxhaReNPokQiL11cUfmIPLNdNy7BeAUffpCiw6QM0",
+              "publication": {
+                "data_gu": "2000-09-28",
+                "codice_redazionale": "000G0304"
+              },
+              "title": "[Testo unico delle leggi sull'ordinamento degli enti locali.\r ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-06T11:08:00.527Z",
+                  "publication": {
+                    "data_gu": "2000-09-28",
+                    "codice_redazionale": "000G0304"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata"
+                }
+              ],
+              "current": "unknown"
+            }
+          ]
+        }
+      },
+      "serialized_bytes": 2209,
+      "elapsed_ms": 871,
+      "validation": "passed"
+    },
+    {
+      "name": "TUEL ordinary direct read",
+      "tool": "read_article",
+      "input": {
+        "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjcsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxNjJ9fX0.KbBxhaReNPokQiL11cUfmIPLNdNy7BeAUffpCiw6QM0",
+        "article_reference": "13",
+        "snapshot_date": "2026-10-02",
+        "max_chars": 4
+      },
+      "result": {
+        "reason": "verified_official_article",
+        "requested": {
+          "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjcsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxNjJ9fX0.KbBxhaReNPokQiL11cUfmIPLNdNy7BeAUffpCiw6QM0",
+          "snapshot_date": "2026-10-02",
+          "article_reference": "13"
+        },
+        "evidence": [
+          {
+            "source": "official_detail",
+            "checked_at": "2026-10-06T11:08:00.556Z",
+            "snapshot_date": "2026-10-02",
+            "publication": {
+              "data_gu": "2000-09-28",
+              "codice_redazionale": "000G0304"
+            },
+            "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto"
+          }
+        ],
+        "outcome": "found",
+        "content": {
+          "format": "text",
+          "text": "Art.",
+          "title": "DECRETO LEGISLATIVO 18 agosto 2000, n. 267",
+          "effective_from": "2000-10-13"
+        },
+        "progress": "more",
+        "cursor": "n1_eyJ2IjoxLCJraW5kIjoiY3Vyc29yIiwicHVibGljYXRpb24iOnsiZGF0YV9ndSI6IjIwMDAtMDktMjgiLCJjb2RpY2VfcmVkYXppb25hbGUiOiIwMDBHMDMwNCJ9LCJkYXRlIjoiMjAyNi0xMC0wMiIsInNvdXJjZSI6Imh0dHBzOi8vYXBpLm5vcm1hdHRpdmEuaXQvdC9ub3JtYXR0aXZhLmFwaS9iZmYtb3BlbmRhdGEvdjEvYXBpL3YxL2F0dG8vZGV0dGFnbGlvLWF0dG8iLCJkaWdlc3QiOiI5NWE2N2NjNjUwMThhNzQ1ZWIxMzMwNGMxZjliNDc4YjljYjgzZDRiYmRlZDRiNTFmMzZiZjU2ZjFjY2RmMGZkIiwiaWRlbnRpdHkiOnsidHlwZSI6IkRFQ1JFVE8gTEVHSVNMQVRJVk8iLCJpc3N1ZWQiOiIyMDAwLTA4LTE4IiwibnVtYmVyIjoyNjcsImdhemV0dGUiOjIyNywic3VwcGxlbWVudCI6eyJ0eXBlIjoiU08iLCJudW1iZXIiOjE2Mn19LCJvcGVyYXRpb24iOiJyZWFkX2FydGljbGUiLCJpbmRleCI6MCwic2VnbWVudCI6MCwib2Zmc2V0Ijo0LCJsaW1pdCI6NCwidGFyZ2V0IjoibjFfZXlKMklqb3hMQ0pyYVc1a0lqb2lZWEowYVdOc1pTSXNJbkIxWW14cFkyRjBhVzl1SWpwN0ltUmhkR0ZmWjNVaU9pSXlNREF3TFRBNUxUSTRJaXdpWTI5a2FXTmxYM0psWkdGNmFXOXVZV3hsSWpvaU1EQXdSekF6TURRaWZTd2laR0YwWlNJNklqSXdNall0TVRBdE1ESWlMQ0p6YjNWeVkyVWlPaUpvZEhSd2N6b3ZMMkZ3YVM1dWIzSnRZWFIwYVhaaExtbDBMM1F2Ym05eWJXRjBkR2wyWVM1aGNHa3ZZbVptTFc5d1pXNWtZWFJoTDNZeEwyRndhUzkyTVM5aGRIUnZMMlJsZEhSaFoyeHBieTFoZEhSdklpd2laR2xuWlhOMElqb2lPVFZoTmpkall6WTFNREU0WVRjME5XVmlNVE16TURSak1XWTVZalEzT0dJNVkySTRNMlEwWW1Ka1pXUTBZalV4WmpNMlltWTFObVl4WTJOa1pqQm1aQ0lzSW1sa1pXNTBhWFI1SWpwN0luUjVjR1VpT2lKRVJVTlNSVlJQSUV4RlIwbFRURUZVU1ZaUElpd2lhWE56ZFdWa0lqb2lNakF3TUMwd09DMHhPQ0lzSW01MWJXSmxjaUk2TWpZM0xDSm5ZWHBsZEhSbElqb3lNamNzSW5OMWNIQnNaVzFsYm5RaU9uc2lkSGx3WlNJNklsTlBJaXdpYm5WdFltVnlJam94TmpKOWZTd2ljMlZzWldOMGIzSWlPaUprYVhKbFkzUWlMQ0pzWVdKbGJDSTZJakV6SWl3aVkyOXVkR1Z1ZEVScFoyVnpkQ0k2SWprMVlUWTNZMk0yTlRBeE9HRTNORFZsWWpFek16QTBZekZtT1dJME56aGlPV05pT0ROa05HSmlaR1ZrTkdJMU1XWXpObUptTlRabU1XTmpaR1l3Wm1RaUxDSmhaR1J5WlhOeklqcDdJbWxrUVhKMGFXTnZiRzhpT2pFekxDSnpiM1IwYjBGeWRHbGpiMnh2SWpveExDSnpiM1IwYjBGeWRHbGpiMnh2TVNJNk1Dd2labXhoWjFScGNHOUJjblJwWTI5c2J5STZJakFpTENKcFpFZHlkWEJ3YnlJNk1Dd2ljSEp2WjNKbGMzTnBkbThpT2pBc0luWmxjbk5wYjI1bElqb3dmU3dpZEdGaWJHVkVhV2RsYzNRaU9pSTBaalV6WTJSaE1UaGpNbUpoWVRCak1ETTFOR0ppTldZNVlUTmxZMkpsTldWa01USmhZalJrT0dVeE1XSmhPRGN6WXpKbU1URXhOakV5TURKaU9UUTFJbjAuY0g4TUhlTk1wMGZzbGJWSi04QXlmcE5pRFk1bnh3TDJzbXQzME40U2trVSJ9.JcPYSkgCsAt6AxHSxOziONPXet45pG8g1clCcUdqA6Y",
+        "explanation": "This page contains part of the article. Continue with the literal cursor for the remaining text."
+      },
+      "serialized_bytes": 6386,
+      "elapsed_ms": 412,
+      "validation": "passed"
+    },
+    {
+      "name": "TUEL literal article continuation",
+      "tool": "read_article",
+      "input": {
+        "cursor": "n1_eyJ2IjoxLCJraW5kIjoiY3Vyc29yIiwicHVibGljYXRpb24iOnsiZGF0YV9ndSI6IjIwMDAtMDktMjgiLCJjb2RpY2VfcmVkYXppb25hbGUiOiIwMDBHMDMwNCJ9LCJkYXRlIjoiMjAyNi0xMC0wMiIsInNvdXJjZSI6Imh0dHBzOi8vYXBpLm5vcm1hdHRpdmEuaXQvdC9ub3JtYXR0aXZhLmFwaS9iZmYtb3BlbmRhdGEvdjEvYXBpL3YxL2F0dG8vZGV0dGFnbGlvLWF0dG8iLCJkaWdlc3QiOiI5NWE2N2NjNjUwMThhNzQ1ZWIxMzMwNGMxZjliNDc4YjljYjgzZDRiYmRlZDRiNTFmMzZiZjU2ZjFjY2RmMGZkIiwiaWRlbnRpdHkiOnsidHlwZSI6IkRFQ1JFVE8gTEVHSVNMQVRJVk8iLCJpc3N1ZWQiOiIyMDAwLTA4LTE4IiwibnVtYmVyIjoyNjcsImdhemV0dGUiOjIyNywic3VwcGxlbWVudCI6eyJ0eXBlIjoiU08iLCJudW1iZXIiOjE2Mn19LCJvcGVyYXRpb24iOiJyZWFkX2FydGljbGUiLCJpbmRleCI6MCwic2VnbWVudCI6MCwib2Zmc2V0Ijo0LCJsaW1pdCI6NCwidGFyZ2V0IjoibjFfZXlKMklqb3hMQ0pyYVc1a0lqb2lZWEowYVdOc1pTSXNJbkIxWW14cFkyRjBhVzl1SWpwN0ltUmhkR0ZmWjNVaU9pSXlNREF3TFRBNUxUSTRJaXdpWTI5a2FXTmxYM0psWkdGNmFXOXVZV3hsSWpvaU1EQXdSekF6TURRaWZTd2laR0YwWlNJNklqSXdNall0TVRBdE1ESWlMQ0p6YjNWeVkyVWlPaUpvZEhSd2N6b3ZMMkZ3YVM1dWIzSnRZWFIwYVhaaExtbDBMM1F2Ym05eWJXRjBkR2wyWVM1aGNHa3ZZbVptTFc5d1pXNWtZWFJoTDNZeEwyRndhUzkyTVM5aGRIUnZMMlJsZEhSaFoyeHBieTFoZEhSdklpd2laR2xuWlhOMElqb2lPVFZoTmpkall6WTFNREU0WVRjME5XVmlNVE16TURSak1XWTVZalEzT0dJNVkySTRNMlEwWW1Ka1pXUTBZalV4WmpNMlltWTFObVl4WTJOa1pqQm1aQ0lzSW1sa1pXNTBhWFI1SWpwN0luUjVjR1VpT2lKRVJVTlNSVlJQSUV4RlIwbFRURUZVU1ZaUElpd2lhWE56ZFdWa0lqb2lNakF3TUMwd09DMHhPQ0lzSW01MWJXSmxjaUk2TWpZM0xDSm5ZWHBsZEhSbElqb3lNamNzSW5OMWNIQnNaVzFsYm5RaU9uc2lkSGx3WlNJNklsTlBJaXdpYm5WdFltVnlJam94TmpKOWZTd2ljMlZzWldOMGIzSWlPaUprYVhKbFkzUWlMQ0pzWVdKbGJDSTZJakV6SWl3aVkyOXVkR1Z1ZEVScFoyVnpkQ0k2SWprMVlUWTNZMk0yTlRBeE9HRTNORFZsWWpFek16QTBZekZtT1dJME56aGlPV05pT0ROa05HSmlaR1ZrTkdJMU1XWXpObUptTlRabU1XTmpaR1l3Wm1RaUxDSmhaR1J5WlhOeklqcDdJbWxrUVhKMGFXTnZiRzhpT2pFekxDSnpiM1IwYjBGeWRHbGpiMnh2SWpveExDSnpiM1IwYjBGeWRHbGpiMnh2TVNJNk1Dd2labXhoWjFScGNHOUJjblJwWTI5c2J5STZJakFpTENKcFpFZHlkWEJ3YnlJNk1Dd2ljSEp2WjNKbGMzTnBkbThpT2pBc0luWmxjbk5wYjI1bElqb3dmU3dpZEdGaWJHVkVhV2RsYzNRaU9pSTBaalV6WTJSaE1UaGpNbUpoWVRCak1ETTFOR0ppTldZNVlUTmxZMkpsTldWa01USmhZalJrT0dVeE1XSmhPRGN6WXpKbU1URXhOakV5TURKaU9UUTFJbjAuY0g4TUhlTk1wMGZzbGJWSi04QXlmcE5pRFk1bnh3TDJzbXQzME40U2trVSJ9.JcPYSkgCsAt6AxHSxOziONPXet45pG8g1clCcUdqA6Y"
+      },
+      "result": {
+        "reason": "verified_official_article",
+        "requested": {
+          "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjcsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxNjJ9fX0.KbBxhaReNPokQiL11cUfmIPLNdNy7BeAUffpCiw6QM0",
+          "snapshot_date": "2026-10-02",
+          "article_reference": "13",
+          "article_locator": "n1_eyJ2IjoxLCJraW5kIjoiYXJ0aWNsZSIsInB1YmxpY2F0aW9uIjp7ImRhdGFfZ3UiOiIyMDAwLTA5LTI4IiwiY29kaWNlX3JlZGF6aW9uYWxlIjoiMDAwRzAzMDQifSwiZGF0ZSI6IjIwMjYtMTAtMDIiLCJzb3VyY2UiOiJodHRwczovL2FwaS5ub3JtYXR0aXZhLml0L3Qvbm9ybWF0dGl2YS5hcGkvYmZmLW9wZW5kYXRhL3YxL2FwaS92MS9hdHRvL2RldHRhZ2xpby1hdHRvIiwiZGlnZXN0IjoiOTVhNjdjYzY1MDE4YTc0NWViMTMzMDRjMWY5YjQ3OGI5Y2I4M2Q0YmJkZWQ0YjUxZjM2YmY1NmYxY2NkZjBmZCIsImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjcsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxNjJ9fSwic2VsZWN0b3IiOiJkaXJlY3QiLCJsYWJlbCI6IjEzIiwiY29udGVudERpZ2VzdCI6Ijk1YTY3Y2M2NTAxOGE3NDVlYjEzMzA0YzFmOWI0NzhiOWNiODNkNGJiZGVkNGI1MWYzNmJmNTZmMWNjZGYwZmQiLCJhZGRyZXNzIjp7ImlkQXJ0aWNvbG8iOjEzLCJzb3R0b0FydGljb2xvIjoxLCJzb3R0b0FydGljb2xvMSI6MCwiZmxhZ1RpcG9BcnRpY29sbyI6IjAiLCJpZEdydXBwbyI6MCwicHJvZ3Jlc3Npdm8iOjAsInZlcnNpb25lIjowfSwidGFibGVEaWdlc3QiOiI0ZjUzY2RhMThjMmJhYTBjMDM1NGJiNWY5YTNlY2JlNWVkMTJhYjRkOGUxMWJhODczYzJmMTExNjEyMDJiOTQ1In0.cH8MHeNMp0fslbVJ-8AyfpNiDY5nxwL2smt30N4SkkU"
+        },
+        "evidence": [
+          {
+            "source": "official_detail",
+            "checked_at": "2026-10-06T11:08:00.963Z",
+            "snapshot_date": "2026-10-02",
+            "publication": {
+              "data_gu": "2000-09-28",
+              "codice_redazionale": "000G0304"
+            },
+            "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto"
+          }
+        ],
+        "outcome": "found",
+        "content": {
+          "format": "text",
+          "text": " 13.",
+          "title": "DECRETO LEGISLATIVO 18 agosto 2000, n. 267",
+          "effective_from": "2000-10-13"
+        },
+        "progress": "more",
+        "cursor": "n1_eyJ2IjoxLCJraW5kIjoiY3Vyc29yIiwicHVibGljYXRpb24iOnsiZGF0YV9ndSI6IjIwMDAtMDktMjgiLCJjb2RpY2VfcmVkYXppb25hbGUiOiIwMDBHMDMwNCJ9LCJkYXRlIjoiMjAyNi0xMC0wMiIsInNvdXJjZSI6Imh0dHBzOi8vYXBpLm5vcm1hdHRpdmEuaXQvdC9ub3JtYXR0aXZhLmFwaS9iZmYtb3BlbmRhdGEvdjEvYXBpL3YxL2F0dG8vZGV0dGFnbGlvLWF0dG8iLCJkaWdlc3QiOiI5NWE2N2NjNjUwMThhNzQ1ZWIxMzMwNGMxZjliNDc4YjljYjgzZDRiYmRlZDRiNTFmMzZiZjU2ZjFjY2RmMGZkIiwiaWRlbnRpdHkiOnsidHlwZSI6IkRFQ1JFVE8gTEVHSVNMQVRJVk8iLCJpc3N1ZWQiOiIyMDAwLTA4LTE4IiwibnVtYmVyIjoyNjcsImdhemV0dGUiOjIyNywic3VwcGxlbWVudCI6eyJ0eXBlIjoiU08iLCJudW1iZXIiOjE2Mn19LCJvcGVyYXRpb24iOiJyZWFkX2FydGljbGUiLCJpbmRleCI6MCwic2VnbWVudCI6MCwib2Zmc2V0Ijo4LCJsaW1pdCI6NCwidGFyZ2V0IjoibjFfZXlKMklqb3hMQ0pyYVc1a0lqb2lZWEowYVdOc1pTSXNJbkIxWW14cFkyRjBhVzl1SWpwN0ltUmhkR0ZmWjNVaU9pSXlNREF3TFRBNUxUSTRJaXdpWTI5a2FXTmxYM0psWkdGNmFXOXVZV3hsSWpvaU1EQXdSekF6TURRaWZTd2laR0YwWlNJNklqSXdNall0TVRBdE1ESWlMQ0p6YjNWeVkyVWlPaUpvZEhSd2N6b3ZMMkZ3YVM1dWIzSnRZWFIwYVhaaExtbDBMM1F2Ym05eWJXRjBkR2wyWVM1aGNHa3ZZbVptTFc5d1pXNWtZWFJoTDNZeEwyRndhUzkyTVM5aGRIUnZMMlJsZEhSaFoyeHBieTFoZEhSdklpd2laR2xuWlhOMElqb2lPVFZoTmpkall6WTFNREU0WVRjME5XVmlNVE16TURSak1XWTVZalEzT0dJNVkySTRNMlEwWW1Ka1pXUTBZalV4WmpNMlltWTFObVl4WTJOa1pqQm1aQ0lzSW1sa1pXNTBhWFI1SWpwN0luUjVjR1VpT2lKRVJVTlNSVlJQSUV4RlIwbFRURUZVU1ZaUElpd2lhWE56ZFdWa0lqb2lNakF3TUMwd09DMHhPQ0lzSW01MWJXSmxjaUk2TWpZM0xDSm5ZWHBsZEhSbElqb3lNamNzSW5OMWNIQnNaVzFsYm5RaU9uc2lkSGx3WlNJNklsTlBJaXdpYm5WdFltVnlJam94TmpKOWZTd2ljMlZzWldOMGIzSWlPaUprYVhKbFkzUWlMQ0pzWVdKbGJDSTZJakV6SWl3aVkyOXVkR1Z1ZEVScFoyVnpkQ0k2SWprMVlUWTNZMk0yTlRBeE9HRTNORFZsWWpFek16QTBZekZtT1dJME56aGlPV05pT0ROa05HSmlaR1ZrTkdJMU1XWXpObUptTlRabU1XTmpaR1l3Wm1RaUxDSmhaR1J5WlhOeklqcDdJbWxrUVhKMGFXTnZiRzhpT2pFekxDSnpiM1IwYjBGeWRHbGpiMnh2SWpveExDSnpiM1IwYjBGeWRHbGpiMnh2TVNJNk1Dd2labXhoWjFScGNHOUJjblJwWTI5c2J5STZJakFpTENKcFpFZHlkWEJ3YnlJNk1Dd2ljSEp2WjNKbGMzTnBkbThpT2pBc0luWmxjbk5wYjI1bElqb3dmU3dpZEdGaWJHVkVhV2RsYzNRaU9pSTBaalV6WTJSaE1UaGpNbUpoWVRCak1ETTFOR0ppTldZNVlUTmxZMkpsTldWa01USmhZalJrT0dVeE1XSmhPRGN6WXpKbU1URXhOakV5TURKaU9UUTFJbjAuY0g4TUhlTk1wMGZzbGJWSi04QXlmcE5pRFk1bnh3TDJzbXQzME40U2trVSJ9.VoXdC9E98XLtG3GZuJx9AX1hvb7VwTTCRx9dZc3asWw",
+        "explanation": "This page contains part of the article. Continue with the literal cursor for the remaining text."
+      },
+      "serialized_bytes": 8516,
+      "elapsed_ms": 969,
+      "validation": "passed"
+    },
+    {
+      "name": "TUEL dated AKN/index canary",
+      "tool": "list_articles",
+      "input": {
+        "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjcsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxNjJ9fX0.KbBxhaReNPokQiL11cUfmIPLNdNy7BeAUffpCiw6QM0",
+        "snapshot_date": "2026-10-02",
+        "page_size": 1
+      },
+      "result": {
+        "snapshot": {
+          "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjcsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxNjJ9fX0.KbBxhaReNPokQiL11cUfmIPLNdNy7BeAUffpCiw6QM0",
+          "snapshot_date": "2026-10-02",
+          "representation_digest": "5bb9b767fce668b4240dd5fb37dfc209f0622fa1623e69806b35088495e1ca46",
+          "evidence": [
+            {
+              "source": "official_akn",
+              "checked_at": "2026-10-06T11:08:11.174Z",
+              "snapshot_date": "2026-10-02",
+              "publication": {
+                "data_gu": "2000-09-28",
+                "codice_redazionale": "000G0304"
+              },
+              "official_url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20000928&codiceRedaz=000G0304&dataVigenza=20261002",
+              "representation_digest": "5bb9b767fce668b4240dd5fb37dfc209f0622fa1623e69806b35088495e1ca46"
+            },
+            {
+              "source": "official_detail",
+              "checked_at": "2026-10-06T11:08:11.174Z",
+              "snapshot_date": "2026-10-02",
+              "publication": {
+                "data_gu": "2000-09-28",
+                "codice_redazionale": "000G0304"
+              },
+              "official_url": "https://www.normattiva.it/eli/id/2000/09/28/000G0304/CONSOLIDATED/20261002"
+            }
+          ],
+          "newer_version_known": "unknown"
+        },
+        "coverage": {
+          "article_inventory_complete": false,
+          "legal_content_complete": false,
+          "unread_attachment_refs": [],
+          "explanation": "Preface, preamble and conclusion sections lack a verified reading adapter."
+        },
+        "traversal": {
+          "progress": "more",
+          "items": [
+            {
+              "label": "1",
+              "hierarchy": [],
+              "kind": "article",
+              "article_locator": "n1_eyJ2IjoxLCJraW5kIjoiYXJ0aWNsZSIsInB1YmxpY2F0aW9uIjp7ImRhdGFfZ3UiOiIyMDAwLTA5LTI4IiwiY29kaWNlX3JlZGF6aW9uYWxlIjoiMDAwRzAzMDQifSwiZGF0ZSI6IjIwMjYtMTAtMDIiLCJzb3VyY2UiOiJodHRwczovL3d3dy5ub3JtYXR0aXZhLml0L2RvL2F0dG8vY2FyaWNhQUtOP2RhdGFHVT0yMDAwMDkyOCZjb2RpY2VSZWRhej0wMDBHMDMwNCZkYXRhVmlnZW56YT0yMDI2MTAwMiIsImRpZ2VzdCI6IjViYjliNzY3ZmNlNjY4YjQyNDBkZDVmYjM3ZGZjMjA5ZjA2MjJmYTE2MjNlNjk4MDZiMzUwODg0OTVlMWNhNDYiLCJpZGVudGl0eSI6eyJ0eXBlIjoiREVDUkVUTyBMRUdJU0xBVElWTyIsImlzc3VlZCI6IjIwMDAtMDgtMTgiLCJudW1iZXIiOjI2NywiZ2F6ZXR0ZSI6MjI3LCJzdXBwbGVtZW50Ijp7InR5cGUiOiJTTyIsIm51bWJlciI6MTYyfX0sInNlbGVjdG9yIjoiMC8xLzcvMSIsImxhYmVsIjoiMSIsImNvbnRlbnREaWdlc3QiOiI3OGIzNWM5Mjc4NjNkMGM2YWU3NzNiNzRmYzE2NjQxZTZkMzcwMzQ3ODU2ZWViNTNjYzA4YzU0Mzc0NDExZDVmIiwiYWRkcmVzcyI6eyJpZEFydGljb2xvIjoxLCJzb3R0b0FydGljb2xvIjoxLCJzb3R0b0FydGljb2xvMSI6OSwiZmxhZ1RpcG9BcnRpY29sbyI6IjAiLCJpZEdydXBwbyI6MSwicHJvZ3Jlc3Npdm8iOjAsInZlcnNpb25lIjoxfSwibGVnYWxEaWdlc3QiOiJiMDk5MzJiMmQ0NTNjMWExZjk4NWFhMTg0NzM0MDlkODFjMjM3NzBmMDFmNjE2OWE2NzQ5N2YwMzBiNDdmYWI1IiwidGFibGVEaWdlc3QiOiI0ZjUzY2RhMThjMmJhYTBjMDM1NGJiNWY5YTNlY2JlNWVkMTJhYjRkOGUxMWJhODczYzJmMTExNjEyMDJiOTQ1IiwidW5yZWFkIjpmYWxzZX0.xoSiTURIfqIWZaECIRBGbYLdc7SxWCI5WbwZdTxQz8E"
+            }
+          ],
+          "cursor": "n1_eyJ2IjoxLCJraW5kIjoiY3Vyc29yIiwicHVibGljYXRpb24iOnsiZGF0YV9ndSI6IjIwMDAtMDktMjgiLCJjb2RpY2VfcmVkYXppb25hbGUiOiIwMDBHMDMwNCJ9LCJkYXRlIjoiMjAyNi0xMC0wMiIsInNvdXJjZSI6Imh0dHBzOi8vd3d3Lm5vcm1hdHRpdmEuaXQvZG8vYXR0by9jYXJpY2FBS04_ZGF0YUdVPTIwMDAwOTI4JmNvZGljZVJlZGF6PTAwMEcwMzA0JmRhdGFWaWdlbnphPTIwMjYxMDAyIiwiZGlnZXN0IjoiNWJiOWI3NjdmY2U2NjhiNDI0MGRkNWZiMzdkZmMyMDlmMDYyMmZhMTYyM2U2OTgwNmIzNTA4ODQ5NWUxY2E0NiIsImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjcsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxNjJ9fSwib3BlcmF0aW9uIjoibGlzdF9hcnRpY2xlcyIsImluZGV4IjoxLCJzZWdtZW50IjowLCJvZmZzZXQiOjAsImxpbWl0IjoxfQ.u06Yf7aM-NXSG1FNyLAM9FQykGkY3XbCNfTiLusp3-A",
+          "explanation": "These entries are one index page. Continue with the literal cursor for the remaining entries."
+        }
+      },
+      "serialized_bytes": 7176,
+      "elapsed_ms": 9271,
+      "validation": "passed"
+    },
+    {
+      "name": "TUEL literal index continuation",
+      "tool": "list_articles",
+      "input": {
+        "cursor": "n1_eyJ2IjoxLCJraW5kIjoiY3Vyc29yIiwicHVibGljYXRpb24iOnsiZGF0YV9ndSI6IjIwMDAtMDktMjgiLCJjb2RpY2VfcmVkYXppb25hbGUiOiIwMDBHMDMwNCJ9LCJkYXRlIjoiMjAyNi0xMC0wMiIsInNvdXJjZSI6Imh0dHBzOi8vd3d3Lm5vcm1hdHRpdmEuaXQvZG8vYXR0by9jYXJpY2FBS04_ZGF0YUdVPTIwMDAwOTI4JmNvZGljZVJlZGF6PTAwMEcwMzA0JmRhdGFWaWdlbnphPTIwMjYxMDAyIiwiZGlnZXN0IjoiNWJiOWI3NjdmY2U2NjhiNDI0MGRkNWZiMzdkZmMyMDlmMDYyMmZhMTYyM2U2OTgwNmIzNTA4ODQ5NWUxY2E0NiIsImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjcsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxNjJ9fSwib3BlcmF0aW9uIjoibGlzdF9hcnRpY2xlcyIsImluZGV4IjoxLCJzZWdtZW50IjowLCJvZmZzZXQiOjAsImxpbWl0IjoxfQ.u06Yf7aM-NXSG1FNyLAM9FQykGkY3XbCNfTiLusp3-A",
+        "page_size": 1
+      },
+      "result": {
+        "snapshot": {
+          "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjcsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxNjJ9fX0.KbBxhaReNPokQiL11cUfmIPLNdNy7BeAUffpCiw6QM0",
+          "snapshot_date": "2026-10-02",
+          "representation_digest": "5bb9b767fce668b4240dd5fb37dfc209f0622fa1623e69806b35088495e1ca46",
+          "evidence": [
+            {
+              "source": "official_akn",
+              "checked_at": "2026-10-06T11:08:11.174Z",
+              "snapshot_date": "2026-10-02",
+              "publication": {
+                "data_gu": "2000-09-28",
+                "codice_redazionale": "000G0304"
+              },
+              "official_url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20000928&codiceRedaz=000G0304&dataVigenza=20261002",
+              "representation_digest": "5bb9b767fce668b4240dd5fb37dfc209f0622fa1623e69806b35088495e1ca46"
+            },
+            {
+              "source": "official_detail",
+              "checked_at": "2026-10-06T11:08:11.174Z",
+              "snapshot_date": "2026-10-02",
+              "publication": {
+                "data_gu": "2000-09-28",
+                "codice_redazionale": "000G0304"
+              },
+              "official_url": "https://www.normattiva.it/eli/id/2000/09/28/000G0304/CONSOLIDATED/20261002"
+            }
+          ],
+          "newer_version_known": "unknown"
+        },
+        "coverage": {
+          "article_inventory_complete": false,
+          "legal_content_complete": false,
+          "unread_attachment_refs": [],
+          "explanation": "Preface, preamble and conclusion sections lack a verified reading adapter."
+        },
+        "traversal": {
+          "progress": "more",
+          "items": [
+            {
+              "label": "1",
+              "heading": "oggetto",
+              "hierarchy": [
+                {
+                  "kind": "chapter",
+                  "label": "PARTE I ORDINAMENTO ISTITUZIONALE TITOLO I DISPOSIZIONI GENERALI",
+                  "occurrence": "0/1/7/3"
+                }
+              ],
+              "kind": "article",
+              "article_locator": "n1_eyJ2IjoxLCJraW5kIjoiYXJ0aWNsZSIsInB1YmxpY2F0aW9uIjp7ImRhdGFfZ3UiOiIyMDAwLTA5LTI4IiwiY29kaWNlX3JlZGF6aW9uYWxlIjoiMDAwRzAzMDQifSwiZGF0ZSI6IjIwMjYtMTAtMDIiLCJzb3VyY2UiOiJodHRwczovL3d3dy5ub3JtYXR0aXZhLml0L2RvL2F0dG8vY2FyaWNhQUtOP2RhdGFHVT0yMDAwMDkyOCZjb2RpY2VSZWRhej0wMDBHMDMwNCZkYXRhVmlnZW56YT0yMDI2MTAwMiIsImRpZ2VzdCI6IjViYjliNzY3ZmNlNjY4YjQyNDBkZDVmYjM3ZGZjMjA5ZjA2MjJmYTE2MjNlNjk4MDZiMzUwODg0OTVlMWNhNDYiLCJpZGVudGl0eSI6eyJ0eXBlIjoiREVDUkVUTyBMRUdJU0xBVElWTyIsImlzc3VlZCI6IjIwMDAtMDgtMTgiLCJudW1iZXIiOjI2NywiZ2F6ZXR0ZSI6MjI3LCJzdXBwbGVtZW50Ijp7InR5cGUiOiJTTyIsIm51bWJlciI6MTYyfX0sInNlbGVjdG9yIjoiMC8xLzcvMy81IiwibGFiZWwiOiIxIiwiY29udGVudERpZ2VzdCI6ImU2YjY2ZjU2NzE5ODQ5ZmQ0MWNmODQ4ZDdmNzQ0MWJiYTY5NjQ0N2YzZWU3NmI5N2E4YzY0ZjE3MTQ1MzgwYjkiLCJhZGRyZXNzIjp7ImlkQXJ0aWNvbG8iOjEsInNvdHRvQXJ0aWNvbG8iOjEsInNvdHRvQXJ0aWNvbG8xIjoxMCwiZmxhZ1RpcG9BcnRpY29sbyI6IjAiLCJpZEdydXBwbyI6MiwicHJvZ3Jlc3Npdm8iOjAsInZlcnNpb25lIjoxfSwibGVnYWxEaWdlc3QiOiJlNmI2NmY1NjcxOTg0OWZkNDFjZjg0OGQ3Zjc0NDFiYmE2OTY0NDdmM2VlNzZiOTdhOGM2NGYxNzE0NTM4MGI5IiwidGFibGVEaWdlc3QiOiI0ZjUzY2RhMThjMmJhYTBjMDM1NGJiNWY5YTNlY2JlNWVkMTJhYjRkOGUxMWJhODczYzJmMTExNjEyMDJiOTQ1IiwidW5yZWFkIjpmYWxzZX0.Dgnlfya4ynUztxAJJ29zMR10aVScZI1b1WxG8ZoA11U"
+            }
+          ],
+          "cursor": "n1_eyJ2IjoxLCJraW5kIjoiY3Vyc29yIiwicHVibGljYXRpb24iOnsiZGF0YV9ndSI6IjIwMDAtMDktMjgiLCJjb2RpY2VfcmVkYXppb25hbGUiOiIwMDBHMDMwNCJ9LCJkYXRlIjoiMjAyNi0xMC0wMiIsInNvdXJjZSI6Imh0dHBzOi8vd3d3Lm5vcm1hdHRpdmEuaXQvZG8vYXR0by9jYXJpY2FBS04_ZGF0YUdVPTIwMDAwOTI4JmNvZGljZVJlZGF6PTAwMEcwMzA0JmRhdGFWaWdlbnphPTIwMjYxMDAyIiwiZGlnZXN0IjoiNWJiOWI3NjdmY2U2NjhiNDI0MGRkNWZiMzdkZmMyMDlmMDYyMmZhMTYyM2U2OTgwNmIzNTA4ODQ5NWUxY2E0NiIsImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjcsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxNjJ9fSwib3BlcmF0aW9uIjoibGlzdF9hcnRpY2xlcyIsImluZGV4IjoyLCJzZWdtZW50IjowLCJvZmZzZXQiOjAsImxpbWl0IjoxfQ.ZB-1RaJKBiJXgBIiSnqHZUfVrE7WgNYt8pn194cGl78",
+          "explanation": "These entries are one index page. Continue with the literal cursor for the remaining entries."
+        }
+      },
+      "serialized_bytes": 7472,
+      "elapsed_ms": 2847,
+      "validation": "passed"
+    },
+    {
+      "name": "CAD reviewed alias live verification",
+      "tool": "find_acts",
+      "input": {
+        "request": "CAD articolo 5"
+      },
+      "result": {
+        "match": "identified",
+        "interpretation": "CAD articolo 5",
+        "article_reference": "5",
+        "ordering": "reviewed_alias",
+        "corpus": "live",
+        "explanation": "Act identity is verified; current legal force is unknown.",
+        "traversal": {
+          "progress": "complete",
+          "items": [
+            {
+              "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwNS0wNS0xNiIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwNUcwMTA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwNS0wMy0wNyIsIm51bWJlciI6ODIsImdhemV0dGUiOjExMiwic3VwcGxlbWVudCI6eyJ0eXBlIjoiU08iLCJudW1iZXIiOjkzfX19.DeNpK4I11rm5Q-zsVDykmAFEqcI3Snb-NA_ockVai5Y",
+              "publication": {
+                "data_gu": "2005-05-16",
+                "codice_redazionale": "005G0104"
+              },
+              "title": "[Codice dell'amministrazione digitale.\r ]",
+              "official_urn": "urn:nir:stato:decreto.legislativo:2005-03-07;82",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-06T11:08:14.197Z",
+                  "publication": {
+                    "data_gu": "2005-05-16",
+                    "codice_redazionale": "005G0104"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata"
+                },
+                {
+                  "source": "reviewed_alias",
+                  "checked_at": "2026-10-05T00:00:00Z",
+                  "official_url": "https://www.normattiva.it/staticPage/codici"
+                }
+              ],
+              "alias": {
+                "name": "Codice dell'amministrazione digitale",
+                "provenance": "https://www.normattiva.it/staticPage/codici",
+                "verified_at": "2026-10-05"
+              },
+              "current": "unknown"
+            }
+          ]
+        }
+      },
+      "serialized_bytes": 2799,
+      "elapsed_ms": 154,
+      "validation": "passed"
+    },
+    {
+      "name": "Official relevance search",
+      "tool": "find_acts",
+      "input": {
+        "request": "trasparenza amministrativa"
+      },
+      "result": {
+        "match": "candidates",
+        "interpretation": "trasparenza amministrativa",
+        "ordering": "observed_relevance",
+        "corpus": "live",
+        "explanation": "Select a candidate; current legal force is unknown.",
+        "traversal": {
+          "progress": "more",
+          "items": [
+            {
+              "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAxNC0wNi0yNCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjE0RzAwMTAzIn0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPLUxFR0dFIiwiaXNzdWVkIjoiMjAxNC0wNi0yNCIsIm51bWJlciI6OTAsImdhemV0dGUiOjE0NCwic3VwcGxlbWVudCI6eyJ0eXBlIjoiTk8iLCJudW1iZXIiOjB9fX0.T349F4gOdYEsgf6GVxYCEUznLa1_Hff-Nkj0BPw7kd4",
+              "publication": {
+                "data_gu": "2014-06-24",
+                "codice_redazionale": "14G00103"
+              },
+              "title": "[Misure urgenti per la semplificazione e la trasparenza amministrativa e per l'efficienza degli uffici giudiziari. (14G00103)  ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-06T11:08:15.411Z",
+                  "publication": {
+                    "data_gu": "2014-06-24",
+                    "codice_redazionale": "14G00103"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/semplice"
+                }
+              ],
+              "current": "unknown"
+            },
+            {
+              "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAxNC0wOC0xOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjE0RzAwMTI5In0sImlkZW50aXR5Ijp7InR5cGUiOiJMRUdHRSIsImlzc3VlZCI6IjIwMTQtMDgtMTEiLCJudW1iZXIiOjExNCwiZ2F6ZXR0ZSI6MTkwLCJzdXBwbGVtZW50Ijp7InR5cGUiOiJTTyIsIm51bWJlciI6NzB9fX0.OY5e2xwfR3b_r1Wp3iKJCdkuGyyKdPg9TTDvlMtLVWs",
+              "publication": {
+                "data_gu": "2014-08-18",
+                "codice_redazionale": "14G00129"
+              },
+              "title": "[Conversione in legge, con modificazioni, del decreto-legge 24  giugno 2014, n. 90, recante misure  urgenti  per  la  semplificazione  e  la trasparenza  amministrativa   e   per   l'efficienza   degli   uffici giudiziari. (14G00129)  ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-06T11:08:15.412Z",
+                  "publication": {
+                    "data_gu": "2014-08-18",
+                    "codice_redazionale": "14G00129"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/semplice"
+                }
+              ],
+              "current": "unknown"
+            },
+            {
+              "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAyNS0wMS0xNCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjI1RzAwMDA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIERFTCBQUkVTSURFTlRFIERFTExBIFJFUFVCQkxJQ0EiLCJpc3N1ZWQiOiIyMDI0LTExLTEzIiwibnVtYmVyIjoyMTcsImdhemV0dGUiOjEwLCJzdXBwbGVtZW50Ijp7InR5cGUiOiJOTyIsIm51bWJlciI6MH19fQ.Tw-lqWOHsFkC05i3Y4rAihg7xRgitSzbFTTcSy5lVlY",
+              "publication": {
+                "data_gu": "2025-01-14",
+                "codice_redazionale": "25G00004"
+              },
+              "title": "[Regolamento  per  la  disciplina  delle  modalita'  di  accesso  alla qualifica  iniziale,  del  percorso  di  formazione  iniziale,  della progressione in  carriera,  dell'aggiornamento  professionale,  della formazione specialistica e della  regolazione  dell'attivita'  libero professionale dei funzionari della carriera dei medici del  Corpo  di polizia penitenziaria. (25G00004)  ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-06T11:08:15.414Z",
+                  "publication": {
+                    "data_gu": "2025-01-14",
+                    "codice_redazionale": "25G00004"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/semplice"
+                }
+              ],
+              "current": "unknown"
+            },
+            {
+              "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAyMi0xMS0wNyIsImNvZGljZV9yZWRhemlvbmFsZSI6IjIyRzAwMTcyIn0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIiwiaXNzdWVkIjoiMjAyMi0wOS0wOSIsIm51bWJlciI6MTY4LCJnYXpldHRlIjoyNjAsInN1cHBsZW1lbnQiOnsidHlwZSI6Ik5PIiwibnVtYmVyIjowfX19.9IHwBKhqekB1imETWGqvTP6epcTYDWD1udn9riq2xzg",
+              "publication": {
+                "data_gu": "2022-11-07",
+                "codice_redazionale": "22G00172"
+              },
+              "title": "[Regolamento recante disciplina delle  modalita'  di  svolgimento  dei concorsi nella Polizia di Stato per l'accesso ai ruoli del personale, ai ruoli direttivi e alle carriere dei funzionari e per la promozione a vice questore aggiunto e dei relativi corsi di formazione iniziale, dei corsi  di  formazione  dirigenziale  e  di  aggiornamento  per  i funzionari, nonche' dei requisiti psico-fisici ed attitudinali per la partecipazione  ai  concorsi  per  l'accesso  alla  banda   musicale. (22G00172)  ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-06T11:08:15.415Z",
+                  "publication": {
+                    "data_gu": "2022-11-07",
+                    "codice_redazionale": "22G00172"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/semplice"
+                }
+              ],
+              "current": "unknown"
+            },
+            {
+              "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAxMy0wNC0wNSIsImNvZGljZV9yZWRhemlvbmFsZSI6IjEzRzAwMDc2In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAxMy0wMy0xNCIsIm51bWJlciI6MzMsImdhemV0dGUiOjgwLCJzdXBwbGVtZW50Ijp7InR5cGUiOiJOTyIsIm51bWJlciI6MH19fQ.HRsSZKhHBozzyfSKNIOzmcj_5THRVp-AGOJ19QeoKSk",
+              "publication": {
+                "data_gu": "2013-04-05",
+                "codice_redazionale": "13G00076"
+              },
+              "title": "[((Riordino della  disciplina  riguardante  il diritto di accesso civico e gli obblighi di pubblicita',  trasparenza e   diffusione   di   informazioni   da   parte    delle    pubbliche amministrazioni.)) (13G00076) \r ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-06T11:08:15.416Z",
+                  "publication": {
+                    "data_gu": "2013-04-05",
+                    "codice_redazionale": "13G00076"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/semplice"
+                }
+              ],
+              "current": "unknown"
+            }
+          ],
+          "cursor": "d1_eyJ2IjoxLCJvcGVyYXRpb24iOiJjb250aW51ZV9hY3RzIiwiYWxpYXNfdmVyc2lvbiI6MSwicGxhbiI6eyJyZXF1ZXN0IjoidHJhc3BhcmVuemEgYW1taW5pc3RyYXRpdmEiLCJyb3V0ZSI6InJlbGV2YW5jZSIsInVuY2VydGFpblRpbWUiOmZhbHNlLCJxdWVyeSI6InRyYXNwYXJlbnphIGFtbWluaXN0cmF0aXZhIiwiZmlsdGVycyI6e319LCJ0YXJnZXQiOjAsInBhZ2UiOjIsIm9mZnNldCI6MCwibGltaXQiOjUsImRlZ3JhZGVkIjpmYWxzZX0.gTCrUvQKNtQFqRdVgKKOkKrHuwnwFhg2uFL5qUzL5tE",
+          "explanation": "Page only; continue with the literal cursor. Live search pages may change."
+        }
+      },
+      "serialized_bytes": 11635,
+      "elapsed_ms": 1217,
+      "validation": "passed"
+    },
+    {
+      "name": "Civil Code discovery",
+      "tool": "find_acts",
+      "input": {
+        "request": "regio decreto 262/1942"
+      },
+      "result": {
+        "match": "identified",
+        "interpretation": "regio decreto 262/1942",
+        "ordering": "exact_citation",
+        "corpus": "live",
+        "explanation": "Act identity is verified; current legal force is unknown.",
+        "traversal": {
+          "progress": "complete",
+          "items": [
+            {
+              "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMTk0Mi0wNC0wNCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjA0MlUwMjYyIn0sImlkZW50aXR5Ijp7InR5cGUiOiJSRUdJTyBERUNSRVRPIiwiaXNzdWVkIjoiMTk0Mi0wMy0xNiIsIm51bWJlciI6MjYyLCJnYXpldHRlIjo3OSwic3VwcGxlbWVudCI6eyJ0eXBlIjoiTk8iLCJudW1iZXIiOjB9fX0.VUs_PwD0IJRVlIUWIgNWOi9IYrepgVcjcSAsc3aowfo",
+              "publication": {
+                "data_gu": "1942-04-04",
+                "codice_redazionale": "042U0262"
+              },
+              "title": "[Approvazione del testo del Codice civile. (042U0262) \r ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-06T11:08:16.227Z",
+                  "publication": {
+                    "data_gu": "1942-04-04",
+                    "codice_redazionale": "042U0262"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata"
+                }
+              ],
+              "current": "unknown"
+            }
+          ]
+        }
+      },
+      "serialized_bytes": 2083,
+      "elapsed_ms": 810,
+      "validation": "passed"
+    },
+    {
+      "name": "Civil Code structured snapshot",
+      "tool": "list_articles",
+      "input": {
+        "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMTk0Mi0wNC0wNCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjA0MlUwMjYyIn0sImlkZW50aXR5Ijp7InR5cGUiOiJSRUdJTyBERUNSRVRPIiwiaXNzdWVkIjoiMTk0Mi0wMy0xNiIsIm51bWJlciI6MjYyLCJnYXpldHRlIjo3OSwic3VwcGxlbWVudCI6eyJ0eXBlIjoiTk8iLCJudW1iZXIiOjB9fX0.VUs_PwD0IJRVlIUWIgNWOi9IYrepgVcjcSAsc3aowfo",
+        "snapshot_date": "2026-10-02",
+        "page_size": 1
+      },
+      "result": {
+        "snapshot": {
+          "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMTk0Mi0wNC0wNCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjA0MlUwMjYyIn0sImlkZW50aXR5Ijp7InR5cGUiOiJSRUdJTyBERUNSRVRPIiwiaXNzdWVkIjoiMTk0Mi0wMy0xNiIsIm51bWJlciI6MjYyLCJnYXpldHRlIjo3OSwic3VwcGxlbWVudCI6eyJ0eXBlIjoiTk8iLCJudW1iZXIiOjB9fX0.VUs_PwD0IJRVlIUWIgNWOi9IYrepgVcjcSAsc3aowfo",
+          "snapshot_date": "2026-10-02",
+          "representation_digest": "8d7fb2c47ca808357e619e68ee19d2f05860492b863382ac43b7665addef2005",
+          "evidence": [
+            {
+              "source": "official_akn",
+              "checked_at": "2026-10-06T11:08:30.238Z",
+              "snapshot_date": "2026-10-02",
+              "publication": {
+                "data_gu": "1942-04-04",
+                "codice_redazionale": "042U0262"
+              },
+              "official_url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=19420404&codiceRedaz=042U0262&dataVigenza=20261002",
+              "representation_digest": "8d7fb2c47ca808357e619e68ee19d2f05860492b863382ac43b7665addef2005"
+            },
+            {
+              "source": "official_detail",
+              "checked_at": "2026-10-06T11:08:30.238Z",
+              "snapshot_date": "2026-10-02",
+              "publication": {
+                "data_gu": "1942-04-04",
+                "codice_redazionale": "042U0262"
+              },
+              "official_url": "https://www.normattiva.it/eli/id/1942/04/04/042U0262/CONSOLIDATED/20261002"
+            }
+          ],
+          "newer_version_known": "unknown"
+        },
+        "coverage": {
+          "article_inventory_complete": false,
+          "legal_content_complete": false,
+          "unread_attachment_refs": [],
+          "explanation": "Unmatched official navigation addresses leave membership unresolved. Preface, preamble and conclusion sections lack a verified reading adapter. Unread components may conceal content or articles; references appear on their index pages."
+        },
+        "traversal": {
+          "progress": "more",
+          "items": [
+            {
+              "label": "1",
+              "hierarchy": [],
+              "kind": "article",
+              "article_locator": "n1_eyJ2IjoxLCJraW5kIjoiYXJ0aWNsZSIsInB1YmxpY2F0aW9uIjp7ImRhdGFfZ3UiOiIxOTQyLTA0LTA0IiwiY29kaWNlX3JlZGF6aW9uYWxlIjoiMDQyVTAyNjIifSwiZGF0ZSI6IjIwMjYtMTAtMDIiLCJzb3VyY2UiOiJodHRwczovL3d3dy5ub3JtYXR0aXZhLml0L2RvL2F0dG8vY2FyaWNhQUtOP2RhdGFHVT0xOTQyMDQwNCZjb2RpY2VSZWRhej0wNDJVMDI2MiZkYXRhVmlnZW56YT0yMDI2MTAwMiIsImRpZ2VzdCI6IjhkN2ZiMmM0N2NhODA4MzU3ZTYxOWU2OGVlMTlkMmYwNTg2MDQ5MmI4NjMzODJhYzQzYjc2NjVhZGRlZjIwMDUiLCJpZGVudGl0eSI6eyJ0eXBlIjoiUkVHSU8gREVDUkVUTyIsImlzc3VlZCI6IjE5NDItMDMtMTYiLCJudW1iZXIiOjI2MiwiZ2F6ZXR0ZSI6NzksInN1cHBsZW1lbnQiOnsidHlwZSI6Ik5PIiwibnVtYmVyIjowfX0sInNlbGVjdG9yIjoiMC8xLzcvMSIsImxhYmVsIjoiMSIsImNvbnRlbnREaWdlc3QiOiJhMTM0M2U0NDViYWU1NDM3MDRmMjhhMDc0ZDFlYjM4MWNlZWQ0MGY1NzgwYmI4ODEzNTY4OTUyY2ZmMjY3MDQ5IiwiYWRkcmVzcyI6eyJpZEFydGljb2xvIjoxLCJzb3R0b0FydGljb2xvIjoxLCJzb3R0b0FydGljb2xvMSI6MTAsImZsYWdUaXBvQXJ0aWNvbG8iOiIwIiwiaWRHcnVwcG8iOjAsInByb2dyZXNzaXZvIjowLCJ2ZXJzaW9uZSI6Mn0sImxlZ2FsRGlnZXN0IjoiYTEzNDNlNDQ1YmFlNTQzNzA0ZjI4YTA3NGQxZWIzODFjZWVkNDBmNTc4MGJiODgxMzU2ODk1MmNmZjI2NzA0OSIsInRhYmxlRGlnZXN0IjoiNGY1M2NkYTE4YzJiYWEwYzAzNTRiYjVmOWEzZWNiZTVlZDEyYWI0ZDhlMTFiYTg3M2MyZjExMTYxMjAyYjk0NSIsInVucmVhZCI6ZmFsc2V9.sAyQBi3Y5IyxGdOApoBnA59luuB80WIAixcCJOGpvwA"
+            }
+          ],
+          "cursor": "n1_eyJ2IjoxLCJraW5kIjoiY3Vyc29yIiwicHVibGljYXRpb24iOnsiZGF0YV9ndSI6IjE5NDItMDQtMDQiLCJjb2RpY2VfcmVkYXppb25hbGUiOiIwNDJVMDI2MiJ9LCJkYXRlIjoiMjAyNi0xMC0wMiIsInNvdXJjZSI6Imh0dHBzOi8vd3d3Lm5vcm1hdHRpdmEuaXQvZG8vYXR0by9jYXJpY2FBS04_ZGF0YUdVPTE5NDIwNDA0JmNvZGljZVJlZGF6PTA0MlUwMjYyJmRhdGFWaWdlbnphPTIwMjYxMDAyIiwiZGlnZXN0IjoiOGQ3ZmIyYzQ3Y2E4MDgzNTdlNjE5ZTY4ZWUxOWQyZjA1ODYwNDkyYjg2MzM4MmFjNDNiNzY2NWFkZGVmMjAwNSIsImlkZW50aXR5Ijp7InR5cGUiOiJSRUdJTyBERUNSRVRPIiwiaXNzdWVkIjoiMTk0Mi0wMy0xNiIsIm51bWJlciI6MjYyLCJnYXpldHRlIjo3OSwic3VwcGxlbWVudCI6eyJ0eXBlIjoiTk8iLCJudW1iZXIiOjB9fSwib3BlcmF0aW9uIjoibGlzdF9hcnRpY2xlcyIsImluZGV4IjoxLCJzZWdtZW50IjowLCJvZmZzZXQiOjAsImxpbWl0IjoxfQ.McHBkN-Io5zLl3x11ZOWAwaLPhhY7-_XZ4m0KkB3j2c",
+          "explanation": "These entries are one index page. Continue with the literal cursor for the remaining entries."
+        }
+      },
+      "serialized_bytes": 7426,
+      "elapsed_ms": 14074,
+      "validation": "passed"
+    },
+    {
+      "name": "Civil Code attachment article 2043",
+      "tool": "read_article",
+      "input": {
+        "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMTk0Mi0wNC0wNCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjA0MlUwMjYyIn0sImlkZW50aXR5Ijp7InR5cGUiOiJSRUdJTyBERUNSRVRPIiwiaXNzdWVkIjoiMTk0Mi0wMy0xNiIsIm51bWJlciI6MjYyLCJnYXpldHRlIjo3OSwic3VwcGxlbWVudCI6eyJ0eXBlIjoiTk8iLCJudW1iZXIiOjB9fX0.VUs_PwD0IJRVlIUWIgNWOi9IYrepgVcjcSAsc3aowfo",
+        "article_reference": "2043",
+        "snapshot_date": "2026-10-02"
+      },
+      "result": {
+        "reason": "verified_official_article",
+        "requested": {
+          "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMTk0Mi0wNC0wNCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjA0MlUwMjYyIn0sImlkZW50aXR5Ijp7InR5cGUiOiJSRUdJTyBERUNSRVRPIiwiaXNzdWVkIjoiMTk0Mi0wMy0xNiIsIm51bWJlciI6MjYyLCJnYXpldHRlIjo3OSwic3VwcGxlbWVudCI6eyJ0eXBlIjoiTk8iLCJudW1iZXIiOjB9fX0.VUs_PwD0IJRVlIUWIgNWOi9IYrepgVcjcSAsc3aowfo",
+          "snapshot_date": "2026-10-02",
+          "article_reference": "2043",
+          "article_locator": "n1_eyJ2IjoxLCJraW5kIjoiYXJ0aWNsZSIsInB1YmxpY2F0aW9uIjp7ImRhdGFfZ3UiOiIxOTQyLTA0LTA0IiwiY29kaWNlX3JlZGF6aW9uYWxlIjoiMDQyVTAyNjIifSwiZGF0ZSI6IjIwMjYtMTAtMDIiLCJzb3VyY2UiOiJodHRwczovL3d3dy5ub3JtYXR0aXZhLml0L2RvL2F0dG8vY2FyaWNhQUtOP2RhdGFHVT0xOTQyMDQwNCZjb2RpY2VSZWRhej0wNDJVMDI2MiZkYXRhVmlnZW56YT0yMDI2MTAwMiIsImRpZ2VzdCI6IjhkN2ZiMmM0N2NhODA4MzU3ZTYxOWU2OGVlMTlkMmYwNTg2MDQ5MmI4NjMzODJhYzQzYjc2NjVhZGRlZjIwMDUiLCJpZGVudGl0eSI6eyJ0eXBlIjoiUkVHSU8gREVDUkVUTyIsImlzc3VlZCI6IjE5NDItMDMtMTYiLCJudW1iZXIiOjI2MiwiZ2F6ZXR0ZSI6NzksInN1cHBsZW1lbnQiOnsidHlwZSI6Ik5PIiwibnVtYmVyIjowfX0sInNlbGVjdG9yIjoiMC8xLzkvNDMyNy8xLzMiLCJsYWJlbCI6IjIwNDMiLCJjb250ZW50RGlnZXN0IjoiZDEwMzM3OTU4NDk0NmIyNWIyMzliMWI4ZjkyNmZmZWU2YTkyZmJiMDAyMTU1MmRiZTczZDlmZWE5YTA3NWRiZiIsImFkZHJlc3MiOnsiaWRBcnRpY29sbyI6MjA0Mywic290dG9BcnRpY29sbyI6MSwic290dG9BcnRpY29sbzEiOjEwLCJmbGFnVGlwb0FydGljb2xvIjoiMiIsImlkR3J1cHBvIjoyNTgsInByb2dyZXNzaXZvIjowLCJ2ZXJzaW9uZSI6MX0sImxlZ2FsRGlnZXN0IjoiZDEwMzM3OTU4NDk0NmIyNWIyMzliMWI4ZjkyNmZmZWU2YTkyZmJiMDAyMTU1MmRiZTczZDlmZWE5YTA3NWRiZiIsInRhYmxlRGlnZXN0IjoiNGY1M2NkYTE4YzJiYWEwYzAzNTRiYjVmOWEzZWNiZTVlZDEyYWI0ZDhlMTFiYTg3M2MyZjExMTYxMjAyYjk0NSIsInVucmVhZCI6ZmFsc2V9.YdTK_5ag0U7M0VECU28egtMjw4nqc8WeP6091NsKByI"
+        },
+        "evidence": [
+          {
+            "source": "official_detail",
+            "checked_at": "2026-10-06T11:08:30.307Z",
+            "snapshot_date": "2026-10-02",
+            "publication": {
+              "data_gu": "1942-04-04",
+              "codice_redazionale": "042U0262"
+            },
+            "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto"
+          }
+        ],
+        "outcome": "found",
+        "content": {
+          "format": "text",
+          "text": "Art. 2043. (Risarcimento per fatto illecito). Qualunque fatto doloso o colposo, che cagiona ad altri un danno ingiusto, obbliga colui che ha commesso il fatto a risarcire il danno.",
+          "title": "REGIO DECRETO 16 marzo 1942, n. 262",
+          "effective_from": "1942-04-19"
+        },
+        "progress": "complete"
+      },
+      "serialized_bytes": 4692,
+      "elapsed_ms": 1602,
+      "validation": "passed"
+    },
+    {
+      "name": "Privacy Code discovery",
+      "tool": "find_acts",
+      "input": {
+        "request": "decreto legislativo 196/2003"
+      },
+      "result": {
+        "match": "identified",
+        "interpretation": "decreto legislativo 196/2003",
+        "ordering": "exact_citation",
+        "corpus": "live",
+        "explanation": "Act identity is verified; current legal force is unknown.",
+        "traversal": {
+          "progress": "complete",
+          "items": [
+            {
+              "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMy0wNy0yOSIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwM0cwMjE4In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMy0wNi0zMCIsIm51bWJlciI6MTk2LCJnYXpldHRlIjoxNzQsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxMjN9fX0.fCbrvcZpfjw0q0I_EovItoeAN8ymbX1bIYj3vsvqKw8",
+              "publication": {
+                "data_gu": "2003-07-29",
+                "codice_redazionale": "003G0218"
+              },
+              "title": "[Codice in materia di protezione dei dati personali ((, recante disposizioni per l'adeguamento dell'ordinamento nazionale al regolamento (UE) n. 2016/679 del Parlamento europeo e del Consiglio, del 27 aprile 2016, relativo alla protezione delle persone fisiche con riguardo al trattamento dei dati personali, nonche' alla libera circolazione di tali dati e che abroga la direttiva 95/46/CE)).\r ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-06T11:08:32.039Z",
+                  "publication": {
+                    "data_gu": "2003-07-29",
+                    "codice_redazionale": "003G0218"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata"
+                }
+              ],
+              "current": "unknown"
+            }
+          ]
+        }
+      },
+      "serialized_bytes": 2795,
+      "elapsed_ms": 135,
+      "validation": "passed"
+    },
+    {
+      "name": "Privacy 2017 dated-route availability",
+      "tool": "list_articles",
+      "input": {
+        "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMy0wNy0yOSIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwM0cwMjE4In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMy0wNi0zMCIsIm51bWJlciI6MTk2LCJnYXpldHRlIjoxNzQsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxMjN9fX0.fCbrvcZpfjw0q0I_EovItoeAN8ymbX1bIYj3vsvqKw8",
+        "snapshot_date": "2017-01-01",
+        "page_size": 1
+      },
+      "result": {
+        "snapshot": {
+          "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMy0wNy0yOSIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwM0cwMjE4In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMy0wNi0zMCIsIm51bWJlciI6MTk2LCJnYXpldHRlIjoxNzQsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxMjN9fX0.fCbrvcZpfjw0q0I_EovItoeAN8ymbX1bIYj3vsvqKw8",
+          "snapshot_date": "2017-01-01",
+          "representation_digest": "b1cfcfbb73ff63daef651f980d3c87944a7339b70a8928dff953b8c020e3d53c",
+          "evidence": [
+            {
+              "source": "official_akn",
+              "checked_at": "2026-10-06T11:08:37.649Z",
+              "snapshot_date": "2017-01-01",
+              "publication": {
+                "data_gu": "2003-07-29",
+                "codice_redazionale": "003G0218"
+              },
+              "official_url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20030729&codiceRedaz=003G0218&dataVigenza=20170101",
+              "representation_digest": "b1cfcfbb73ff63daef651f980d3c87944a7339b70a8928dff953b8c020e3d53c"
+            },
+            {
+              "source": "official_detail",
+              "checked_at": "2026-10-06T11:08:37.649Z",
+              "snapshot_date": "2017-01-01",
+              "publication": {
+                "data_gu": "2003-07-29",
+                "codice_redazionale": "003G0218"
+              },
+              "official_url": "https://www.normattiva.it/eli/id/2003/07/29/003G0218/CONSOLIDATED/20170101"
+            }
+          ],
+          "newer_version_known": "unknown"
+        },
+        "coverage": {
+          "article_inventory_complete": false,
+          "legal_content_complete": false,
+          "unread_attachment_refs": [],
+          "explanation": "Unmatched official navigation addresses leave membership unresolved. Preface, preamble and conclusion sections lack a verified reading adapter. Unread components may conceal content or articles; references appear on their index pages."
+        },
+        "traversal": {
+          "progress": "more",
+          "items": [
+            {
+              "label": "1",
+              "heading": "Diritto alla protezione dei dati personali",
+              "hierarchy": [
+                {
+                  "kind": "chapter",
+                  "label": "PARTE I DISPOSIZIONI GENERALI - - TITOLO I PRINCIPI GENERALI",
+                  "occurrence": "0/1/7/1"
+                }
+              ],
+              "kind": "article",
+              "article_locator": "n1_eyJ2IjoxLCJraW5kIjoiYXJ0aWNsZSIsInB1YmxpY2F0aW9uIjp7ImRhdGFfZ3UiOiIyMDAzLTA3LTI5IiwiY29kaWNlX3JlZGF6aW9uYWxlIjoiMDAzRzAyMTgifSwiZGF0ZSI6IjIwMTctMDEtMDEiLCJzb3VyY2UiOiJodHRwczovL3d3dy5ub3JtYXR0aXZhLml0L2RvL2F0dG8vY2FyaWNhQUtOP2RhdGFHVT0yMDAzMDcyOSZjb2RpY2VSZWRhej0wMDNHMDIxOCZkYXRhVmlnZW56YT0yMDE3MDEwMSIsImRpZ2VzdCI6ImIxY2ZjZmJiNzNmZjYzZGFlZjY1MWY5ODBkM2M4Nzk0NGE3MzM5YjcwYTg5MjhkZmY5NTNiOGMwMjBlM2Q1M2MiLCJpZGVudGl0eSI6eyJ0eXBlIjoiREVDUkVUTyBMRUdJU0xBVElWTyIsImlzc3VlZCI6IjIwMDMtMDYtMzAiLCJudW1iZXIiOjE5NiwiZ2F6ZXR0ZSI6MTc0LCJzdXBwbGVtZW50Ijp7InR5cGUiOiJTTyIsIm51bWJlciI6MTIzfX0sInNlbGVjdG9yIjoiMC8xLzcvMS81IiwibGFiZWwiOiIxIiwiY29udGVudERpZ2VzdCI6IjRhZDEwOTFjNTA2MTgwNWI2NTRhMWExNjM2M2ZjYzI3MDM0NTAzYzJmNjY0MjM2OTJkNjNlZGNmZDExNDVlOTEiLCJhZGRyZXNzIjp7ImlkQXJ0aWNvbG8iOjEsInNvdHRvQXJ0aWNvbG8iOjEsInNvdHRvQXJ0aWNvbG8xIjoxMCwiZmxhZ1RpcG9BcnRpY29sbyI6IjAiLCJpZEdydXBwbyI6MSwicHJvZ3Jlc3Npdm8iOjAsInZlcnNpb25lIjozfSwibGVnYWxEaWdlc3QiOiI0YWQxMDkxYzUwNjE4MDViNjU0YTFhMTYzNjNmY2MyNzAzNDUwM2MyZjY2NDIzNjkyZDYzZWRjZmQxMTQ1ZTkxIiwidGFibGVEaWdlc3QiOiI0ZjUzY2RhMThjMmJhYTBjMDM1NGJiNWY5YTNlY2JlNWVkMTJhYjRkOGUxMWJhODczYzJmMTExNjEyMDJiOTQ1IiwidW5yZWFkIjpmYWxzZX0.08M4PEotTjNGazHXCFfQRCAi7WMpYsOJE3Ce0I8HrBQ"
+            }
+          ],
+          "cursor": "n1_eyJ2IjoxLCJraW5kIjoiY3Vyc29yIiwicHVibGljYXRpb24iOnsiZGF0YV9ndSI6IjIwMDMtMDctMjkiLCJjb2RpY2VfcmVkYXppb25hbGUiOiIwMDNHMDIxOCJ9LCJkYXRlIjoiMjAxNy0wMS0wMSIsInNvdXJjZSI6Imh0dHBzOi8vd3d3Lm5vcm1hdHRpdmEuaXQvZG8vYXR0by9jYXJpY2FBS04_ZGF0YUdVPTIwMDMwNzI5JmNvZGljZVJlZGF6PTAwM0cwMjE4JmRhdGFWaWdlbnphPTIwMTcwMTAxIiwiZGlnZXN0IjoiYjFjZmNmYmI3M2ZmNjNkYWVmNjUxZjk4MGQzYzg3OTQ0YTczMzliNzBhODkyOGRmZjk1M2I4YzAyMGUzZDUzYyIsImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMy0wNi0zMCIsIm51bWJlciI6MTk2LCJnYXpldHRlIjoxNzQsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxMjN9fSwib3BlcmF0aW9uIjoibGlzdF9hcnRpY2xlcyIsImluZGV4IjoxLCJzZWdtZW50IjowLCJvZmZzZXQiOjAsImxpbWl0IjoxfQ.J6C5JXIN_QUEgH9zf2bAPgcOM0BHeTIGZqoEx-uRD0c",
+          "explanation": "These entries are one index page. Continue with the literal cursor for the remaining entries."
+        }
+      },
+      "serialized_bytes": 7854,
+      "elapsed_ms": 5635,
+      "validation": "passed"
+    },
+    {
+      "name": "Privacy article 1 at 2017-01-01",
+      "tool": "read_article",
+      "input": {
+        "article_locator": "n1_eyJ2IjoxLCJraW5kIjoiYXJ0aWNsZSIsInB1YmxpY2F0aW9uIjp7ImRhdGFfZ3UiOiIyMDAzLTA3LTI5IiwiY29kaWNlX3JlZGF6aW9uYWxlIjoiMDAzRzAyMTgifSwiZGF0ZSI6IjIwMTctMDEtMDEiLCJzb3VyY2UiOiJodHRwczovL3d3dy5ub3JtYXR0aXZhLml0L2RvL2F0dG8vY2FyaWNhQUtOP2RhdGFHVT0yMDAzMDcyOSZjb2RpY2VSZWRhej0wMDNHMDIxOCZkYXRhVmlnZW56YT0yMDE3MDEwMSIsImRpZ2VzdCI6ImIxY2ZjZmJiNzNmZjYzZGFlZjY1MWY5ODBkM2M4Nzk0NGE3MzM5YjcwYTg5MjhkZmY5NTNiOGMwMjBlM2Q1M2MiLCJpZGVudGl0eSI6eyJ0eXBlIjoiREVDUkVUTyBMRUdJU0xBVElWTyIsImlzc3VlZCI6IjIwMDMtMDYtMzAiLCJudW1iZXIiOjE5NiwiZ2F6ZXR0ZSI6MTc0LCJzdXBwbGVtZW50Ijp7InR5cGUiOiJTTyIsIm51bWJlciI6MTIzfX0sInNlbGVjdG9yIjoiMC8xLzcvMS81IiwibGFiZWwiOiIxIiwiY29udGVudERpZ2VzdCI6IjRhZDEwOTFjNTA2MTgwNWI2NTRhMWExNjM2M2ZjYzI3MDM0NTAzYzJmNjY0MjM2OTJkNjNlZGNmZDExNDVlOTEiLCJhZGRyZXNzIjp7ImlkQXJ0aWNvbG8iOjEsInNvdHRvQXJ0aWNvbG8iOjEsInNvdHRvQXJ0aWNvbG8xIjoxMCwiZmxhZ1RpcG9BcnRpY29sbyI6IjAiLCJpZEdydXBwbyI6MSwicHJvZ3Jlc3Npdm8iOjAsInZlcnNpb25lIjozfSwibGVnYWxEaWdlc3QiOiI0YWQxMDkxYzUwNjE4MDViNjU0YTFhMTYzNjNmY2MyNzAzNDUwM2MyZjY2NDIzNjkyZDYzZWRjZmQxMTQ1ZTkxIiwidGFibGVEaWdlc3QiOiI0ZjUzY2RhMThjMmJhYTBjMDM1NGJiNWY5YTNlY2JlNWVkMTJhYjRkOGUxMWJhODczYzJmMTExNjEyMDJiOTQ1IiwidW5yZWFkIjpmYWxzZX0.08M4PEotTjNGazHXCFfQRCAi7WMpYsOJE3Ce0I8HrBQ"
+      },
+      "result": {
+        "reason": "verified_official_article",
+        "requested": {
+          "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMy0wNy0yOSIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwM0cwMjE4In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMy0wNi0zMCIsIm51bWJlciI6MTk2LCJnYXpldHRlIjoxNzQsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxMjN9fX0.fCbrvcZpfjw0q0I_EovItoeAN8ymbX1bIYj3vsvqKw8",
+          "snapshot_date": "2017-01-01",
+          "article_reference": "1",
+          "article_locator": "n1_eyJ2IjoxLCJraW5kIjoiYXJ0aWNsZSIsInB1YmxpY2F0aW9uIjp7ImRhdGFfZ3UiOiIyMDAzLTA3LTI5IiwiY29kaWNlX3JlZGF6aW9uYWxlIjoiMDAzRzAyMTgifSwiZGF0ZSI6IjIwMTctMDEtMDEiLCJzb3VyY2UiOiJodHRwczovL3d3dy5ub3JtYXR0aXZhLml0L2RvL2F0dG8vY2FyaWNhQUtOP2RhdGFHVT0yMDAzMDcyOSZjb2RpY2VSZWRhej0wMDNHMDIxOCZkYXRhVmlnZW56YT0yMDE3MDEwMSIsImRpZ2VzdCI6ImIxY2ZjZmJiNzNmZjYzZGFlZjY1MWY5ODBkM2M4Nzk0NGE3MzM5YjcwYTg5MjhkZmY5NTNiOGMwMjBlM2Q1M2MiLCJpZGVudGl0eSI6eyJ0eXBlIjoiREVDUkVUTyBMRUdJU0xBVElWTyIsImlzc3VlZCI6IjIwMDMtMDYtMzAiLCJudW1iZXIiOjE5NiwiZ2F6ZXR0ZSI6MTc0LCJzdXBwbGVtZW50Ijp7InR5cGUiOiJTTyIsIm51bWJlciI6MTIzfX0sInNlbGVjdG9yIjoiMC8xLzcvMS81IiwibGFiZWwiOiIxIiwiY29udGVudERpZ2VzdCI6IjRhZDEwOTFjNTA2MTgwNWI2NTRhMWExNjM2M2ZjYzI3MDM0NTAzYzJmNjY0MjM2OTJkNjNlZGNmZDExNDVlOTEiLCJhZGRyZXNzIjp7ImlkQXJ0aWNvbG8iOjEsInNvdHRvQXJ0aWNvbG8iOjEsInNvdHRvQXJ0aWNvbG8xIjoxMCwiZmxhZ1RpcG9BcnRpY29sbyI6IjAiLCJpZEdydXBwbyI6MSwicHJvZ3Jlc3Npdm8iOjAsInZlcnNpb25lIjozfSwibGVnYWxEaWdlc3QiOiI0YWQxMDkxYzUwNjE4MDViNjU0YTFhMTYzNjNmY2MyNzAzNDUwM2MyZjY2NDIzNjkyZDYzZWRjZmQxMTQ1ZTkxIiwidGFibGVEaWdlc3QiOiI0ZjUzY2RhMThjMmJhYTBjMDM1NGJiNWY5YTNlY2JlNWVkMTJhYjRkOGUxMWJhODczYzJmMTExNjEyMDJiOTQ1IiwidW5yZWFkIjpmYWxzZX0.08M4PEotTjNGazHXCFfQRCAi7WMpYsOJE3Ce0I8HrBQ"
+        },
+        "evidence": [
+          {
+            "source": "official_detail",
+            "checked_at": "2026-10-06T11:08:37.680Z",
+            "snapshot_date": "2017-01-01",
+            "publication": {
+              "data_gu": "2003-07-29",
+              "codice_redazionale": "003G0218"
+            },
+            "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto"
+          }
+        ],
+        "outcome": "found",
+        "content": {
+          "format": "text",
+          "text": "Art. 1. Diritto alla protezione dei dati personali 1. Chiunque ha diritto alla protezione dei dati personali che lo riguardano. ((PERIODO SOPPRESSO DALLA L. 4 NOVEMBRE 2010, N. 183)).",
+          "title": "DECRETO LEGISLATIVO 30 giugno 2003, n. 196",
+          "effective_from": "2010-11-24",
+          "effective_to": "2018-09-18"
+        },
+        "progress": "complete"
+      },
+      "serialized_bytes": 4780,
+      "elapsed_ms": 780,
+      "validation": "passed"
+    },
+    {
+      "name": "Privacy article 1 at 2018-09-18",
+      "tool": "read_article",
+      "input": {
+        "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMy0wNy0yOSIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwM0cwMjE4In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMy0wNi0zMCIsIm51bWJlciI6MTk2LCJnYXpldHRlIjoxNzQsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxMjN9fX0.fCbrvcZpfjw0q0I_EovItoeAN8ymbX1bIYj3vsvqKw8",
+        "article_reference": "1",
+        "snapshot_date": "2018-09-18"
+      },
+      "result": {
+        "reason": "verified_official_article",
+        "requested": {
+          "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMy0wNy0yOSIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwM0cwMjE4In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMy0wNi0zMCIsIm51bWJlciI6MTk2LCJnYXpldHRlIjoxNzQsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxMjN9fX0.fCbrvcZpfjw0q0I_EovItoeAN8ymbX1bIYj3vsvqKw8",
+          "snapshot_date": "2018-09-18",
+          "article_reference": "1"
+        },
+        "evidence": [
+          {
+            "source": "official_detail",
+            "checked_at": "2026-10-06T11:08:38.460Z",
+            "snapshot_date": "2018-09-18",
+            "publication": {
+              "data_gu": "2003-07-29",
+              "codice_redazionale": "003G0218"
+            },
+            "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto"
+          }
+        ],
+        "outcome": "found",
+        "content": {
+          "format": "text",
+          "text": "Art. 1. Diritto alla protezione dei dati personali 1. Chiunque ha diritto alla protezione dei dati personali che lo riguardano. ((PERIODO SOPPRESSO DALLA L. 4 NOVEMBRE 2010, N. 183)).",
+          "title": "DECRETO LEGISLATIVO 30 giugno 2003, n. 196",
+          "effective_from": "2010-11-24",
+          "effective_to": "2018-09-18"
+        },
+        "progress": "complete"
+      },
+      "serialized_bytes": 2346,
+      "elapsed_ms": 614,
+      "validation": "passed"
+    },
+    {
+      "name": "Privacy article 1 at 2018-09-19",
+      "tool": "read_article",
+      "input": {
+        "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMy0wNy0yOSIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwM0cwMjE4In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMy0wNi0zMCIsIm51bWJlciI6MTk2LCJnYXpldHRlIjoxNzQsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxMjN9fX0.fCbrvcZpfjw0q0I_EovItoeAN8ymbX1bIYj3vsvqKw8",
+        "article_reference": "1",
+        "snapshot_date": "2018-09-19"
+      },
+      "result": {
+        "reason": "verified_official_article",
+        "requested": {
+          "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMy0wNy0yOSIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwM0cwMjE4In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMy0wNi0zMCIsIm51bWJlciI6MTk2LCJnYXpldHRlIjoxNzQsInN1cHBsZW1lbnQiOnsidHlwZSI6IlNPIiwibnVtYmVyIjoxMjN9fX0.fCbrvcZpfjw0q0I_EovItoeAN8ymbX1bIYj3vsvqKw8",
+          "snapshot_date": "2018-09-19",
+          "article_reference": "1"
+        },
+        "evidence": [
+          {
+            "source": "official_detail",
+            "checked_at": "2026-10-06T11:08:39.074Z",
+            "snapshot_date": "2018-09-19",
+            "publication": {
+              "data_gu": "2003-07-29",
+              "codice_redazionale": "003G0218"
+            },
+            "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto"
+          }
+        ],
+        "outcome": "found",
+        "content": {
+          "format": "text",
+          "text": "Art. 1. (( (Oggetto). )) ((Il trattamento dei dati personali avviene secondo le norme del regolamento (UE) 2016/679 del Parlamento europeo e del Consiglio, del 27 aprile 2016, di seguito «Regolamento», e del presente codice, nel rispetto della dignità umana, dei diritti e delle libertà fondamentali della persona.))",
+          "title": "DECRETO LEGISLATIVO 30 giugno 2003, n. 196",
+          "effective_from": "2018-09-19"
+        },
+        "progress": "complete"
+      },
+      "serialized_bytes": 2560,
+      "elapsed_ms": 927,
+      "validation": "passed"
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+      "request": {
+        "denominazioneAtto": "DECRETO LEGISLATIVO",
+        "annoProvvedimento": "2000",
+        "numeroProvvedimento": "267",
+        "orderType": "recente",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "http_status": 200,
+      "headers_ms": 817
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "request": {
+        "idArticolo": 13,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 0,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 0,
+        "dataGU": "2000-09-28",
+        "codiceRedazionale": "000G0304",
+        "dataVigenza": "2026-10-02",
+        "tipoDettaglio": "singolavigenza"
+      },
+      "http_status": 200,
+      "headers_ms": 220
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "request": {
+        "idArticolo": 13,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 0,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 0,
+        "dataGU": "2000-09-28",
+        "codiceRedazionale": "000G0304",
+        "dataVigenza": "2026-10-02",
+        "tipoDettaglio": "singolavigenza"
+      },
+      "http_status": 200,
+      "headers_ms": 217
+    },
+    {
+      "url": "https://www.normattiva.it/eli/id/2000/09/28/000G0304/CONSOLIDATED/20261002",
+      "http_status": 200,
+      "headers_ms": 3393
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20000928&codiceRedaz=000G0304&dataVigenza=20261002",
+      "http_status": 200,
+      "headers_ms": 3150
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "request": {
+        "idArticolo": 1,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 2,
+        "progressivo": 0,
+        "versione": 1,
+        "dataGU": "2000-09-28",
+        "codiceRedazionale": "000G0304",
+        "dataVigenza": "2026-10-02",
+        "tipoDettaglio": "singolavigenza"
+      },
+      "http_status": 200,
+      "headers_ms": 2832
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+      "request": {
+        "denominazioneAtto": "DECRETO LEGISLATIVO",
+        "annoProvvedimento": "2005",
+        "numeroProvvedimento": "82",
+        "giornoProvvedimento": "7",
+        "meseProvvedimento": "3",
+        "orderType": "recente",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "http_status": 200,
+      "headers_ms": 139
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/semplice",
+      "request": {
+        "testoRicerca": "trasparenza amministrativa",
+        "orderType": "rilevante",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "http_status": 200,
+      "headers_ms": 351
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+      "request": {
+        "denominazioneAtto": "REGIO DECRETO",
+        "annoProvvedimento": "1942",
+        "numeroProvvedimento": "262",
+        "orderType": "recente",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "http_status": 200,
+      "headers_ms": 166
+    },
+    {
+      "url": "https://www.normattiva.it/eli/id/1942/04/04/042U0262/CONSOLIDATED/20261002",
+      "http_status": 200,
+      "headers_ms": 3509
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=19420404&codiceRedaz=042U0262&dataVigenza=20261002",
+      "http_status": 200,
+      "headers_ms": 4552
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "request": {
+        "idArticolo": 2043,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "2",
+        "idGruppo": 258,
+        "progressivo": 0,
+        "versione": 1,
+        "dataGU": "1942-04-04",
+        "codiceRedazionale": "042U0262",
+        "dataVigenza": "2026-10-02",
+        "tipoDettaglio": "singolavigenza"
+      },
+      "http_status": 200,
+      "headers_ms": 1585
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+      "request": {
+        "denominazioneAtto": "DECRETO LEGISLATIVO",
+        "annoProvvedimento": "2003",
+        "numeroProvvedimento": "196",
+        "orderType": "recente",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "http_status": 200,
+      "headers_ms": 119
+    },
+    {
+      "url": "https://www.normattiva.it/eli/id/2003/07/29/003G0218/CONSOLIDATED/20170101",
+      "http_status": 200,
+      "headers_ms": 867
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20030729&codiceRedaz=003G0218&dataVigenza=20170101",
+      "http_status": 200,
+      "headers_ms": 2221
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "request": {
+        "idArticolo": 1,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 1,
+        "progressivo": 0,
+        "versione": 3,
+        "dataGU": "2003-07-29",
+        "codiceRedazionale": "003G0218",
+        "dataVigenza": "2017-01-01",
+        "tipoDettaglio": "singolavigenza"
+      },
+      "http_status": 200,
+      "headers_ms": 769
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "request": {
+        "idArticolo": 1,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 0,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 0,
+        "dataGU": "2003-07-29",
+        "codiceRedazionale": "003G0218",
+        "dataVigenza": "2018-09-18",
+        "tipoDettaglio": "singolavigenza"
+      },
+      "http_status": 200,
+      "headers_ms": 382
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "request": {
+        "idArticolo": 1,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 0,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 0,
+        "dataGU": "2003-07-29",
+        "codiceRedazionale": "003G0218",
+        "dataVigenza": "2018-09-19",
+        "tipoDettaglio": "singolavigenza"
+      },
+      "http_status": 200,
+      "headers_ms": 310
+    }
+  ]
+}

@@ -1,22 +1,23 @@
 import { z } from "zod";
-import { dettaglioAtto, officialText, ARTICLE_DETAIL_URL } from "./api.js";
+import { dettaglioAtto, officialText, ARTICLE_DETAIL_URL, type WebsiteSession } from "./api.js";
 import { OperationError, internalError } from "./errors.js";
 import { currentCall, upstreamRuntime, type UpstreamRuntime } from "./upstream.js";
 import { RESPONSE_LIMITS, indexInputSchema, articleInputSchema, actInputSchema, indexPageSchema, readingPageSchema,
   articlePageSchema, type IndexPage, type ReadingPage, type ArticlePage } from "./contracts.js";
 import { assertResponseSize } from "./serialization.js";
-import { ReferenceCodec, digest, type Reference, type Binding } from "./references.js";
+import { ReferenceCodec, digest, type Reference, type Binding, type ActIdentity } from "./references.js";
 import { parsePortal, detailText, detailStructure, articleLabel, articleHeading, sourceFailure,
   type Publication, type ParsedAct, type SourceEntry, type Segment } from "./act-source.js";
 import { prepareSource, parseSource } from "./source-parser.js";
 
-interface Acquired extends Binding, ParsedAct { checkedAt: string; verified: Set<string>; notesOnly?: boolean; }
+interface Acquired extends Binding, ParsedAct { checkedAt: string; verified: Set<string>; notesOnly?: boolean; renderedControlUrl?: string; }
 interface Options { signingKey: Uint8Array; upstream?: UpstreamRuntime; cacheBytes?: number; }
 type Cursor = Extract<Reference, { kind: "cursor" }>;
 type ArticleReference = Extract<Reference, { kind: "article" }>;
 const invalidInput = () => new OperationError({ category: "invalid_input", code: "invalid_input", message: "Use one valid target or literal continuation cursor with bounded inputs.", retryability: false });
 const fits = (page: unknown) => { try { assertResponseSize({ structuredContent: page, content: [{ type: "text", text: JSON.stringify(page) }] }); return true; } catch { return false; } };
-const binding = (act: Binding): Binding => ({ publication: act.publication, date: act.date, source: act.source, digest: act.digest });
+const binding = (act: Binding): Binding => ({ publication: act.publication, date: act.date, source: act.source, digest: act.digest,
+  ...(act.identity ? { identity: act.identity } : {}) });
 const boundary = (text: string, end: number) => end > 0 && end < text.length
   && text.charCodeAt(end - 1) >= 0xd800 && text.charCodeAt(end - 1) <= 0xdbff
   && text.charCodeAt(end) >= 0xdc00 && text.charCodeAt(end) <= 0xdfff ? end - 1 : end;
@@ -61,10 +62,12 @@ export class ActTraversal {
         ...(entry.unread ? { explanation: entry.explanation ?? "This component contains unread graphics. Its full contents were not retrieved." } : {}) };
   }
   private envelope(act: Acquired, verifiedThrough = 0, displayedEntries: IndexPage["traversal"]["items"] = []) {
-    const evidence = [{ source: "official_akn" as const, checked_at: act.checkedAt, publication: act.publication,
+    const evidence: IndexPage["snapshot"]["evidence"] = [{ source: "official_akn" as const, checked_at: act.checkedAt, publication: act.publication,
       snapshot_date: act.date, official_url: act.source, representation_digest: act.digest,
       ...(act.notesOnly ? { explanation: "The official copies differ only within identified explanatory notes; this page retains the selected AKN copy." } : {}) }];
-    return { snapshot: { act_locator: this.codec.act(act.publication), snapshot_date: act.date, representation_digest: act.digest,
+    if (act.renderedControlUrl) evidence.push({ source: "official_detail", checked_at: act.checkedAt, publication: act.publication,
+      snapshot_date: act.date, official_url: act.renderedControlUrl });
+    return { snapshot: { act_locator: this.codec.act(act.publication, act.identity), snapshot_date: act.date, representation_digest: act.digest,
       evidence, newer_version_known: "unknown" as const },
       coverage: { article_inventory_complete: act.inventoryComplete && verifiedThrough === act.entries.length,
         legal_content_complete: act.legalComplete && verifiedThrough === act.entries.length,
@@ -72,21 +75,22 @@ export class ActTraversal {
         ...(act.coverageExplanation ? { explanation: act.coverageExplanation }
           : verifiedThrough < act.entries.length ? { explanation: "Remaining entries need verification." } : {}) } };
   }
-  private async acquire(publication: Publication, date: string, expected?: Binding): Promise<Acquired> {
-    return prepareSource(currentCall()!.signal, () => this.acquirePrepared(publication, date, expected));
+  private async acquire(publication: Publication, date: string, expected?: Binding, identity = expected?.identity): Promise<Acquired> {
+    return prepareSource(currentCall()!.signal, () => this.acquirePrepared(publication, date, expected, identity));
   }
-  private async acquirePrepared(publication: Publication, date: string, expected?: Binding): Promise<Acquired> {
-    const key = JSON.stringify([publication, date]);
+  private async acquirePrepared(publication: Publication, date: string, expected?: Binding, identity?: ActIdentity): Promise<Acquired> {
+    const key = JSON.stringify([publication, date, identity]);
     const cached = this.cache.get(key);
     if (cached) {
       if (expected && (cached.act.digest !== expected.digest || cached.act.source !== expected.source)) throw sourceFailure("representation_changed", "The cached representation differs from the continuation binding.");
       this.cache.delete(key); this.cache.set(key, cached); return cached.act;
     }
     const url = `https://www.normattiva.it/eli/id/${publication.data_gu.replaceAll("-", "/")}/${encodeURIComponent(publication.codice_redazionale)}/CONSOLIDATED/${date.replaceAll("-", "")}`;
-    const page = await officialText(url);
+    const session: WebsiteSession = {};
+    const page = await officialText(url, session);
     const portal = parsePortal(page.text, page.url, publication, date);
     if (expected && portal.source !== expected.source) throw sourceFailure("representation_changed", "The supplied structured source address changed; continuation cannot switch representations.");
-    const source = await officialText(portal.source);
+    const source = await officialText(portal.source, session);
     if (source.url !== portal.source) throw sourceFailure("source_unverified", "The structured download changed address without publication/date verification.");
     // The frozen reading representation includes the supplied address crosswalk
     // and unresolved navigation components, not just the XML legal body.
@@ -99,7 +103,17 @@ export class ActTraversal {
     if (!anchor) throw sourceFailure("snapshot_unverified", "No independent dated article control is available to verify this source.");
     // Independent controls are checked per occurrence before useful output.
     // A cursor authenticates already verified prefixes of this exact digest.
-    const act: Acquired = { ...parsed, publication, date, source: portal.source, digest: fingerprint, checkedAt: new Date().toISOString(), verified: new Set() };
+    const act: Acquired = { ...parsed, publication, date, ...(identity ? { identity } : {}), source: portal.source, digest: fingerprint, checkedAt: new Date().toISOString(), verified: new Set() };
+    if (identity && portal.rendered) {
+      const control = portal.rendered, first = act.entries[0];
+      if (first?.kind === "article" && !first.unread) {
+        if (control.from > date || (control.to && control.to < date)) throw sourceFailure("snapshot_conflict", "The rendered article validity does not cover the selected date.");
+        const structure = detailStructure(control.html);
+        if (structure.hasGraphics || structure.tableDigest !== first.tableDigest || digest(detailText(control.html)) !== first.contentDigest)
+          throw sourceFailure("source_content_conflict", "The independent rendered first occurrence disagrees with the AKN; the index is withheld.");
+        act.verified.add(first.selector); act.renderedControlUrl = page.url;
+      }
+    }
     const bytes = Buffer.byteLength(JSON.stringify(act));
     if (bytes <= this.cacheLimit) {
       while (this.cacheSize + bytes > this.cacheLimit || this.cache.size >= 8) {
@@ -112,18 +126,28 @@ export class ActTraversal {
   private async verifyEntry(act: Acquired, entry: SourceEntry): Promise<void> {
     if (entry.unread || act.verified.has(entry.selector)) return;
     if (!entry.address) throw sourceFailure("address_unverified", "No exact historical retrieval address is available.");
-    const detail = await this.verifiedDetail(act.publication, act.date, entry.kind === "article" ? entry.label : undefined, entry.address, entry.contentDigest, entry.legalDigest, entry.tableDigest);
+    const detail = await this.verifiedDetail(act.publication, act.date, entry.kind === "article" ? entry.label : undefined, entry.address, entry.contentDigest, entry.legalDigest, entry.tableDigest, act.identity);
     if (detail.notesOnly) act.notesOnly = true;
     act.verified.add(entry.selector);
   }
-  private async verifiedDetail(publication: Publication, date: string, label: string | undefined, address: ArticleReference["address"], expectedDigest?: string, expectedLegalDigest?: string, expectedTableDigest?: string) {
+  private async verifiedDetail(publication: Publication, date: string, label: string | undefined, address: ArticleReference["address"], expectedDigest?: string, expectedLegalDigest?: string, expectedTableDigest?: string, identity?: ActIdentity) {
     const result = await dettaglioAtto({ ...address, dataGU: publication.data_gu, codiceRedazionale: publication.codice_redazionale,
       dataVigenza: date, tipoDettaglio: "singolavigenza" });
     const atto = result.data?.atto;
     if (!result.success || !atto?.articoloHtml) throw sourceFailure("target_unresolved", "The official detail did not establish the requested target.");
     const subtitle = atto.sottoTitolo ?? "";
+    // Missing editorial metadata can use independent proof; conflicting
+    // editorial metadata cannot. These are the official legacy/current code forms.
+    const editorialConflict = [...subtitle.matchAll(/\((\d{3}[A-Z]\d{4}|\d{2}[A-Z]\d{5})\)/g)]
+      .some(match => match[1] !== publication.codice_redazionale);
     const gu = [atto.annoGU, atto.meseGU, atto.giornoGU].map((v, i) => String(v).padStart(i === 0 ? 4 : 2, "0")).join("-");
-    if (!subtitle.includes(`(${publication.codice_redazionale})`) || gu !== publication.data_gu) throw sourceFailure("source_identity_conflict", "The article detail did not verify the exact publication.");
+    const issued = identity && [atto.annoProvvedimento, atto.meseProvvedimento, atto.giornoProvvedimento].map((v, i) => String(v).padStart(i === 0 ? 4 : 2, "0")).join("-");
+    const identityVerified = identity ? atto.tipoProvvedimentoDescrizione === identity.type && issued === identity.issued
+      && atto.numeroProvvedimento === identity.number && atto.numeroGU === identity.gazette
+      && (identity.supplement ? atto.tipoSupplementoCode === identity.supplement.type && atto.numeroSupplemento === identity.supplement.number
+        : !atto.tipoSupplementoCode && !atto.numeroSupplemento)
+      : subtitle.includes(`(${publication.codice_redazionale})`);
+    if (editorialConflict || !identityVerified || gu !== publication.data_gu) throw sourceFailure("source_identity_conflict", "The article detail did not verify the exact publication.");
     const from = atto.articoloDataInizioVigenza, to = atto.articoloDataFineVigenza;
     if (!from || from > date || (to && to < date)) throw sourceFailure("snapshot_conflict", "The article's official validity interval does not cover the requested date.");
     const text = detailText(atto.articoloHtml);
@@ -139,11 +163,12 @@ export class ActTraversal {
   async listArticles(value: unknown, signal?: AbortSignal): Promise<IndexPage> {
     const args = this.input(indexInputSchema, value);
     const cursor = "cursor" in args ? this.cursor(args.cursor, "list_articles") : undefined;
-    const publication = cursor?.publication ?? this.codec.publication("act_locator" in args ? args.act_locator : "");
+    const actReference = cursor ?? this.codec.actReference("act_locator" in args ? args.act_locator : "");
+    const { publication, identity } = actReference;
     const date = cursor?.date ?? ("snapshot_date" in args ? args.snapshot_date : undefined) ?? new Date().toISOString().slice(0, 10);
     const limit = args.page_size ?? cursor?.limit ?? RESPONSE_LIMITS.indexDefault;
     return this.call("composed", signal, async () => {
-      const act = await this.acquire(publication, date, cursor);
+      const act = await this.acquire(publication, date, cursor, identity);
       let index = cursor?.index ?? 0;
       if (index > act.entries.length || (cursor && (cursor.segment || cursor.offset || cursor.target))) throw invalidInput();
       if (cursor) for (const entry of act.entries.slice(0, index)) if (!entry.unread) act.verified.add(entry.selector);
@@ -172,17 +197,19 @@ export class ActTraversal {
     const token = cursor?.target ?? ("article_locator" in args ? args.article_locator : undefined);
     let exact = token ? this.codec.decode(token, "article") as ArticleReference : undefined;
     if (cursor && (!exact || JSON.stringify(binding(cursor)) !== JSON.stringify(binding(exact)))) throw invalidInput();
-    const publication = exact?.publication ?? this.codec.publication("act_locator" in args ? args.act_locator : "");
+    const actReference = exact ?? this.codec.actReference("act_locator" in args ? args.act_locator : "");
+    const { publication, identity } = actReference;
     const date = exact?.date ?? ("snapshot_date" in args ? args.snapshot_date : undefined) ?? new Date().toISOString().slice(0, 10);
     const label = exact?.label ?? articleLabel("article_reference" in args ? args.article_reference : "");
     if (!label) throw invalidInput();
     const limit = args.max_chars ?? cursor?.limit ?? RESPONSE_LIMITS.textDefault;
     return this.call("direct", signal, async () => {
       const evidence = [{ source: "official_detail" as const, checked_at: new Date().toISOString(), publication, snapshot_date: date, official_url: ARTICLE_DETAIL_URL }];
-      const requested = { act_locator: this.codec.act(publication), snapshot_date: date, article_reference: label,
+      const requested = { act_locator: this.codec.act(publication, identity), snapshot_date: date, article_reference: label,
         ...(token ? { article_locator: token } : {}) };
       if (!exact) {
-        const acquired = [...this.cache.values()].map(c => c.act).find(a => a.date === date && JSON.stringify(a.publication) === JSON.stringify(publication));
+        const acquired = [...this.cache.values()].map(c => c.act).find(a => a.date === date && JSON.stringify(a.publication) === JSON.stringify(publication)
+          && JSON.stringify(a.identity) === JSON.stringify(identity));
         if (acquired) {
           if (acquired.unmatchedArticleLabels.includes(label)) return { outcome: "unresolved", reason: "source_membership_conflict", requested,
             evidence: [{ ...evidence[0]!, explanation: "An official navigation address is missing from the acquired representation; historical membership is unresolved." }] };
@@ -208,7 +235,7 @@ export class ActTraversal {
       let content: Awaited<ReturnType<ActTraversal["verifiedDetail"]>>;
       const address = exact?.address ?? { idArticolo: Number(label), sottoArticolo: 1, sottoArticolo1: 0, flagTipoArticolo: "0", idGruppo: 0, progressivo: 0, versione: 0 };
       try {
-        content = await this.verifiedDetail(publication, date, label, address, exact?.contentDigest, cursor ? undefined : exact?.legalDigest, exact?.tableDigest);
+        content = await this.verifiedDetail(publication, date, label, address, exact?.contentDigest, cursor ? undefined : exact?.legalDigest, exact?.tableDigest, identity);
       } catch (error) {
         if (!(error instanceof OperationError)) throw error;
         if (error.detail.http_status !== 404 && !["target_unresolved", "source_identity_conflict", "snapshot_conflict", "article_identity_conflict", "source_content_conflict", "source_table_conflict", "graphic_content_unread"].includes(error.detail.code)) throw error;
@@ -221,7 +248,7 @@ export class ActTraversal {
       if (offset >= text.length && offset !== 0) throw invalidInput();
       let end = characterEnd(text, offset, limit);
       const source = exact?.source ?? ARTICLE_DETAIL_URL;
-      const reference = exact ? { ...exact, contentDigest: digest(text), legalDigest: undefined } : { v: 1 as const, kind: "article" as const, publication, date, source, digest: digest(text), label, selector: "direct", contentDigest: digest(text),
+      const reference = exact ? { ...exact, contentDigest: digest(text), legalDigest: undefined } : { v: 1 as const, kind: "article" as const, publication, date, source, ...(identity ? { identity } : {}), digest: digest(text), label, selector: "direct", contentDigest: digest(text),
         address, tableDigest: content.tableDigest };
       const make = (): ArticlePage => ({ outcome: "found", reason: "verified_official_article", requested, evidence,
         content: { format: "text", text: text.slice(offset, end), ...(content.title ? { title: content.title } : {}),
@@ -238,13 +265,14 @@ export class ActTraversal {
     const cursor = "cursor" in args ? this.cursor(args.cursor, "read_act") : undefined;
     const attachmentToken = cursor?.target ?? ("attachment_ref" in args ? args.attachment_ref : undefined);
     const attachment = attachmentToken ? this.codec.decode(attachmentToken, "attachment") : undefined;
-    const publication = cursor?.publication ?? this.codec.publication("act_locator" in args ? args.act_locator : "");
+    const actReference = cursor ?? this.codec.actReference("act_locator" in args ? args.act_locator : "");
+    const { publication, identity } = actReference;
     const date = cursor?.date ?? ("snapshot_date" in args ? args.snapshot_date : undefined) ?? attachment?.date ?? new Date().toISOString().slice(0, 10);
     if (attachment && (JSON.stringify(attachment.publication) !== JSON.stringify(publication) || attachment.date !== date
       || (cursor && JSON.stringify(binding(cursor)) !== JSON.stringify(binding(attachment))))) throw invalidInput();
     const limit = args.max_chars ?? cursor?.limit ?? RESPONSE_LIMITS.textDefault;
     return this.call("composed", signal, async () => {
-      const act = await this.acquire(publication, date, cursor ?? attachment);
+      const act = await this.acquire(publication, date, cursor ?? attachment, identity);
       const entries = attachment ? act.entries.filter(e => e.selector === (attachment as Extract<Reference, { kind: "attachment" }>).selector) : act.entries;
       if (attachment && (entries.length !== 1 || entries[0]!.kind !== "attachment" || entries[0]!.contentDigest !== (attachment as Extract<Reference, { kind: "attachment" }>).contentDigest)) throw invalidInput();
       if (attachment && entries[0]!.unread) throw sourceFailure("attachment_unread", entries[0]!.explanation ?? "The attachment includes unread graphics; its full content is unresolved.");

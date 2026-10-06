@@ -66,7 +66,42 @@ export function articleHeading(text: string, component = false): string | undefi
   return new RegExp(`${component ? "(?:^|\\n)\\s*" : "\\b"}(?:Articolo|Art\\.?)\\s*(\\d+(?:/\\d+|[-\\s]+(?:${suffix}))?)(?=[\\s.()])`, component ? "m" : "i").exec(text)?.[1];
 }
 interface Navigation { label: string; component: string; address: RetrievalAddress; hierarchy: Hierarchy; officialUrl: string; }
-export interface PortalEvidence { source: string; navigation: Navigation[]; }
+export interface PortalEvidence { source: string; navigation: Navigation[]; rendered?: { html: string; from: string; to?: string }; }
+
+/** The initial ELI view independently renders the first occurrence. Do not
+ * strip a preamble from an unstructured API body to manufacture agreement. */
+function renderedPortalArticle(html: string): PortalEvidence["rendered"] {
+  const parser = new SAXParser({ sourceCodeLocationInfo: true });
+  const voidTags = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]);
+  let depth = 0, bodyDepth = 0, start = -1, end = -1, count = 0;
+  const dates: Record<string, string> = {};
+  let dateField: string | undefined;
+  parser.on("startTag", tag => {
+    if (++count > 100_000 || depth >= 96) throw sourceFailure("parse_limit_exceeded", "The rendered page exceeds its element or depth limit.");
+    const attrs = Object.fromEntries(tag.attrs.map(a => [a.name, a.value]));
+    if (!voidTags.has(tag.tagName) && !tag.selfClosing) depth++;
+    if (attrs.class?.split(/\s+/).includes("bodyTesto")) {
+      if (start !== -1) throw sourceFailure("source_unverified", "The dated page has multiple rendered article bodies.");
+      start = tag.sourceCodeLocation!.startOffset; bodyDepth = depth;
+    }
+    if (tag.tagName === "span" && ["artInizio", "artFine"].includes(attrs.id ?? "")) { dateField = attrs.id; dates[dateField!] = ""; }
+  });
+  parser.on("text", token => { if (dateField) dates[dateField] += token.text; });
+  parser.on("endTag", tag => {
+    if (start >= 0 && end < 0 && depth === bodyDepth) end = tag.sourceCodeLocation!.endOffset;
+    if (tag.tagName === "span") dateField = undefined;
+    if (!voidTags.has(tag.tagName)) depth--;
+  });
+  parser.end(html);
+  if (start < 0 || end < 0 || !dates.artInizio) return undefined;
+  const date = (text: string): string => {
+    const m = /^(\d{1,2})-(\d{1,2})-(\d{4})$/.exec(text.trim());
+    const iso = m && `${m[3]}-${m[2]!.padStart(2, "0")}-${m[1]!.padStart(2, "0")}`;
+    if (!iso || !calendarDateSchema.safeParse(iso).success) throw sourceFailure("snapshot_conflict", "The rendered article validity is unverifiable.");
+    return iso;
+  };
+  return { html: html.slice(start, end), from: date(dates.artInizio), ...(dates.artFine ? { to: date(dates.artFine) } : {}) };
+}
 
 export function parsePortal(html: string, pageUrl: string, publication: Publication, date: string): PortalEvidence {
   const parser = new SAXParser();
@@ -135,7 +170,7 @@ export function parsePortal(html: string, pageUrl: string, publication: Publicat
   });
   parser.end(html);
   if (!identity || !dated || links.size !== 1 || anchor) throw sourceFailure("source_unverified", "The dated official page does not supply one verifiable AKN link and complete navigation addresses.");
-  return { source: [...links][0]!, navigation };
+  return { source: [...links][0]!, navigation, rendered: renderedPortalArticle(html) };
 }
 
 function xmlTree(xml: string, closed?: (node: XmlNode, ancestors: XmlNode[]) => void): XmlNode {

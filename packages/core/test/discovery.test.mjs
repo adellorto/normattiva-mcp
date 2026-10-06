@@ -24,8 +24,8 @@ test('a complete citation selects a live exact act without retrieving its articl
     assert.equal(result.article_reference, '52');
     assert.equal(result.ordering, 'exact_citation');
     assert.equal(result.traversal.progress, 'complete');
-    const reader = new core.ActTraversal({ signingKey: key });
-    assert.equal(result.traversal.items[0].act_locator, reader.actLocator({ data_gu: '2005-05-16', codice_redazionale: '005G0104' }));
+    assert.deepEqual(result.traversal.items[0].publication, { data_gu: '2005-05-16', codice_redazionale: '005G0104' });
+    assert.equal(typeof result.traversal.items[0].act_locator, 'string');
     assert.equal(result.traversal.items[0].current, 'unknown');
     assert.equal(requests.length, 1);
     assert.equal(requests[0].body.numeroProvvedimento, '82');

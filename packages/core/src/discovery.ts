@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ricercaAvanzata, ricercaSemplice, BASE_URL } from "./api.js";
-import { ReferenceCodec, digest, referenceError } from "./references.js";
+import { ReferenceCodec, digest, referenceError, actIdentitySchema } from "./references.js";
 import { AuthenticatedTokens } from "./authenticated-tokens.js";
 import { RESPONSE_LIMITS, publicationSchema, discoveryInputSchema, discoveryContinuationInputSchema, discoveryPageSchema, type DiscoveryPage } from "./contracts.js";
 import { discoveryPlanSchema, planDiscovery, invalidRequest, type DiscoveryPlan, type Citation } from "./discovery-plan.js";
@@ -88,7 +88,12 @@ export class ActDiscovery {
     if (!parsed.success || !/^[A-Za-z0-9_-]{1,80}$/.test(parsed.data.codice_redazionale)
       || typeof item.titoloAtto !== "string" || !item.titoloAtto.trim()) throw malformed();
     const publication = parsed.data;
-    const candidate: Candidate = { act_locator: this.codec.act(publication), publication, title: item.titoloAtto, current: "unknown",
+    // Only independent official result metadata can become authenticated reading proof.
+    // Partial metadata retains the coordinate-only locator, which cannot certify detail identity.
+    const identity = actIdentitySchema.safeParse({ type: item.denominazioneAtto, issued: item.dataEmanazione?.slice(0, 10),
+      number: Number(item.numeroProvvedimento), gazette: Number(item.numeroGU),
+      ...(item.tipoSupplemento || item.numeroSupplemento ? { supplement: { type: item.tipoSupplemento, number: Number(item.numeroSupplemento) } } : {}) });
+    const candidate: Candidate = { act_locator: this.codec.act(publication, identity.success ? identity.data : undefined), publication, title: item.titoloAtto, current: "unknown",
       evidence: [{ source: "official_search", checked_at: new Date().toISOString(), publication, official_url: BASE_URL + path }] };
     return alias ? { ...candidate, official_urn: alias.urn, alias: { name: alias.name, provenance: alias.provenance, verified_at: alias.verified_at },
       evidence: [...candidate.evidence, { source: "reviewed_alias", checked_at: `${alias.verified_at}T00:00:00Z`, official_url: alias.provenance }] } : candidate;

@@ -6,7 +6,7 @@ This guide describes the unpublished replacement source interface. Stages 1–4 
 
 Set `NORMATTIVA_REFERENCE_KEY` to a preserved, cryptographically generated 32-byte key encoded as exactly 64 hex characters. Generate once with `openssl rand -hex 32`, save in the process/deployment configuration, and reuse on ordinary restart. The server does not read `.env` automatically. The key must never be a new random value per invocation. Remote clients do not need the hosted server's key.
 
-Locators/cursors from compatible copies transfer only when format versions and signed-reference trust agree. `a1_` act locators identify a validated publication; `n1_` reading references/cursors and `d1_` discovery cursors are signed. Losing/changing trust invalidates signed references. Tampering, unsupported versions, operation mismatch and untrusted references reject explicitly; there is no silent restart.
+Locators/cursors from compatible copies transfer only when format versions and signed-reference trust agree. `a1_` act locators identify a validated publication; `a2_` act locators authenticate independent official discovery identity, and `n1_` reading references/cursors and `d1_` discovery cursors are signed. Losing/changing trust invalidates signed references, including `a2_` act locators. Tampering, unsupported versions, operation mismatch and untrusted references reject explicitly; there is no silent restart. Partial discovery metadata retains `a1_`; it does not authorize reading a detail response without independent publication proof.
 
 ## Replace calls and result handling
 

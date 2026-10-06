@@ -7,6 +7,9 @@ export interface AttoListItem {
   codiceRedazionale?: string;
   dataGU?: string;
   dataEmanazione?: string;
+  numeroGU?: string;
+  numeroSupplemento?: string;
+  tipoSupplemento?: string;
   dataPubblicazione?: string;
   classeProvvedimento?: string;
   dataUltimaModifica?: string;
@@ -52,6 +55,13 @@ export interface DettaglioAttoResponse {
       giornoGU?: number;
       tipoProvvedimentoDescrizione?: string;
       tipoProvvedimentoCodice?: string;
+      annoProvvedimento?: number;
+      meseProvvedimento?: number;
+      giornoProvvedimento?: number;
+      numeroProvvedimento?: number;
+      numeroGU?: number;
+      tipoSupplementoCode?: string;
+      numeroSupplemento?: number;
       articoloHtml?: string;
       articoloDataInizioVigenza?: string;
       articoloDataFineVigenza?: string;

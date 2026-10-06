@@ -94,7 +94,7 @@ export NORMATTIVA_REFERENCE_KEY='<paste your preserved 64-hex key>'
 
 The server reads the process environment; it does not automatically load `.env` files, create a key, or ship a shared secret. Missing/malformed configuration fails explicitly. Compatible processes with the same preserved key can verify signed references across restarts; hosted/npm transfer additionally needs shared trust and compatible versions. Changing or losing the key invalidates signed references and requires new discovery/traversal. Unshared deployments reject references explicitly.
 
-Formats: `a1_` portable, validated publication locators (not existence evidence); `n1_` signed exact article/attachment references and reading cursors; `d1_` signed live-discovery cursors. Unsupported/tampered/untrusted references fail without silently restarting or redirecting to caller-selected hosts. No cursor database is required.
+Formats: `a1_` portable, validated publication locators (not existence evidence); `a2_` signed act locators carrying independently returned official discovery identity; `n1_` signed exact article/attachment references and reading cursors; `d1_` signed live-discovery cursors. Signed act identity survives restart and requires shared trust for transfer. Detail responses must independently match that identity and the requested validity interval. Unsupported/tampered/untrusted references fail without silently restarting or redirecting to caller-selected hosts. No cursor database is required.
 
 Upstream destinations are fixed official Normattiva production API/website hosts. The open API requires no authentication. The mTLS PRE environment is excluded.
 

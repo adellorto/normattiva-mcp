@@ -28,7 +28,11 @@ export async function checkContracts(client) {
   assert.equal(read.structuredContent.traversal.progress, 'complete');
   assert.equal(read.structuredContent.traversal.items.length, 2);
   const updates = await client.callTool({ name: 'recent_updates', arguments: { data_inizio: '2026-10-01', data_fine: '2026-10-02' } });
-  assert.equal(updates.structuredContent.atti[0].act_locator, act_locator);
+  const updateRead = await client.callTool({ name: 'read_article', arguments: {
+    act_locator: updates.structuredContent.atti[0].act_locator, article_reference: '13', snapshot_date: '2026-10-02',
+  } });
+  assert.equal(updateRead.structuredContent.outcome, 'unresolved');
+  assert.equal(updateRead.structuredContent.reason, 'source_identity_conflict');
   const unresolved = await client.callTool({ name: 'read_article', arguments: { act_locator, article_reference: '999' } });
   assert.equal(unresolved.structuredContent.outcome, 'unresolved');
   const error = await client.callTool({ name: 'read_article', arguments: { article_locator: 'invented' } });

@@ -71,7 +71,10 @@ try {
       assert.equal(value.traversal.items[0].label, '1'); assert.equal(value.traversal.progress, 'more');
     });
     if (index?.traversal?.cursor) await canary('TUEL literal index continuation', 'list_articles', { cursor: index.traversal.cursor, page_size: 1 }, value => {
-      assert.equal(value.snapshot.snapshot_date, snapshot_date); assert.equal(value.traversal.items[0].label, '2');
+      assert.equal(value.snapshot.snapshot_date, snapshot_date);
+      // The saved inventory begins with two distinct article-1 occurrences.
+      assert.equal(value.traversal.items[0].label, '1');
+      assert.notEqual(value.traversal.items[0].article_locator, index.traversal.items[0].article_locator);
     });
   }
   await canary('CAD reviewed alias live verification', 'find_acts', { request: 'CAD articolo 5' }, value => {
@@ -89,13 +92,37 @@ try {
       assert.equal(value.traversal.items.length, 1);
       assert.ok(value.traversal.items[0].article_locator);
     });
-    if (index?.traversal) await canary('Civil Code attachment article 2043', 'read_article', { act_locator, article_reference: '2043', snapshot_date }, value => assert.equal(value.outcome, 'found'));
+    // Even if first-occurrence verification failed, source acquisition may have
+    // retained the exact crosswalk. The read must independently verify 2043.
+    await canary('Civil Code attachment article 2043', 'read_article', { act_locator, article_reference: '2043', snapshot_date }, value => {
+      assert.equal(value.outcome, 'found'); assert.match(value.content.text, /danno ingiusto/);
+      assert.ok(value.requested.article_locator);
+    });
   }
   const privacy = await canary('Privacy Code discovery', 'find_acts', { request: 'decreto legislativo 196/2003' }, value => assert.equal(value.match, 'identified'));
   // Route availability only: date/label assertions do not certify historical content.
-  if (privacy?.traversal?.items[0]) await canary('Privacy 2017 dated-route availability', 'list_articles', {
-    act_locator: privacy.traversal.items[0].act_locator, snapshot_date: '2017-01-01', page_size: 1,
-  }, value => { assert.equal(value.snapshot.snapshot_date, '2017-01-01'); assert.equal(value.traversal.items[0].label, '1'); });
+  if (privacy?.traversal?.items[0]) {
+    const act_locator = privacy.traversal.items[0].act_locator;
+    const historicalIndex = await canary('Privacy 2017 dated-route availability', 'list_articles', {
+      act_locator, snapshot_date: '2017-01-01', page_size: 1,
+    }, value => { assert.equal(value.snapshot.snapshot_date, '2017-01-01'); assert.equal(value.traversal.items[0].label, '1'); });
+    for (const snapshot_date of ['2017-01-01', '2018-09-18', '2018-09-19']) await canary(`Privacy article 1 at ${snapshot_date}`, 'read_article', {
+      ...(snapshot_date === '2017-01-01' && historicalIndex?.traversal?.items[0]?.article_locator
+        ? { article_locator: historicalIndex.traversal.items[0].article_locator }
+        : { act_locator, article_reference: '1', snapshot_date }),
+    }, value => {
+      assert.equal(value.outcome, 'found');
+      assert.equal(value.evidence[0].snapshot_date, snapshot_date);
+      if (snapshot_date < '2018-09-19') {
+        assert.match(value.content.text, /Chiunque ha diritto alla protezione dei dati personali che lo riguardano/);
+        assert.equal(value.content.effective_to, '2018-09-18');
+      } else {
+        assert.match(value.content.text, /regolamento \(UE\) 2016\/679/);
+        assert.doesNotMatch(value.content.text, /Chiunque ha diritto alla protezione/);
+        assert.equal(value.content.effective_from, '2018-09-19');
+      }
+    });
+  }
 } finally {
   await client.close(); await server.close(); globalThis.fetch = fetchOfficial;
   await writeFile(process.argv[2] ?? '/tmp/normattiva-release-live.json', JSON.stringify(report, null, 2) + '\n');

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { dettaglioAtto } from '../dist/api.js';
+import { dettaglioAtto, officialText } from '../dist/api.js';
 import { UpstreamRuntime, executeUpstream } from '../dist/upstream.js';
 import { OperationError } from '../dist/errors.js';
 
@@ -9,6 +9,21 @@ const articleRequest = {
   sottoArticolo: 2, sottoArticolo1: 0, dataVigenza: '2025-01-01',
   idGruppo: 6, progressivo: 0, versione: 0,
 };
+
+test('official website navigation omits the OpenData Origin and retains unknown HTTP failures without retry', async () => {
+  const original = globalThis.fetch;
+  let attempts = 0;
+  globalThis.fetch = async (_url, init) => {
+    attempts++;
+    assert.equal(new Headers(init.headers).has('Origin'), false);
+    return new Response('conflict', { status: 409 });
+  };
+  try {
+    await assert.rejects(officialText('https://www.normattiva.it/eli/id/2000/09/28/000G0304/CONSOLIDATED/20261002'),
+      error => error.detail.http_status === 409 && error.detail.retryability === 'unknown');
+    assert.equal(attempts, 1);
+  } finally { globalThis.fetch = original; }
+});
 
 test('a throttle with code 1000 remains an operational failure, never an article miss', async () => {
   const originalFetch = globalThis.fetch;

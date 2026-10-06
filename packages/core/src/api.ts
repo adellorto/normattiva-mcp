@@ -207,7 +207,8 @@ export function dettaglioAtto(body: DettaglioAttoBody): Promise<DettaglioAttoRes
 }
 
 /** Only the official website is allowed; redirects consume separate attempts. */
-export async function officialText(url: string): Promise<{ text: string; url: string }> {
+export interface WebsiteSession { sessionId?: string; affinity?: string; }
+export async function officialText(url: string, session?: WebsiteSession): Promise<{ text: string; url: string }> {
   for (let redirects = 0; redirects <= 4; redirects++) {
     const target = new URL(url);
     if (target.origin !== "https://www.normattiva.it" || target.username || target.password) {
@@ -216,8 +217,22 @@ export async function officialText(url: string): Promise<{ text: string; url: st
     }
     const result = await executeUpstream({ operation: target.pathname, replaySafe: true, execute: async signal => {
       let response: Response;
-      try { response = await fetch(url, { signal, redirect: "manual", headers: COMMON_HEADERS }); }
+      // Website navigation is not an OpenData cross-origin request. The website
+      // rejects the OpenData portal Origin with HTTP 409, including valid ELI URLs.
+      const { Origin: _origin, ...websiteHeaders } = COMMON_HEADERS;
+      const cookies = [session?.sessionId && `JSESSIONID=${session.sessionId}`, session?.affinity && `NCC=${session.affinity}`].filter(Boolean).join("; ");
+      try { response = await fetch(url, { signal, redirect: "manual", headers: { ...websiteHeaders,
+        ...(cookies ? { Cookie: cookies } : {}) } }); }
       catch (error) { throw transportError(error, target.pathname); }
+      // The dated page selects the download in its servlet session. Keep only
+      // this cookie and its load-balancer affinity, on the allowlisted host,
+      // for one acquisition; never persist
+      // it in locators, cache entries, diagnostics or continuation references.
+      if (session) for (const cookie of response.headers.getSetCookie()) {
+        const match = /^(JSESSIONID|NCC)=([A-Za-z0-9._-]{1,512})(?:;|$)/.exec(cookie);
+        if (match?.[1] === "JSESSIONID") session.sessionId = match[2];
+        if (match?.[1] === "NCC") session.affinity = match[2];
+      }
       if ([301, 302, 303, 307, 308].includes(response.status)) {
         const location = response.headers.get("location");
         await response.body?.cancel();

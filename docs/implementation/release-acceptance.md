@@ -1,14 +1,14 @@
 # Candidate 0.2.0 release acceptance — incomplete
 
-Recorded on 5 October 2026, Node 24.15.0/Linux, against local stages 1–4 through `5be40d2` and the stage-5 working tree. [Validate coordinated release and prepare publication handoff](https://github.com/adellorto/normattiva-mcp/issues/22) remains open. The [accepted delivery specification](https://github.com/adellorto/normattiva-mcp/issues/6#issuecomment-5992182865) still governs acceptance. No push, tag, npm publication or deployment was performed.
+Initial acceptance recorded on 5 October 2026; live-source correction recorded on 6 October 2026, Node 24.15.0/Linux, against local stages 1–4 through `5be40d2` and the stage-5 working tree. [Validate coordinated release and prepare publication handoff](https://github.com/adellorto/normattiva-mcp/issues/22) remains open. The [accepted delivery specification](https://github.com/adellorto/normattiva-mcp/issues/6#issuecomment-5992182865) still governs acceptance. No push, tag, npm publication or deployment was performed.
 
-New prerequisites on the implementation map are [Restore verified live reading against current official sources](https://github.com/adellorto/normattiva-mcp/issues/23) and [Remedy observed model continuation-reference failures](https://github.com/adellorto/normattiva-mcp/issues/24). The new [Preserve complete requests and verified references in model-facing discovery](https://github.com/adellorto/normattiva-mcp/issues/25) prerequisite records the measured routing failures. All three block final acceptance through native tracker dependencies.
+New prerequisites on the implementation map are [Restore verified live reading against current official sources](https://github.com/adellorto/normattiva-mcp/issues/23) and [Remedy observed model continuation-reference failures](https://github.com/adellorto/normattiva-mcp/issues/24). The new [Preserve complete requests and verified references in model-facing discovery](https://github.com/adellorto/normattiva-mcp/issues/25) prerequisite records the measured routing failures. The live-source prerequisite now has a passing scoped corrective run recorded below. The continuation-reference and discovery prerequisites still block final acceptance through native tracker dependencies.
 
 ## Gate status
 
 | Gate | Result and limit of the evidence |
 | --- | --- |
-| Deterministic regressions, build and public contracts | 96/96 tests pass, including production stdio/HTTP registration and migration smoke with synthetic sources. A captured live-detail negative control was added. |
+| Deterministic regressions, build and public contracts | 102/102 tests pass after the live-source correction, including production stdio/HTTP registration with authenticated discovery identity and migration smoke with synthetic sources. Captured identity and preamble negative controls remain intact. |
 | Installed npm consumer | Passed after fixing an omitted parser-worker bundle. Real tarball installed outside the workspace, with runtime dependencies only. |
 | Restart and configured npm/HTTP reference transfer | Passed for article, index, whole-act and discovery continuations, including HTTP-to-npm article continuation and different-key rejection. HTTP tests execute fresh processes of the actual handler; this is not deployed Vercel verification. |
 | Runtime memory and serialization | Recorded representative saved/synthetic workloads meet the 256 MiB memory target. Full MCP bytes include both copies. This is sample evidence, not universal capacity or complete historical/attachment benchmarking. |
@@ -16,7 +16,7 @@ New prerequisites on the implementation map are [Restore verified live reading a
 | Schema/result guidance | Both prototype tokenizers pass: 2.00–2.08% schema overhead and at most 58 explanatory tokens counting both MCP copies. Client-native tokenization of individual results remains outstanding. |
 | Terminal clients | Sonnet: one passing sample. Terra: fails the literal-cursor gate, despite correct final text and absence explanation. |
 | Representative OpenRouter matrix | Failed/incomplete: 78 Qwen and 78 DeepSeek outputs reviewed; Llama first-call provider error 502. 81 rows have automated flags; manual review distinguishes scorer limitations. $0.05119 completion receipts; $0.05667 accounted upper bound including prior attempts, under the $1 software cap. |
-| Official-source live canaries | Blocked: five discovery checks pass; direct reading lacks independently verified editorial identity and three dated website requests return HTTP 409. |
+| Official-source live canaries | Corrective run: 15/15 paced checks pass on 6 October, 18 attempts, including TUEL direct/index continuation, Civil 2043 and a Privacy historical/change-boundary control. This is local default MCP registration, not deployed transport or full-act/historical traversal acceptance. |
 | Deployed packaging and transport cancellation/timeouts | Outstanding. Local Vercel build could not retrieve project settings because its saved token is invalid. Core cancellation/timeouts pass, but dedicated checks through both default transports remain required. |
 | Final release approval | Blocked. Version alignment and migration preparation do not establish release acceptance. |
 
@@ -43,13 +43,29 @@ TUEL XML/portal are captured sources, but its independently rendered detail enve
 
 [Guidance measurements](release-guidance-measurements.json) use tiktoken 0.14.0, `o200k_base` and `cl100k_base`. The baseline removes descriptions from the same replacement schemas. Total schemas are 16,130 and 15,528 tokens, respectively; the small guidance percentage does not make the full schemas negligible. Risky output explanations range to 58 tokens across both representations; full payloads include locators and metadata.
 
-## Live-source blockers
+## Live-source findings and restoration
 
 [Paced live trace](release-live-canaries.json): nine MCP calls, twelve upstream attempts, at least one second between request starts. Exact TUEL/Civil/Privacy discovery, CAD alias verification and official relevance search pass. There was no full crawl or load test.
 
 The ordinary TUEL article-13 detail returned HTTP 200 but its actual `sottoTitolo` omits editorial code `000G0304`. The current verifier requires that code and withholds the result as `unresolved / source_identity_conflict`; Gazette and issuance fields alone did not satisfy its selected identity proof. This reveals an incompatibility between the synthetic controls and the live response, not a legal absence. The preserved [captured detail](../../packages/core/test/fixtures/acts/tuel-direct-2026-10-05.json.gz) is replayed through the public MCP seam to retain withholding as a negative control. A remedy must establish independent identity without treating echoed request coordinates as evidence.
 
 Dated TUEL, Civil Code and 2017 Privacy website routes returned HTTP 409. The historical/attachment readings and continuations could not be validated. The original trace names the Privacy probe an independent historical control, but date/label assertions only test dated-route availability; the runner now names that scope correctly. Independent historical legal-content/change-boundary controls remain required. Unclassified failures did not authorize retries or weaker source validation. Restore/verify the supported official route, then rerun the paced canaries; do not treat saved fixtures as a substitute for this gate.
+
+### Corrective live run, 6 October 2026
+
+[Restore verified live reading against current official sources](https://github.com/adellorto/normattiva-mcp/issues/23) remedies three verified connector findings without relaxing source agreement or retries:
+
+- The website rejects the OpenData portal Origin. A one-variable probe returned HTTP 409 with Origin and HTTP 200 without it; changing Accept alone retained HTTP 409. Website navigation now omits that Origin. The AKN link depends on the dated page's servlet session and load-balancer affinity; JSESSIONID and NCC are carried only within each acquisition, never in evidence, locators, cache entries or persisted state. A missing session previously produced an HTML page with HTTP 200, correctly rejected by the XML parser. Source-size and attempt limits are unchanged.
+- Complete official discovery metadata now yields an authenticated `a2_` act locator. It carries exact publication, issuance type/date/number, Gazette issue and supplied supplement identity. The detail must match every field and independently cover the requested date. Signed article/continuation references retain this proof across restart. Missing or conflicting metadata, explicit contradictory editorial codes, forged locators and different trust are rejected; no echoed coordinates establish proof. Partial discovery metadata retains `a1_`, and the original coordinate-only TUEL withholding control remains intact. Healthy ordinary reading and each article continuation remain one upstream request.
+- The TUEL enactment article-1 API rendering bundles a substantive preamble into its article body. Rather than normalize that away, acquisition verifies the first occurrence against the independently rendered dated website, including its validity interval, entire article text/notes and table relationships. Snapshot evidence names that detail URL. Conflicting renderings withhold the index, and a direct read of the conflicting API body still remains unresolved. The captured preamble response is retained as a negative control.
+
+[Corrective paced trace](release-live-canaries-2026-10-06.json): **15/15 calls pass, 18 upstream attempts**, at least one second between attempt starts. TUEL direct article-13 continuation remains date-bound; dated index continuation returns the second distinct article-1 occurrence, rather than guessing article 2. Civil's index returns useful verified content and its supplied attachment address reads article 2043. Privacy's dated index and exact first occurrence agree for 2017; independent article-1 readings at 18/19 September 2018 distinguish the old right-to-protection text from the GDPR wording and verify the end/start boundaries. The amendment's independent [Gazette publication](https://www.gazzettaufficiale.it/eli/id/2018/09/04/18G00129/sg) records entry into force on 19 September 2018. The 2017 index's repeated labels require its exact returned locator; a bare article-1 request after indexing correctly stays unresolved.
+
+Earlier investigative runs retained HTTP 500/1000, HTML-instead-of-XML and source-conflict failures. They did not authorize automatic retries or changes to supplied article coordinates. The final passing run follows corrections to request headers, session affinity and independent verification. It is bounded sample evidence; it does not certify every historical occurrence, attachment, whole-act completion or upstream availability. Remaining live historical/attachment performance and deployed transport/package checks remain on final acceptance.
+
+[Paired direct overhead](release-direct-overhead-2026-10-06.json) repeats the same truthful warm synthetic reads against stage 2 `3f75ff5`: 1,601 reads per revision, 3,202 total upstream attempts, full MCP serialization, alternating batches. The median comparison is +0.08%, below the +10% target; timing noise means this is not an optimization claim. Cold comparisons and the cost of the larger authenticated references remain to be evaluated in stage 5. The signed proof changes corrective model input payloads; the earlier frozen model sample remains failed/incomplete and must not be relabelled as a passing run.
+
+No paid inference, push, publication or deployment was performed during this correction. The previous spending ledger remains authoritative.
 
 ## Model/client evidence and spending
 
@@ -144,11 +160,15 @@ Two independent reviewers inspected the staged stage-5 changes against completed
 
 ### Standards
 
+The live-source correction was independently reviewed against `5e0dd85`. No documented-standard breach or material new smell finding. Review confirmed external fixture seams, bilingual documentation, acquisition-only cookies, bounded parsing and evidence limitations.
+
 No documented-standard breaches. Two harness findings were corrected: the Civil Code canary now requires a useful snapshot-bound index entry before recording success; terminal cursor checking now tracks both cursor locations and associates issued references with their continuation tool. No remaining material finding.
 
 The restored OpenRouter continuation was independently reviewed against local checkpoint `19bc790`. No remaining material standards or evidence-integrity finding: frozen hashes, receipt/reservation totals, every-call review coverage and credential exclusions reconcile. All nine staged files belong to this evaluation continuation; unrelated changes were excluded.
 
 ### Spec
+
+The live-source correction review found that authenticated issuance fields could override an explicit conflicting editorial subtitle. A captured public MCP negative reproduced `found` for subtitle `(999G9999)`; the verifier now rejects conflicting observed editorial-code forms while retaining missing-code discovery proof. The reviewer verified missing/matching/conflicting code cases after correction. No remaining material spec finding; full release acceptance stays open.
 
 Two findings were corrected: the Civil canary could have falsely passed an unresolved response, and the Privacy probe's label overstated historical evidence. The latter is now explicitly a dated-route availability check; independent historical controls remain an open gate. No remaining material false-pass claim. The incomplete gates in the table are retained rather than reported as successful acceptance.
 

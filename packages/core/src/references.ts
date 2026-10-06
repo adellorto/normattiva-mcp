@@ -13,7 +13,13 @@ export const addressSchema = z.object({
   versione: z.number().int().nonnegative(),
 }).strict();
 export type RetrievalAddress = z.infer<typeof addressSchema>;
-const binding = { publication: publicationSchema, date: calendarDateSchema, source: z.string().max(2048), digest: z.string().regex(/^[a-f0-9]{64}$/) };
+export const actIdentitySchema = z.object({
+  type: z.string().trim().min(1).max(120), issued: calendarDateSchema, number: z.number().int().positive(),
+  gazette: z.number().int().positive(), supplement: z.object({ type: z.string().min(1).max(12), number: z.number().int().nonnegative() }).strict().optional(),
+}).strict();
+export type ActIdentity = z.infer<typeof actIdentitySchema>;
+const actReferenceSchema = z.object({ v: z.literal(2), publication: publicationSchema, identity: actIdentitySchema }).strict();
+const binding = { publication: publicationSchema, date: calendarDateSchema, source: z.string().max(2048), digest: z.string().regex(/^[a-f0-9]{64}$/), identity: actIdentitySchema.optional() };
 const position = { index: z.number().int().nonnegative(), segment: z.number().int().nonnegative(), offset: z.number().int().nonnegative() };
 const targetFields = { selector: z.string().max(1024), label: z.string().max(300), contentDigest: z.string().regex(/^[a-f0-9]{64}$/) };
 const referenceSchema = z.discriminatedUnion("kind", [
@@ -24,7 +30,7 @@ const referenceSchema = z.discriminatedUnion("kind", [
     ...position, limit: z.number().int().positive(), target: z.string().max(4096).optional() }).strict(),
 ]);
 export type Reference = z.infer<typeof referenceSchema>;
-export type Binding = Pick<Reference, "publication" | "date" | "source" | "digest">;
+export type Binding = Pick<Reference, "publication" | "date" | "source" | "digest" | "identity">;
 
 export function referenceError(cursor: boolean): OperationError {
   return new OperationError({ category: cursor ? "invalid_cursor" : "invalid_locator",
@@ -38,15 +44,20 @@ export class ReferenceCodec {
   constructor(key: Uint8Array) {
     this.tokens = new AuthenticatedTokens(key);
   }
-  act(publication: z.infer<typeof publicationSchema>): string {
+  act(publication: z.infer<typeof publicationSchema>, identity?: ActIdentity): string {
+    if (identity) return this.tokens.issue("a2_", actReferenceSchema.parse({ v: 2, publication, identity }), 4096);
     return "a1_" + Buffer.from(JSON.stringify(publicationSchema.parse(publication))).toString("base64url");
   }
   publication(locator: string): z.infer<typeof publicationSchema> {
+    return this.actReference(locator).publication;
+  }
+  actReference(locator: string): { publication: z.infer<typeof publicationSchema>; identity?: ActIdentity } {
     try {
+      if (locator.startsWith("a2_")) return actReferenceSchema.parse(this.tokens.decode("a2_", locator, 4096));
       if (!locator.startsWith("a1_") || locator.length > 4096) throw referenceError(false);
       const data = publicationSchema.strict().parse(JSON.parse(Buffer.from(locator.slice(3), "base64url").toString("utf8")));
       if (!/^[A-Za-z0-9_-]{1,80}$/.test(data.codice_redazionale) || this.act(data) !== locator) throw referenceError(false);
-      return data;
+      return { publication: data };
     } catch { throw referenceError(false); }
   }
   issue(data: Reference): string {

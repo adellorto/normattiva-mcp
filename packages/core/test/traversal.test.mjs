@@ -42,6 +42,31 @@ test('a dated official link, publication, structure and independent article cont
   });
 });
 
+test('structured acquisition keeps the website session through its AKN download and reacquires it after restart', async () => {
+  const original = globalThis.fetch;
+  let session = 0;
+  globalThis.fetch = async (url, init) => {
+    if (String(url).includes('dettaglio-atto')) return Response.json(detail);
+    if (String(url).includes('caricaAKN')) {
+      if (new Headers(init.headers).get('Cookie') !== `JSESSIONID=fixture-${session}; NCC=lane-${session}`) return new Response('<!DOCTYPE html><html>Session missing</html>');
+      return new Response(xml);
+    }
+    session++;
+    const headers = new Headers();
+    headers.append('Set-Cookie', `JSESSIONID=fixture-${session}; Path=/; HttpOnly; Secure`);
+    headers.append('Set-Cookie', `NCC=lane-${session}; Path=/; HttpOnly; Secure`);
+    return new Response(page, { headers });
+  };
+  try {
+    for (let restart = 0; restart < 2; restart++) {
+      const reader = new ActTraversal({ signingKey: key, cacheBytes: 0 });
+      const index = await reader.listArticles({ act_locator: reader.actLocator(publication), snapshot_date: date });
+      assert.equal(index.traversal.items[0].label, '13');
+    }
+    assert.equal(session, 2);
+  } finally { globalThis.fetch = original; }
+});
+
 export { fixture, publication, date, key, page, xml, detail };
 
 const nav = (label, id, group = 0, suffix = 1, progress = 0) => `<a class="numero_articolo" onclick="showArticle('/atto/caricaArticolo?art.idArticolo=${id}&amp;art.idSottoArticolo=${suffix}&amp;art.idSottoArticolo1=0&amp;art.flagTipoArticolo=0&amp;art.idGruppo=${group}&amp;art.progressivo=${progress}&amp;art.versione=1&amp;art.codiceRedazionale=000G0304&amp;art.dataPubblicazioneGazzetta=2000-09-28')">${/^\d/.test(label) ? 'Art. ' : ''}${label}</a>`;

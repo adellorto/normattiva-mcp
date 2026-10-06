@@ -94,7 +94,7 @@ export NORMATTIVA_REFERENCE_KEY='<incolla la chiave persistente di 64 caratteri 
 
 Il server legge l'ambiente del processo; non carica automaticamente `.env`, non crea chiavi e non include un segreto condiviso. Configurazione assente o malformata fallisce esplicitamente. Processi compatibili con la stessa chiave conservata verificano riferimenti firmati dopo riavvio; trasferimenti tra hosting e npm richiedono anche fiducia condivisa e versioni compatibili. Perdere/cambiare chiave invalida riferimenti firmati e richiede nuove ricerche/letture. Deployment con fiducia diversa rifiutano i riferimenti.
 
-Formati: `a1_` riferimenti portabili alla pubblicazione validata (non prove di esistenza); `n1_` riferimenti esatti e cursori firmati di lettura; `d1_` cursori firmati della ricerca live. Riferimenti non supportati/manomessi/non fidati falliscono senza riavvii silenziosi o richieste a host scelti dal chiamante. Nessun database dei cursori.
+Formati: `a1_` riferimenti portabili alla pubblicazione validata (non prove di esistenza); `a2_` riferimenti firmati agli atti con identità restituita indipendentemente dalla ricerca ufficiale; `n1_` riferimenti esatti e cursori firmati di lettura; `d1_` cursori firmati della ricerca live. L'identità firmata sopravvive al riavvio e richiede fiducia condivisa per il trasferimento. Le risposte di dettaglio devono confermare indipendentemente quell'identità e l'intervallo di validità richiesto. Riferimenti non supportati/manomessi/non fidati falliscono senza riavvii silenziosi o richieste a host scelti dal chiamante. Nessun database dei cursori.
 
 Le destinazioni sono host ufficiali fissi dell'API e del sito Normattiva in produzione. L'API aperta non richiede autenticazione. L'ambiente PRE con mTLS è escluso.
 
