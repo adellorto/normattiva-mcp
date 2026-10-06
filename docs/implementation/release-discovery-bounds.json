@@ -1,0 +1,237 @@
+{
+  "recorded_at": "2026-10-06T14:25:47.640Z",
+  "node": "v24.15.0",
+  "scope": "Default MCP with empty-source controls; first/cached legal-source latency and full-release memory remain separate. Full serialized responses count both MCP copies.",
+  "max_rss_kib": 99060,
+  "total_upstream_attempts": 29,
+  "samples": [
+    {
+      "case": "civil-code-2043",
+      "elapsed_ms": 42.19030699999996,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 698,
+      "interpreted_request_chars": 44,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "nonexistent-article-320",
+      "elapsed_ms": 5.335676999999976,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 694,
+      "interpreted_request_chars": 43,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "contracts-article-119",
+      "elapsed_ms": 4.445096999999976,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 680,
+      "interpreted_request_chars": 36,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "cad-article-52",
+      "elapsed_ms": 3.580996999999968,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 726,
+      "interpreted_request_chars": 60,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "contracts-current-article-108",
+      "elapsed_ms": 4.673793999999987,
+      "upstream_attempts": 3,
+      "full_mcp_bytes": 710,
+      "interpreted_request_chars": 51,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "exact-law-241",
+      "elapsed_ms": 2.8094839999999976,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 608,
+      "interpreted_request_chars": 28,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "topic-transparency",
+      "elapsed_ms": 2.7288110000000074,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 666,
+      "interpreted_request_chars": 53,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "publication-window",
+      "elapsed_ms": 3.7499500000000126,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 726,
+      "interpreted_request_chars": 87,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "faceted-contracts",
+      "elapsed_ms": 2.239666999999997,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 666,
+      "interpreted_request_chars": 58,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "conflicting-civil-code",
+      "elapsed_ms": 1.4996340000000146,
+      "upstream_attempts": 0,
+      "full_mcp_bytes": 321,
+      "outcome": "contradictory_request"
+    },
+    {
+      "case": "edge-law-short-year",
+      "elapsed_ms": 3.1055800000000318,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 714,
+      "interpreted_request_chars": 44,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "edge-dpr-full-date",
+      "elapsed_ms": 2.4276249999999777,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 728,
+      "interpreted_request_chars": 59,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "edge-regio-decreto",
+      "elapsed_ms": 1.7205150000000344,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 720,
+      "interpreted_request_chars": 53,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "edge-decreto-legge",
+      "elapsed_ms": 1.6803989999999658,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 720,
+      "interpreted_request_chars": 52,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "edge-cad-unknown",
+      "elapsed_ms": 2.2631719999999973,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 748,
+      "interpreted_request_chars": 69,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "edge-tuel-common-name",
+      "elapsed_ms": 1.553937000000019,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 668,
+      "interpreted_request_chars": 29,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "edge-current-contracts",
+      "elapsed_ms": 2.09124300000002,
+      "upstream_attempts": 3,
+      "full_mcp_bytes": 730,
+      "interpreted_request_chars": 59,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "edge-faceted-contracts",
+      "elapsed_ms": 2.6521740000000023,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 666,
+      "interpreted_request_chars": 58,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "edge-ai-topic",
+      "elapsed_ms": 2.2938399999999888,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 772,
+      "interpreted_request_chars": 102,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "edge-publication-window",
+      "elapsed_ms": 2.362301000000002,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 716,
+      "interpreted_request_chars": 82,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "edge-issuance-window",
+      "elapsed_ms": 2.5438670000000343,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 700,
+      "interpreted_request_chars": 74,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "edge-in-force-on",
+      "elapsed_ms": 2.170413999999937,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 706,
+      "interpreted_request_chars": 78,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "edge-repealed-codes",
+      "elapsed_ms": 2.3129659999999603,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 644,
+      "interpreted_request_chars": 47,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "edge-conflicting-code",
+      "elapsed_ms": 1.107283999999936,
+      "upstream_attempts": 0,
+      "full_mcp_bytes": 321,
+      "outcome": "contradictory_request"
+    },
+    {
+      "case": "edge-reversed-range",
+      "elapsed_ms": 0.9084149999999909,
+      "upstream_attempts": 0,
+      "full_mcp_bytes": 287,
+      "outcome": "inverted_date_range"
+    },
+    {
+      "case": "edge-nonexistent-law",
+      "elapsed_ms": 1.6733960000000252,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 604,
+      "interpreted_request_chars": 26,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "max-ascii-request",
+      "elapsed_ms": 1.9345140000000356,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 8752,
+      "interpreted_request_chars": 4096,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "bounded-unicode-request",
+      "elapsed_ms": 2.3326540000000477,
+      "upstream_attempts": 1,
+      "full_mcp_bytes": 8752,
+      "interpreted_request_chars": 2048,
+      "outcome": "no_candidates"
+    },
+    {
+      "case": "oversized-unicode-reference",
+      "elapsed_ms": 1.4593569999999545,
+      "upstream_attempts": 0,
+      "full_mcp_bytes": 377,
+      "outcome": "request_reference_limit"
+    }
+  ]
+}

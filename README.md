@@ -47,13 +47,13 @@ Essential call and interpretation guidance is in tool descriptions/results. No p
 
 ## Discovery and reading
 
-Pass the user's request and constraints together:
+Make one discovery call with the complete user request verbatim, including articles/commas, dates, currentness and contradictions. Wait for its result before reading or searching further; do not insert remembered citations, substitute publication for issuance, or silently repair an invalid range. Clarification of an invalid request is also appropriate.
 
 ```json
 {"name":"find_acts","arguments":{"request":"decreto legislativo 267/2000 articolo 13"}}
 ```
 
-Select the returned candidate's `act_locator`. Discovery keeps `article_reference` separate. Substitute the actual returned value below:
+Select the returned candidate's opaque `act_locator`; never put a human citation or a value constructed from memory in a locator field. Discovery keeps `article_reference` separate. Substitute the actual returned value below:
 
 ```json
 {"name":"read_article","arguments":{"act_locator":"<returned act_locator>","article_reference":"13","snapshot_date":"2026-10-02"}}

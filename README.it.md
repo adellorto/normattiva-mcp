@@ -47,13 +47,13 @@ Le indicazioni essenziali sono nelle descrizioni e nei risultati degli strumenti
 
 ## Ricerca e lettura
 
-Mantieni richiesta e vincoli insieme:
+Esegui una sola chiamata di ricerca copiando integralmente la richiesta dell'utente, inclusi articoli/commi, date, vigenza e contraddizioni. Attendi il risultato prima di leggere o cercare ancora; non aggiungere citazioni ricordate, non sostituire l'emanazione con la pubblicazione e non correggere silenziosamente un intervallo invalido. È appropriato anche chiedere chiarimenti su una richiesta invalida.
 
 ```json
 {"name":"find_acts","arguments":{"request":"decreto legislativo 267/2000 articolo 13"}}
 ```
 
-Seleziona l'`act_locator` del candidato restituito. La ricerca separa `article_reference`. Sostituisci il riferimento nell'esempio con il valore effettivo:
+Seleziona l'`act_locator` opaco del candidato restituito; non inserire mai una citazione leggibile o un valore ricostruito a memoria in un campo locator. La ricerca separa `article_reference`. Sostituisci il riferimento nell'esempio con il valore effettivo:
 
 ```json
 {"name":"read_article","arguments":{"act_locator":"<act_locator restituito>","article_reference":"13","snapshot_date":"2026-10-02"}}

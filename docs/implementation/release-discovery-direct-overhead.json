@@ -1,0 +1,164 @@
+{
+  "recorded_at": "2026-10-06T14:16:01.597Z",
+  "node": "v24.15.0",
+  "baseline_revision": "3f75ff5",
+  "scope": "Same truthful found content/schema, fixture upstream, paired alternating warm batches with full MCP serialization. No upstream network latency.",
+  "reads_per_revision": 1601,
+  "blocks": [
+    {
+      "baseline_ms_per_read": 0.87878872,
+      "current_ms_per_read": 1.0686526000000003,
+      "increase_percent": 21.605179456559288
+    },
+    {
+      "baseline_ms_per_read": 0.7535791199999994,
+      "current_ms_per_read": 0.8505754999999999,
+      "increase_percent": 12.871426161595423
+    },
+    {
+      "baseline_ms_per_read": 0.9580398400000013,
+      "current_ms_per_read": 1.0181934999999998,
+      "increase_percent": 6.278826567379325
+    },
+    {
+      "baseline_ms_per_read": 0.8866651599999977,
+      "current_ms_per_read": 1.3633701399999996,
+      "increase_percent": 53.76381090692715
+    },
+    {
+      "baseline_ms_per_read": 1.0417991600000005,
+      "current_ms_per_read": 1.0716086799999993,
+      "increase_percent": 2.8613499745957505
+    },
+    {
+      "baseline_ms_per_read": 0.9981595400000015,
+      "current_ms_per_read": 0.9110524600000008,
+      "increase_percent": -8.726769269770296
+    },
+    {
+      "baseline_ms_per_read": 0.6242785800000001,
+      "current_ms_per_read": 0.6556240200000002,
+      "increase_percent": 5.021066075981673
+    },
+    {
+      "baseline_ms_per_read": 0.556329039999996,
+      "current_ms_per_read": 0.5418840599999976,
+      "increase_percent": -2.5964813916595997
+    },
+    {
+      "baseline_ms_per_read": 0.7864084599999979,
+      "current_ms_per_read": 0.6607291600000008,
+      "increase_percent": -15.981427768464929
+    },
+    {
+      "baseline_ms_per_read": 0.5840671999999995,
+      "current_ms_per_read": 0.6029217999999992,
+      "increase_percent": 3.228155938220767
+    },
+    {
+      "baseline_ms_per_read": 0.7969441199999983,
+      "current_ms_per_read": 0.6236223199999995,
+      "increase_percent": -21.748300244689567
+    },
+    {
+      "baseline_ms_per_read": 0.6400003400000014,
+      "current_ms_per_read": 0.7618814399999974,
+      "increase_percent": 19.043911757921215
+    },
+    {
+      "baseline_ms_per_read": 0.5603825600000027,
+      "current_ms_per_read": 0.7092305799999985,
+      "increase_percent": 26.56185802784352
+    },
+    {
+      "baseline_ms_per_read": 1.0112278000000015,
+      "current_ms_per_read": 1.0337849800000003,
+      "increase_percent": 2.230672455800642
+    },
+    {
+      "baseline_ms_per_read": 0.8121603200000027,
+      "current_ms_per_read": 0.9097219799999994,
+      "increase_percent": 12.012611007639018
+    },
+    {
+      "baseline_ms_per_read": 0.8387585199999967,
+      "current_ms_per_read": 0.9082654000000002,
+      "increase_percent": 8.286876179809632
+    },
+    {
+      "baseline_ms_per_read": 0.47956306000000043,
+      "current_ms_per_read": 0.6206713000000036,
+      "increase_percent": 29.424334726699563
+    },
+    {
+      "baseline_ms_per_read": 0.8789883000000009,
+      "current_ms_per_read": 0.5830692,
+      "increase_percent": -33.66587473348629
+    },
+    {
+      "baseline_ms_per_read": 0.9339438400000017,
+      "current_ms_per_read": 0.9120823000000019,
+      "increase_percent": -2.34077672164954
+    },
+    {
+      "baseline_ms_per_read": 0.9977135999999973,
+      "current_ms_per_read": 0.8951931599999989,
+      "increase_percent": -10.275537990060336
+    },
+    {
+      "baseline_ms_per_read": 1.1282033000000047,
+      "current_ms_per_read": 0.9273518599999988,
+      "increase_percent": -17.80277012130749
+    },
+    {
+      "baseline_ms_per_read": 0.9881196799999998,
+      "current_ms_per_read": 0.8439706400000069,
+      "increase_percent": -14.588216682415734
+    },
+    {
+      "baseline_ms_per_read": 0.8287385599999925,
+      "current_ms_per_read": 0.8209995400000025,
+      "increase_percent": -0.9338312917393399
+    },
+    {
+      "baseline_ms_per_read": 0.5713871800000015,
+      "current_ms_per_read": 0.815100739999998,
+      "increase_percent": 42.65296256734283
+    },
+    {
+      "baseline_ms_per_read": 0.6932380399999966,
+      "current_ms_per_read": 0.514740839999995,
+      "increase_percent": -25.74832737107191
+    },
+    {
+      "baseline_ms_per_read": 3.8964609999999995,
+      "current_ms_per_read": 0.5727469800000017,
+      "increase_percent": -85.30084145587492
+    },
+    {
+      "baseline_ms_per_read": 0.5889042199999949,
+      "current_ms_per_read": 0.5194776799999999,
+      "increase_percent": -11.789105535700784
+    },
+    {
+      "baseline_ms_per_read": 0.5630740400000014,
+      "current_ms_per_read": 0.5045619799999986,
+      "increase_percent": -10.391539272526684
+    },
+    {
+      "baseline_ms_per_read": 0.5017814799999997,
+      "current_ms_per_read": 0.5112960399999974,
+      "increase_percent": 1.8961560717621007
+    },
+    {
+      "baseline_ms_per_read": 0.5539290399999937,
+      "current_ms_per_read": 0.4873820799999976,
+      "increase_percent": -12.013625427545161
+    }
+  ],
+  "median_increase_percent": 0.362049207229842,
+  "target_percent": 10,
+  "gate": "passed",
+  "total_requests": 3202,
+  "max_rss_kib": 288192
+}

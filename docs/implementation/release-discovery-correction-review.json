@@ -1,0 +1,1508 @@
+{
+  "scope": "Every generated routing call inspected and find_acts calls replayed through default MCP with empty-source controls. Not live/deployed acceptance; prose needs manual review.",
+  "complete": true,
+  "gate": "passed mechanical checks; manual review required",
+  "rows": [
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "contracts-article-119",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Passami l'art. 119 del D.Lgs 36/2023"
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2023",
+                "numeroProvvedimento": "36",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Passami l'art. 119 del D.Lgs 36/2023",
+            "article_reference": "119",
+            "ordering": "exact_citation",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "cad-article-52",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Mi serve l'articolo 52 del CAD, non so il numero della legge"
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2005",
+                "numeroProvvedimento": "82",
+                "giornoProvvedimento": "7",
+                "meseProvvedimento": "3",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Mi serve l'articolo 52 del CAD, non so il numero della legge",
+            "article_reference": "52",
+            "ordering": "reviewed_alias",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "exact-law-241",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Trova la legge 241 del 1990."
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "LEGGE",
+                "annoProvvedimento": "1990",
+                "numeroProvvedimento": "241",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Trova la legge 241 del 1990.",
+            "ordering": "exact_citation",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "conflicting-civil-code",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Cerca l'articolo 2043 del Codice civile come LEGGE n. 2043 del 1942."
+          },
+          "issues": [],
+          "upstream_requests": [],
+          "result": {
+            "error": {
+              "category": "invalid_input",
+              "code": "contradictory_request",
+              "message": "The common name and supplied citation contradict each other.",
+              "retryability": false
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-dpr-full-date",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Mostrami l’articolo 46 del D.P.R. 28 dicembre 2000, n. 445."
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO DEL PRESIDENTE DELLA REPUBBLICA",
+                "annoProvvedimento": "2000",
+                "numeroProvvedimento": "445",
+                "giornoProvvedimento": "28",
+                "meseProvvedimento": "12",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Mostrami l’articolo 46 del D.P.R. 28 dicembre 2000, n. 445.",
+            "article_reference": "46",
+            "ordering": "exact_citation",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-regio-decreto",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "R.D. 16 marzo 1942, n. 262: cosa prevede l’art. 2043?"
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "REGIO DECRETO",
+                "annoProvvedimento": "1942",
+                "numeroProvvedimento": "262",
+                "giornoProvvedimento": "16",
+                "meseProvvedimento": "3",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "R.D. 16 marzo 1942, n. 262: cosa prevede l’art. 2043?",
+            "article_reference": "2043",
+            "ordering": "exact_citation",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-tuel-common-name",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Cosa dice l’art. 42 del TUEL?"
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2000",
+                "numeroProvvedimento": "267",
+                "giornoProvvedimento": "18",
+                "meseProvvedimento": "8",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Cosa dice l’art. 42 del TUEL?",
+            "article_reference": "42",
+            "ordering": "reviewed_alias",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-current-contracts",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Cerco l’articolo 108 del codice dei contratti oggi vigente."
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2023",
+                "numeroProvvedimento": "36",
+                "giornoProvvedimento": "31",
+                "meseProvvedimento": "3",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            },
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2016",
+                "numeroProvvedimento": "50",
+                "giornoProvvedimento": "18",
+                "meseProvvedimento": "4",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            },
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2006",
+                "numeroProvvedimento": "163",
+                "giornoProvvedimento": "12",
+                "meseProvvedimento": "4",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Cerco l’articolo 108 del codice dei contratti oggi vigente.",
+            "article_reference": "108",
+            "ordering": "reviewed_alias",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "contracts-article-119",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Passami l'art. 119 del D.Lgs 36/2023"
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2023",
+                "numeroProvvedimento": "36",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Passami l'art. 119 del D.Lgs 36/2023",
+            "article_reference": "119",
+            "ordering": "exact_citation",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "cad-article-52",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Mi serve l'articolo 52 del CAD, non so il numero della legge"
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2005",
+                "numeroProvvedimento": "82",
+                "giornoProvvedimento": "7",
+                "meseProvvedimento": "3",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Mi serve l'articolo 52 del CAD, non so il numero della legge",
+            "article_reference": "52",
+            "ordering": "reviewed_alias",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "exact-law-241",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Trova la legge 241 del 1990."
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "LEGGE",
+                "annoProvvedimento": "1990",
+                "numeroProvvedimento": "241",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Trova la legge 241 del 1990.",
+            "ordering": "exact_citation",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "conflicting-civil-code",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Cerca l'articolo 2043 del Codice civile come LEGGE n. 2043 del 1942."
+          },
+          "issues": [],
+          "upstream_requests": [],
+          "result": {
+            "error": {
+              "category": "invalid_input",
+              "code": "contradictory_request",
+              "message": "The common name and supplied citation contradict each other.",
+              "retryability": false
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-dpr-full-date",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Mostrami l’articolo 46 del D.P.R. 28 dicembre 2000, n. 445."
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO DEL PRESIDENTE DELLA REPUBBLICA",
+                "annoProvvedimento": "2000",
+                "numeroProvvedimento": "445",
+                "giornoProvvedimento": "28",
+                "meseProvvedimento": "12",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Mostrami l’articolo 46 del D.P.R. 28 dicembre 2000, n. 445.",
+            "article_reference": "46",
+            "ordering": "exact_citation",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-regio-decreto",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "R.D. 16 marzo 1942, n. 262: cosa prevede l’art. 2043?"
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "REGIO DECRETO",
+                "annoProvvedimento": "1942",
+                "numeroProvvedimento": "262",
+                "giornoProvvedimento": "16",
+                "meseProvvedimento": "3",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "R.D. 16 marzo 1942, n. 262: cosa prevede l’art. 2043?",
+            "article_reference": "2043",
+            "ordering": "exact_citation",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-tuel-common-name",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Cosa dice l’art. 42 del TUEL?"
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2000",
+                "numeroProvvedimento": "267",
+                "giornoProvvedimento": "18",
+                "meseProvvedimento": "8",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Cosa dice l’art. 42 del TUEL?",
+            "article_reference": "42",
+            "ordering": "reviewed_alias",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-current-contracts",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Cerco l’articolo 108 del codice dei contratti oggi vigente."
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2023",
+                "numeroProvvedimento": "36",
+                "giornoProvvedimento": "31",
+                "meseProvvedimento": "3",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            },
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2016",
+                "numeroProvvedimento": "50",
+                "giornoProvvedimento": "18",
+                "meseProvvedimento": "4",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            },
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2006",
+                "numeroProvvedimento": "163",
+                "giornoProvvedimento": "12",
+                "meseProvvedimento": "4",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Cerco l’articolo 108 del codice dei contratti oggi vigente.",
+            "article_reference": "108",
+            "ordering": "reviewed_alias",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "contracts-article-119",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Passami l'art. 119 del D.Lgs 36/2023"
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2023",
+                "numeroProvvedimento": "36",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Passami l'art. 119 del D.Lgs 36/2023",
+            "article_reference": "119",
+            "ordering": "exact_citation",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "cad-article-52",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Mi serve l'articolo 52 del CAD, non so il numero della legge"
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2005",
+                "numeroProvvedimento": "82",
+                "giornoProvvedimento": "7",
+                "meseProvvedimento": "3",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Mi serve l'articolo 52 del CAD, non so il numero della legge",
+            "article_reference": "52",
+            "ordering": "reviewed_alias",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "exact-law-241",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Trova la legge 241 del 1990."
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "LEGGE",
+                "annoProvvedimento": "1990",
+                "numeroProvvedimento": "241",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Trova la legge 241 del 1990.",
+            "ordering": "exact_citation",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "conflicting-civil-code",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Cerca l'articolo 2043 del Codice civile come LEGGE n. 2043 del 1942."
+          },
+          "issues": [],
+          "upstream_requests": [],
+          "result": {
+            "error": {
+              "category": "invalid_input",
+              "code": "contradictory_request",
+              "message": "The common name and supplied citation contradict each other.",
+              "retryability": false
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-dpr-full-date",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Mostrami l’articolo 46 del D.P.R. 28 dicembre 2000, n. 445."
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO DEL PRESIDENTE DELLA REPUBBLICA",
+                "annoProvvedimento": "2000",
+                "numeroProvvedimento": "445",
+                "giornoProvvedimento": "28",
+                "meseProvvedimento": "12",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Mostrami l’articolo 46 del D.P.R. 28 dicembre 2000, n. 445.",
+            "article_reference": "46",
+            "ordering": "exact_citation",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-regio-decreto",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "R.D. 16 marzo 1942, n. 262: cosa prevede l’art. 2043?"
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "REGIO DECRETO",
+                "annoProvvedimento": "1942",
+                "numeroProvvedimento": "262",
+                "giornoProvvedimento": "16",
+                "meseProvvedimento": "3",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "R.D. 16 marzo 1942, n. 262: cosa prevede l’art. 2043?",
+            "article_reference": "2043",
+            "ordering": "exact_citation",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-tuel-common-name",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Cosa dice l’art. 42 del TUEL?"
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2000",
+                "numeroProvvedimento": "267",
+                "giornoProvvedimento": "18",
+                "meseProvvedimento": "8",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Cosa dice l’art. 42 del TUEL?",
+            "article_reference": "42",
+            "ordering": "reviewed_alias",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-current-contracts",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Cerco l’articolo 108 del codice dei contratti oggi vigente."
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2023",
+                "numeroProvvedimento": "36",
+                "giornoProvvedimento": "31",
+                "meseProvvedimento": "3",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            },
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2016",
+                "numeroProvvedimento": "50",
+                "giornoProvvedimento": "18",
+                "meseProvvedimento": "4",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            },
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2006",
+                "numeroProvvedimento": "163",
+                "giornoProvvedimento": "12",
+                "meseProvvedimento": "4",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Cerco l’articolo 108 del codice dei contratti oggi vigente.",
+            "article_reference": "108",
+            "ordering": "reviewed_alias",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "contracts-article-119",
+      "caller_visible_text": " ",
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Passami l'art. 119 del D.Lgs 36/2023"
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2023",
+                "numeroProvvedimento": "36",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Passami l'art. 119 del D.Lgs 36/2023",
+            "article_reference": "119",
+            "ordering": "exact_citation",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "cad-article-52",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Mi serve l'articolo 52 del CAD, non so il numero della legge"
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2005",
+                "numeroProvvedimento": "82",
+                "giornoProvvedimento": "7",
+                "meseProvvedimento": "3",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Mi serve l'articolo 52 del CAD, non so il numero della legge",
+            "article_reference": "52",
+            "ordering": "reviewed_alias",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "exact-law-241",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Trova la legge 241 del 1990."
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "LEGGE",
+                "annoProvvedimento": "1990",
+                "numeroProvvedimento": "241",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Trova la legge 241 del 1990.",
+            "ordering": "exact_citation",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "conflicting-civil-code",
+      "caller_visible_text": " ",
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Cerca l'articolo 2043 del Codice civile come LEGGE n. 2043 del 1942."
+          },
+          "issues": [],
+          "upstream_requests": [],
+          "result": {
+            "error": {
+              "category": "invalid_input",
+              "code": "contradictory_request",
+              "message": "The common name and supplied citation contradict each other.",
+              "retryability": false
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-dpr-full-date",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Mostrami l’articolo 46 del D.P.R. 28 dicembre 2000, n. 445."
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO DEL PRESIDENTE DELLA REPUBBLICA",
+                "annoProvvedimento": "2000",
+                "numeroProvvedimento": "445",
+                "giornoProvvedimento": "28",
+                "meseProvvedimento": "12",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Mostrami l’articolo 46 del D.P.R. 28 dicembre 2000, n. 445.",
+            "article_reference": "46",
+            "ordering": "exact_citation",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-regio-decreto",
+      "caller_visible_text": " ",
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "R.D. 16 marzo 1942, n. 262: cosa prevede l’art. 2043?"
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "REGIO DECRETO",
+                "annoProvvedimento": "1942",
+                "numeroProvvedimento": "262",
+                "giornoProvvedimento": "16",
+                "meseProvvedimento": "3",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "R.D. 16 marzo 1942, n. 262: cosa prevede l’art. 2043?",
+            "article_reference": "2043",
+            "ordering": "exact_citation",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-tuel-common-name",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Cosa dice l’art. 42 del TUEL?"
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2000",
+                "numeroProvvedimento": "267",
+                "giornoProvvedimento": "18",
+                "meseProvvedimento": "8",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Cosa dice l’art. 42 del TUEL?",
+            "article_reference": "42",
+            "ordering": "reviewed_alias",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-current-contracts",
+      "caller_visible_text": null,
+      "calls": [
+        {
+          "tool": "find_acts",
+          "arguments": {
+            "request": "Cerco l’articolo 108 del codice dei contratti oggi vigente."
+          },
+          "issues": [],
+          "upstream_requests": [
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2023",
+                "numeroProvvedimento": "36",
+                "giornoProvvedimento": "31",
+                "meseProvvedimento": "3",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            },
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2016",
+                "numeroProvvedimento": "50",
+                "giornoProvvedimento": "18",
+                "meseProvvedimento": "4",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            },
+            {
+              "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+              "body": {
+                "denominazioneAtto": "DECRETO LEGISLATIVO",
+                "annoProvvedimento": "2006",
+                "numeroProvvedimento": "163",
+                "giornoProvvedimento": "12",
+                "meseProvvedimento": "4",
+                "orderType": "recente",
+                "paginazione": {
+                  "paginaCorrente": 1,
+                  "numeroElementiPerPagina": 5
+                }
+              }
+            }
+          ],
+          "result": {
+            "match": "no_candidates",
+            "interpretation": "Cerco l’articolo 108 del codice dei contratti oggi vigente.",
+            "article_reference": "108",
+            "ordering": "reviewed_alias",
+            "corpus": "live",
+            "explanation": "This bounded discovery returned no candidates. It does not prove legal absence.",
+            "traversal": {
+              "progress": "complete",
+              "items": []
+            }
+          }
+        }
+      ],
+      "failures": [],
+      "manual_decision": "passed complete handoff; no unsupported claim observed"
+    }
+  ],
+  "manual_review": {
+    "recorded_on": "2026-10-06",
+    "scope": "Every caller-visible output and generated call in this run reviewed; no legal tool results were provided in these first-call scenarios.",
+    "false_absence_observed": false,
+    "false_completion_observed": false,
+    "fabricated_reference_observed": false,
+    "acceptance": "passed scoped corrective run; not final coordinated acceptance"
+  },
+  "post_review_parser_replay": "All 32 saved model calls pass after the year-range/list rejection correction, without further inference."
+}

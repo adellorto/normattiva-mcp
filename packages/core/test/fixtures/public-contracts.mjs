@@ -39,4 +39,26 @@ export async function checkContracts(client) {
   assert.equal(error.isError, true);
   assert.equal(error.structuredContent.error.category, 'invalid_locator');
   assert.equal(JSON.stringify(error).includes('private dump'), false);
+  // Human citations from the recorded model failures are never read references.
+  for (const name of ['list_articles', 'read_article', 'read_act']) {
+    const rejected = await client.callTool({ name, arguments: {
+      act_locator: 'D.P.R. 28 dicembre 2000, n. 445', ...(name === 'read_article' ? { article_reference: '46' } : {}),
+    } });
+    assert.equal(rejected.isError, true);
+    assert.equal(rejected.structuredContent.error.category, 'invalid_locator');
+    assert.match(rejected.content[0].text, /invalid_locator/);
+  }
+  const request = 'Mi serve l’art. 13, comma 1, del decreto legislativo 267/2000 oggi vigente.';
+  const complete = await client.callTool({ name: 'find_acts', arguments: { request } });
+  assert.equal(complete.structuredContent.interpretation, request);
+  assert.equal(complete.structuredContent.article_reference, '13, comma 1');
+  assert.equal(complete.structuredContent.match, 'identified');
+  assert.equal(complete.structuredContent.traversal.items[0].current, 'unknown');
+  assert.deepEqual(JSON.parse(complete.content[0].text), complete.structuredContent);
+  for (const request of ['Cerca l’art. 2043 del Codice civile, cioè della Legge 262/1942.',
+    'Cerca gli atti emanati dal 31 dicembre 2024 al 1° gennaio 2024.']) {
+    const rejected = await client.callTool({ name: 'find_acts', arguments: { request } });
+    assert.equal(rejected.isError, true);
+    assert.equal(rejected.structuredContent.error.category, 'invalid_input');
+  }
 }

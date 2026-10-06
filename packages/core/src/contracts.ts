@@ -167,7 +167,8 @@ export const discoveryPageSchema = z.object({
   }
 });
 
-export const discoveryInputSchema = z.object({ request: z.string().trim().min(1).max(4096) }).strict();
+export const discoveryInputSchema = z.object({ request: z.string().trim().min(1).max(4096).describe(
+  "REQUIRED: copy the entire original user message character for character, including reading instructions and article/comma clauses after a colon. Do not extract just the act, shorten, repair, translate or add citations. Keep dates, currentness and contradictions unchanged.") }).strict();
 export const discoveryContinuationInputSchema = z.object({ cursor: cursor.describe(
   "Copy an actual d1_ cursor returned by discovery, without changes. No placeholders or guesses. If none was returned, ask before calling this tool.") }).strict();
 export const indexInputSchema = z.union([

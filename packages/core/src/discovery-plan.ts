@@ -70,12 +70,20 @@ function research(text: string): { query: string; filters: NonNullable<Discovery
     ["REGIO DECRETO", /\b(?:regi decreti|regio decreto)\b/g],
     ["LEGGE", /\bleggi\b/g],
   ] as const;
+  // The measured model handoff omitted "del" in plural-type year research.
+  // Make that one unambiguous facet explicit before removing the type; never
+  // infer a year from arbitrary topic numbers or incomplete singular citations.
+  rest = rest.replace(/\b(decreti legislativi|decreti[ -]legge|decreti del presidente della repubblica|regi decreti|leggi)\s+(\d{4})\b/g,
+    '$1 del $2');
   for (const [type, pattern] of typeFilters) if (pattern.test(rest)) {
     if (filters.denominazioneAtto) throw invalidRequest("Specify one act type per research request.");
     filters.denominazioneAtto = type; rest = rest.replace(pattern, " ");
   }
   const years = [...rest.matchAll(/\b(?:del(?:l'anno)?|nel|anno)\s+(\d{4})\b/g)];
-  if (years.length > 1) throw invalidRequest("Specify one act year per request.");
+  if (years.length > 1 || years.some(match =>
+    /^\s*(?:[-–—/,]|(?:e|o|oppure|al|a)\b)?\s*\d{4}\b/.test(rest.slice(match.index! + match[0].length)))) {
+    throw invalidRequest("Specify one act year per request; year ranges or lists require clarification.");
+  }
   if (years.length) {
     const year = years[0]![1]!;
     if (Number(year) < 1861 || Number(year) > new Date().getUTCFullYear()) throw invalidRequest("Use a supported act year.");

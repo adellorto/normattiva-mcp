@@ -2675,7 +2675,8 @@
       ],
       "tool_call_checks": [],
       "notes": [
-        "Asks for clarification of the reversed range without changing it. Automatic wrong_or_missing_tool_route is not semantic constraint loss; no acceptance-spec revision inferred."
+        "Asks for clarification of the reversed range without changing it. Automatic wrong_or_missing_tool_route is not semantic constraint loss; no acceptance-spec revision inferred.",
+        "Manual reclassification, 6 October 2026: explicitly asks the user to clarify the inverted range without making a tool call. This is appropriate invalid-input clarification, not semantic constraint loss. Original automatic wrong_or_missing_tool_route flag is retained as historical evidence; the corrective scorer now distinguishes this case."
       ]
     },
     {

@@ -42,6 +42,25 @@ const citations = [
   ['Cerca l’articolo 7-bis del decreto-legge n. 76/2020.', 'DECRETO-LEGGE', '2020', '76', '7-bis'],
   ['Trova la legge 241 del 1990.', 'LEGGE', '1990', '241', undefined],
 ];
+test('observed plural type and bare-year research preserves the year as a facet', async () => {
+  await fixture(() => Response.json({ listaAtti: [], numeroAttiTrovati: 0, numeroPagine: 0, paginaCorrente: 1 }), async requests => {
+    const request = 'decreti legislativi 2023 contratti pubblici';
+    const result = await discovery().findActs({ request });
+    assert.equal(result.interpretation, request);
+    assert.equal(requests[0].body.denominazioneAtto, 'DECRETO LEGISLATIVO');
+    assert.equal(requests[0].body.annoProvvedimento, '2023');
+    assert.equal(requests[0].body.testoRicerca, 'contratti pubblici');
+  });
+});
+test('year ranges and lists require clarification without selecting their first year', async () => {
+  await fixture(() => { throw new Error('unexpected traffic'); }, async requests => {
+    for (const years of ['2023-2024', '2023–2024', '2023 e 2024', '2023, 2024', 'del 2023 al 2024']) {
+      await assert.rejects(discovery().findActs({ request: `decreti legislativi ${years} contratti pubblici` }),
+        error => error.detail?.category === 'invalid_input', years);
+    }
+    assert.equal(requests.length, 0);
+  });
+});
 test('accepted citation spellings preserve article intent and use exact search', async () => {
   for (const [request, type, year, number, article] of citations) {
     await fixture(({ body }) => Response.json({ listaAtti: [], numeroAttiTrovati: 0, numeroPagine: 0, paginaCorrente: 1 }), async requests => {

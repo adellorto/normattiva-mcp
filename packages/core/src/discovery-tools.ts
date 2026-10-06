@@ -15,7 +15,7 @@ const resultSchema = z.object(discoveryPageSchema.shape).partial().extend({ erro
 /** Shared discovery registration for both default transports. */
 export function registerDiscoveryTools(server: McpServer, finder: ActDiscovery, context: ToolContext = {}): void {
   server.registerTool("find_acts", {
-    description: "Start discovery of official Italian acts from the user's citation, common name or topic. Preserve dates, constraints and article references in request. For a next-page request without a returned cursor, make no tool call: ask for that cursor instead of searching again. Returns act locators and candidates, without article text. Empty discovery does not prove legal absence.",
+    description: "Discover official Italian acts: make one find_acts call with the complete user request verbatim, then wait for its result before reading or searching further. The server separates article intent and plans citation/name/topic/date constraints. Never replace issuance with publication or silently repair contradictions. For a next page without a returned cursor, ask for it without tools. Returns opaque act locators, never article text. Empty discovery does not prove absence.",
     inputSchema: discoveryInputSchema, outputSchema: resultSchema,
   }, async (args, extra) => runTool("composed", extra.signal, context, args,
     async () => jsonContent(await finder.findActs(args, extra.signal))));

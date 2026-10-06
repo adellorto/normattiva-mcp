@@ -118,6 +118,11 @@ if (keyData.limit_remaining != null) assert.ok(reserve <= Number(keyData.limit_r
 function validate(sample, message) {
   const errors = [], calls = message.tool_calls ?? [];
   if (sample.scenario?.route === 'clarify' && calls.length) errors.push('missing_cursor_requires_clarification');
+  // Invalid requests can be handed off unchanged or clarified by the human.
+  // A silent repair still fails below; prose clarification needs manual review.
+  if (sample.scenario?.route === 'reject' && !calls.length) {
+    return message.content?.trim() ? [] : ['missing_invalid_input_clarification'];
+  }
   if (sample.expected_tool && (calls.length !== 1 || calls[0].function.name !== sample.expected_tool)) errors.push('wrong_or_missing_tool_route');
   if (!calls.length) return errors;
   let args;
@@ -125,6 +130,7 @@ function validate(sample, message) {
   if (sample.cursor && (args.cursor !== sample.cursor || Object.keys(args).some(k => !['cursor', 'max_chars', 'page_size'].includes(k)))) errors.push('fabricated_or_conflicting_cursor');
   const scenario = sample.scenario;
   if (scenario && scenario.route !== 'continue') {
+    if (scenario.route !== 'clarify' && args.request !== scenario.prompt) errors.push('complete_request_not_verbatim');
     const request = String(args.request ?? '').toUpperCase();
     const required = [...(scenario.referenceTokens ?? []), ...(scenario.articleTokens ?? (scenario.article ? [scenario.article] : []))];
     if (scenario.exact) required.push(scenario.exact.number);

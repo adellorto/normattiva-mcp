@@ -75,3 +75,21 @@ test('four concurrent requests each reserve cost and produce one readable checkp
     assert.equal(await readFile(f.attempts, 'utf8'), '4');
   } finally { child.kill('SIGTERM'); await exited; }
 });
+
+test('clarification of an inverted range is scored separately from semantic constraint loss', async () => {
+  const f = await fixture('clarify-invalid');
+  f.env.OPENROUTER_CASES = 'edge-reversed-range';
+  await promisify(execFile)(process.execPath, f.args, { env: f.env });
+  const report = JSON.parse(await readFile(f.output, 'utf8'));
+  assert.equal(report.runs.length, 2);
+  assert.ok(report.runs.every(run => run.automated_failures.length === 0));
+  assert.ok(report.runs.every(run => run.semantic_review.startsWith('pending')));
+});
+
+test('silently repairing an inverted range remains a measured routing failure', async () => {
+  const f = await fixture('repair-invalid');
+  f.env.OPENROUTER_CASES = 'edge-reversed-range';
+  await assert.rejects(promisify(execFile)(process.execPath, f.args, { env: f.env }));
+  const report = JSON.parse(await readFile(f.output, 'utf8'));
+  assert.ok(report.runs.every(run => run.automated_failures.includes('lost_invalid_constraint')));
+});

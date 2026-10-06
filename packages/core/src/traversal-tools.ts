@@ -16,7 +16,8 @@ function pageResult<T extends z.ZodRawShape>(schema: z.ZodObject<T>) {
   });
 }
 export function registerTraversalTools(server: McpServer, reader: ActTraversal, context: ToolContext = {}): void {
-  const locator = z.string().min(1).max(4096).optional().describe("Initial call only; omit when cursor is present.");
+  const locator = z.string().min(1).max(4096).optional().describe(
+    "Copy an opaque reference returned by a tool, never a human citation or a value built from memory. Initial call only; omit on continuation.");
   const cursor = z.string().min(1).max(16384).optional().describe(
     "Copy the returned cursor literally. For continuation, supply only cursor and an optional page_size or max_chars; omit every original target and date.");
   const max_chars = z.number().int().min(1).max(RESPONSE_LIMITS.textMax).optional();
@@ -30,7 +31,7 @@ export function registerTraversalTools(server: McpServer, reader: ActTraversal, 
     outputSchema: pageResult(indexPageSchema),
   }, async (args, extra) => runTool("composed", extra.signal, context, args, async () => jsonContent(await reader.listArticles(args, extra.signal))));
   server.registerTool("read_article", {
-    description: "Read an article_locator from list_articles, or an act_locator plus article_reference (e.g. '13'), without listing first. snapshot_date defaults to today for the act path; exact locators freeze the date. Continuation: call read_article with only the literal cursor and optional max_chars; omit all locators, article_reference and snapshot_date. Unresolved does not prove absence.",
+    description: "Read only after a tool returned the locator: article_locator from list_articles, or act_locator from find_acts plus article_reference (e.g. '13'), without listing first. Never put a citation in a locator or read alongside unfinished discovery. snapshot_date defaults to today; exact locators freeze it. Continuation: only literal cursor and optional max_chars; omit all targets/dates. Unresolved does not prove absence.",
     inputSchema: z.object({ act_locator: locator, article_locator: locator, article_reference: z.string().trim().min(1).max(200).optional()
       .describe("Initial act-locator call only; omit when cursor is present."),
       snapshot_date, cursor, max_chars }).strict(),
