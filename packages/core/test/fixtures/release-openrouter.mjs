@@ -13,6 +13,8 @@ const planOnly = process.argv.includes('--plan');
 const priorIndex = process.argv.indexOf('--prior-report');
 const prior = priorIndex < 0 ? undefined : JSON.parse(await readFile(process.argv[priorIndex + 1], 'utf8'));
 const models = (process.env.OPENROUTER_MODELS ?? 'qwen/qwen3-14b,deepseek/deepseek-v4.1-flash,meta-llama/llama-3.1-8b-instruct').split(',');
+const providerTag = process.env.OPENROUTER_PROVIDER;
+assert.ok(!providerTag || models.length === 1, 'Endpoint pinning requires one model per report.');
 const ceiling = Math.min(1, Number(process.env.OPENROUTER_MAX_COST_USD ?? 1));
 assert.ok(Number.isFinite(ceiling) && ceiling > 0);
 const repetitions = 2, maxTokens = 1536;
@@ -22,6 +24,8 @@ const connectionAttemptMs = 2000;
 setDefaultAutoSelectFamilyAttemptTimeout(connectionAttemptMs);
 const concurrency = Number(process.env.OPENROUTER_CONCURRENCY ?? 4);
 assert.ok(Number.isInteger(concurrency) && concurrency >= 1 && concurrency <= 4);
+const pauseMs = Number(process.env.OPENROUTER_PAUSE_MS ?? 0);
+assert.ok(Number.isInteger(pauseMs) && pauseMs >= 0 && pauseMs <= 60_000);
 const tools = input.schema.tools.map(tool => ({ type: 'function', function: {
   name: tool.name, description: tool.description, parameters: tool.inputSchema,
 } }));
@@ -90,16 +94,28 @@ async function json(url, options) {
   return value;
 }
 const catalog = new Map((await json('https://openrouter.ai/api/v1/models')).data.map(m => [m.id, m]));
-const jobs = [];
+const jobs = [], pricedModels = [];
 for (const id of models) {
   const model = catalog.get(id);
   assert.ok(model?.supported_parameters.includes('tools'), `${id}: tools unavailable`);
-  const prompt = Number(model.pricing.prompt), completion = Number(model.pricing.completion);
+  let pricing = model.pricing, selectedEndpoint;
+  if (providerTag) {
+    const endpointData = await json(`https://openrouter.ai/api/v1/models/${id.split('/').map(encodeURIComponent).join('/')}/endpoints`);
+    const endpoint = endpointData.data?.endpoints?.find(value => value.tag === providerTag);
+    assert.ok(endpoint && ['tools', 'tool_choice', 'temperature', 'max_tokens'].every(value => endpoint.supported_parameters?.includes(value)),
+      'The requested endpoint must exist and support every required request parameter.');
+    pricing = endpoint.pricing;
+    selectedEndpoint = { tag: endpoint.tag, provider_name: endpoint.provider_name,
+      pricing, supported_parameters: endpoint.supported_parameters, status: endpoint.status };
+  }
+  pricedModels.push({ id, pricing, ...(selectedEndpoint ? { selected_endpoint: selectedEndpoint } : {}) });
+  const prompt = Number(pricing.prompt), completion = Number(pricing.completion);
   assert.ok(Number.isFinite(prompt) && Number.isFinite(completion) && prompt >= 0 && completion >= 0);
   for (let repetition = 1; repetition <= repetitions; repetition++) for (const sample of cases) {
     const body = { model: id, messages: sample.messages, tools, tool_choice: 'auto',
       temperature: 0, max_tokens: maxTokens,
-      provider: { require_parameters: true, max_price: { prompt: prompt * 1e6, completion: completion * 1e6 } } };
+      provider: { require_parameters: true, max_price: { prompt: prompt * 1e6, completion: completion * 1e6 },
+        ...(selectedEndpoint ? { only: [selectedEndpoint.tag], allow_fallbacks: false } : {}) } };
     // One byte per input token plus extra provider/template/output margin.
     const reserve = (Buffer.byteLength(JSON.stringify(body)) * 2 + 4096) * prompt + maxTokens * 2 * completion;
     jobs.push({ id, model, repetition, sample, body, reserve });
@@ -108,11 +124,12 @@ for (const id of models) {
 const reserve = jobs.reduce((n, j) => n + j.reserve, 0);
 const report = { recorded_at: new Date().toISOString(), scope: 'OpenRouter function-tool adapter, production MCP schemas and synthetic caller-visible text. Not named UI/client or deployed acceptance.',
   acceptance: 'pending; automated routing checks cannot establish semantic honesty',
-  models: models.map(id => ({ id, pricing: catalog.get(id).pricing })),
+  models: pricedModels,
   cases: cases.map(sample => ({ id: sample.id, expected_tool: sample.expected_tool })),
   input_sha256: createHash('sha256').update(JSON.stringify(input)).digest('hex'),
   schema_sha256: createHash('sha256').update(JSON.stringify(input.schema)).digest('hex'),
   settings: { repetitions, max_tokens: maxTokens, temperature: 0, concurrency, request_timeout_ms: 120_000,
+    pause_between_requests_per_worker_ms: pauseMs,
     connection_family_attempt_ms: connectionAttemptMs,
     parallel_tool_calls: 'omitted; unsupported by eligible providers',
     opt_in_prompts: false, initialization_instructions: false },
@@ -183,10 +200,14 @@ function checkpoint() {
 let next = 0;
 const blockedModels = new Set();
 async function worker() {
+ let attempted = false;
  while (next < jobs.length) {
   const job = jobs[next++];
   if (blockedModels.has(job.id)) continue;
+  if (attempted && pauseMs) await new Promise(resolve => setTimeout(resolve, pauseMs));
+  if (blockedModels.has(job.id)) continue;
   if (report.accounted_upper_bound_usd + job.reserve > ceiling) return;
+  attempted = true;
   const started = performance.now();
   const row = { requested_model: job.id, repetition: job.repetition, case: job.sample.id,
     input: job.sample.messages, expected_tool: job.sample.expected_tool, expected_cursor: job.sample.cursor };

@@ -15,12 +15,12 @@ const resultSchema = z.object(discoveryPageSchema.shape).partial().extend({ erro
 /** Shared discovery registration for both default transports. */
 export function registerDiscoveryTools(server: McpServer, finder: ActDiscovery, context: ToolContext = {}): void {
   server.registerTool("find_acts", {
-    description: "Discover official Italian acts: make one find_acts call with the complete user request verbatim, then wait for its result before reading or searching further. The server separates article intent and plans citation/name/topic/date constraints. Never replace issuance with publication or silently repair contradictions. For a next page without a returned cursor, ask for it without tools. Returns opaque act locators, never article text. Empty discovery does not prove absence.",
+    description: "FIRST STEP for any act or article request: call ONLY find_acts, with the entire user message unchanged, then STOP and wait for the result. Do not send a speculative sequence of tools. The server plans citations, names, articles and dates. Preserve issuance/publication distinctions and contradictions. A next page needs a returned cursor; otherwise ask without tools. Returns act locators, never article text. Empty discovery does not prove absence.",
     inputSchema: discoveryInputSchema, outputSchema: resultSchema,
   }, async (args, extra) => runTool("composed", extra.signal, context, args,
     async () => jsonContent(await finder.findActs(args, extra.signal))));
   server.registerTool("continue_acts", {
-    description: "Continue discovery only with an actual returned d1_ cursor from find_acts or continue_acts, copied literally. If none is available, make no tool call: ask for the cursor in one short sentence. Never invent a cursor or use article/index/whole-act cursors. Search uses a live corpus; completion describes this traversal, not exhaustive legal relevance.",
+    description: "ONLY discovery pagination: copy the actual d1_ cursor returned by find_acts or continue_acts. Never call this for list_articles, read_article or read_act results; continue those with the SAME tool. Without a returned discovery cursor, ask for it without tools. Never invent references. Live search completion is traversal completion, not exhaustive legal relevance.",
     inputSchema: discoveryContinuationInputSchema, outputSchema: resultSchema,
   }, async (args, extra) => runTool("composed", extra.signal, context, args,
     async () => jsonContent(await finder.continueActs(args, extra.signal))));

@@ -118,7 +118,7 @@ async function request<T>(path: string, init?: RequestInit, validate?: (body: un
           category: response.status === 429 ? "rate_limited" : "upstream_failure",
           code: response.status === 429 ? "upstream_rate_limited" : "upstream_http_error",
           message: response.status === 429 ? "Normattiva is rate limited; retry in a later call."
-            : `Normattiva returned HTTP ${response.status}. This does not establish legal absence.`,
+            : `Legal absence unproved; Normattiva HTTP ${response.status}.`,
           retryability: response.status === 429 || knownTransient ? true
             : response.status === 400 || response.status === 422 ? false : "unknown",
           ...(delay !== undefined ? { retry_after_ms: delay } : {}),
@@ -244,7 +244,7 @@ export async function officialText(url: string, session?: WebsiteSession): Promi
         await response.body?.cancel();
         throw new OperationError({ category: response.status === 429 ? "rate_limited" : "upstream_failure",
           code: response.status === 429 ? "upstream_rate_limited" : "upstream_http_error",
-          message: `Normattiva returned HTTP ${response.status}. This does not establish legal absence.`,
+          message: `Legal absence unproved; Normattiva HTTP ${response.status}.`,
           retryability: response.status === 429 ? true : [400, 422].includes(response.status) ? false : "unknown",
           retry_after_ms: retryAfter(response.headers.get("retry-after")), provider: "normattiva", http_status: response.status });
       }

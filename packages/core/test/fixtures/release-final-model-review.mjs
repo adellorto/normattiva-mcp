@@ -33,11 +33,15 @@ async function execute(name, args) {
   } catch (error) { return { protocol_error: error.message }; }
   finally { await client.close(); await server.close(); }
 }
-const rows = [];
+const rows = [], reports = [];
 for (const path of process.argv.slice(3)) {
   const report = JSON.parse(await readFile(path, 'utf8'));
   assert.equal(report.input_sha256, hash(input)); assert.equal(report.schema_sha256, hash(input.schema));
-  assert.equal(report.runs.length, report.planned_calls);
+  assert.ok(report.runs.length <= report.planned_calls, 'More dispatches than planned calls');
+  reports.push({ input_sha256: report.input_sha256, schema_sha256: report.schema_sha256,
+    planned_calls: report.planned_calls, dispatched_calls: report.runs.length,
+    completed_outputs: report.runs.filter(run => run.message).length,
+    complete: report.runs.length === report.planned_calls && report.runs.every(run => run.message && !run.blocked_error) });
   for (const run of report.runs) {
     const refs = new Set();
     for (const message of run.input) if (message.role === 'tool') collectReferences(JSON.parse(message.content), refs);
@@ -63,4 +67,5 @@ for (const path of process.argv.slice(3)) {
   }
 }
 console.log(JSON.stringify({ recorded_at: new Date().toISOString(), input_sha256: hash(input), schema_sha256: hash(input.schema),
-  scope: 'Every generated call replayed through fresh default MCP with synthetic sources. Replays are contract checks, not live-law or multi-turn model acceptance. Prose requires separate review.', rows }, null, 2));
+  scope: 'Every available generated call replayed through fresh default MCP with synthetic sources. Incomplete reports retain dispatch and output counts; replay is not acceptance. Prose requires separate review.',
+  complete: reports.every(report => report.complete), reports, rows }, null, 2));

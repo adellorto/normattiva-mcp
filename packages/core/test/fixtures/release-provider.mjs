@@ -1,14 +1,32 @@
 // Offline OpenRouter boundary for spending/checkpoint regressions. No network.
-import { writeFileSync } from 'node:fs';
+import { appendFileSync, writeFileSync } from 'node:fs';
 let attempts = 0;
 globalThis.fetch = async (url, init) => {
   if (String(url).endsWith('/models')) return Response.json({ data: [{ id: 'fixture-model',
     pricing: { prompt: '0.00000012', completion: '0.00000024' }, supported_parameters: ['tools'] }] });
   if (String(url).endsWith('/key')) return Response.json({ data: { limit_remaining: 1 } });
+  if (String(url).endsWith('/fixture-model/endpoints')) return Response.json({ data: { endpoints: [{
+    tag: 'fixture/fp8', provider_name: 'Fixture provider', status: 0,
+    pricing: process.env.RELEASE_PROVIDER_MODE === 'pinned-expensive'
+      ? { prompt: '0.00001', completion: '0.00002' } : { prompt: '0.0000002', completion: '0.0000003' },
+    supported_parameters: ['tools', 'tool_choice', 'temperature', 'max_tokens'],
+  }] } });
   if (!String(url).endsWith('/chat/completions')) throw new Error('Unexpected fixture destination');
   attempts++;
   writeFileSync(process.env.RELEASE_ATTEMPT_FILE, String(attempts));
+  if (process.env.RELEASE_TIMING_FILE) appendFileSync(process.env.RELEASE_TIMING_FILE, Date.now() + '\n');
   const body = JSON.parse(init.body);
+  if (process.env.RELEASE_PROVIDER_MODE === 'pinned-provider') {
+    if (JSON.stringify(body.provider.only) !== '["fixture/fp8"]' || body.provider.allow_fallbacks !== false
+      || Math.abs(body.provider.max_price.prompt - .2) > 1e-12 || Math.abs(body.provider.max_price.completion - .3) > 1e-12) {
+      return Response.json({ error: { message: 'The selected endpoint and its actual prices must bound dispatch' } }, { status: 422 });
+    }
+    return Response.json({ model: 'fixture-model', provider: 'Fixture provider', choices: [{ finish_reason: 'tool_calls', message: {
+      role: 'assistant', content: null, tool_calls: [{ id: 'fixture_pinned', type: 'function', function: {
+        name: 'find_acts', arguments: JSON.stringify({ request: body.messages[0].content }),
+      } }],
+    } }], usage: { cost: .0002 } });
+  }
   if ('parallel_tool_calls' in body) return Response.json({ error: { message: 'Unsupported provider parameter' } }, { status: 404 });
   if (process.env.RELEASE_PROVIDER_MODE === 'discovery-continuation') {
     const prior = body.messages.find(message => message.role === 'tool');

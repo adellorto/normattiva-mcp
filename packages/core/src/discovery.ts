@@ -108,8 +108,8 @@ export class ActDiscovery {
       ordering: this.ordering(state), corpus: "live", traversal,
       ...(traversal.progress === "interrupted" ? {}
         : !traversal.items.length ? { explanation: state.degraded
-          ? "Relevance unavailable; chronological search returned no candidates. This does not prove absence."
-          : "This bounded discovery returned no candidates. It does not prove legal absence." }
+          ? "Relevance unavailable; chronological search returned no candidates. This does not prove absence. Never invent sources or URLs."
+          : "No candidates; this does not prove legal absence. Use only returned official references; never invent sources or URLs." }
         : state.degraded ? { explanation: "Observed relevance search is unavailable; chronological candidates have unknown current legal force." }
         : state.plan.uncertainTime ? { explanation: "Requested historical/current status is unknown; select a candidate." }
         : { explanation: identified ? "Act identity is verified; current legal force is unknown."

@@ -1,0 +1,65 @@
+{
+  "recorded_at": "2026-10-07T13:09:15.784Z",
+  "source": "https://openrouter.ai/api/v1/models/deepseek/deepseek-v4.1-flash/endpoints",
+  "endpoints": [
+    {
+      "tag": "relace",
+      "provider_name": "Relace",
+      "pricing": {
+        "prompt": "0.00000005",
+        "completion": "0.0000012",
+        "input_cache_read": "0.00000002",
+        "discount": 0
+      },
+      "supported_parameters": [
+        "reasoning",
+        "include_reasoning",
+        "temperature",
+        "top_p",
+        "top_k",
+        "min_p",
+        "stop",
+        "max_tokens",
+        "logit_bias",
+        "frequency_penalty",
+        "presence_penalty",
+        "repetition_penalty",
+        "tools",
+        "tool_choice",
+        "reasoning_effort"
+      ],
+      "status": 0
+    },
+    {
+      "tag": "deepinfra/fp8",
+      "provider_name": "DeepInfra",
+      "pricing": {
+        "prompt": "0.00000014",
+        "completion": "0.00000042",
+        "input_cache_read": "0.0000000042",
+        "discount": 0.3
+      },
+      "supported_parameters": [
+        "reasoning",
+        "include_reasoning",
+        "max_tokens",
+        "temperature",
+        "top_p",
+        "stop",
+        "frequency_penalty",
+        "presence_penalty",
+        "repetition_penalty",
+        "top_k",
+        "seed",
+        "min_p",
+        "logit_bias",
+        "structured_outputs",
+        "tools",
+        "tool_choice",
+        "response_format",
+        "reasoning_effort"
+      ],
+      "status": 0
+    }
+  ]
+}

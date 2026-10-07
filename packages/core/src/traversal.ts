@@ -73,7 +73,7 @@ export class ActTraversal {
         legal_content_complete: act.legalComplete && verifiedThrough === act.entries.length,
         unread_attachment_refs: displayedEntries.flatMap(e => e.kind === "attachment" && !e.text_available ? [e.attachment_ref] : []),
         ...(act.coverageExplanation ? { explanation: act.coverageExplanation }
-          : verifiedThrough < act.entries.length ? { explanation: "Remaining entries need verification." } : {}) } };
+          : verifiedThrough < act.entries.length ? { explanation: "Remaining entries unverified." } : {}) } };
   }
   private async acquire(publication: Publication, date: string, expected?: Binding, identity = expected?.identity): Promise<Acquired> {
     return prepareSource(currentCall()!.signal, () => this.acquirePrepared(publication, date, expected, identity));
@@ -177,7 +177,7 @@ export class ActTraversal {
       const make = (): IndexPage => ({ ...this.envelope(act, index, items), traversal: !items.length && index < act.entries.length ? { progress: "pending", items: [],
         cursor: this.continuation(act, "list_articles", index, 0, 0, limit), explanation: "Preparation only. Continue list_articles with only cursor; omit act_locator and snapshot_date." }
         : failure ? { progress: "interrupted", items,
-        cursor: this.continuation(act, "list_articles", index, 0, 0, limit), failure: { error: failure.detail, position: String(index) }, explanation: "Prefix preserved; continue list_articles with only cursor." }
+        cursor: this.continuation(act, "list_articles", index, 0, 0, limit), failure: { error: failure.detail, position: String(index) }, explanation: "Continue list_articles with cursor only, without asking again." }
         : index === act.entries.length ? { progress: "complete", items }
         : { progress: "more", items, cursor: this.continuation(act, "list_articles", index, 0, 0, limit), explanation: "Index page only. Continue list_articles with only cursor; omit act_locator and snapshot_date." } });
       while (index < act.entries.length && items.length < limit) {
@@ -229,7 +229,7 @@ export class ActTraversal {
       }
       // Ordinary base articles have an established direct coordinate path. No annex or suffix guessing.
       if (!exact && !/^\d+$/.test(label)) return { outcome: "unresolved", reason: "exact_locator_required", requested,
-        evidence: [{ ...evidence[0]!, explanation: "Use list_articles to select an exact article_locator for this suffixed or structured reference." }] };
+        evidence: [{ ...evidence[0]!, explanation: "Existence unknown, not absent. Use list_articles to select an exact article_locator." }] };
       if (exact?.unread) return { outcome: "unresolved", reason: "graphic_content_unread", requested,
         evidence: [{ ...evidence[0]!, explanation: "The acquired article contains unread graphics; its full content is withheld." }] };
       let content: Awaited<ReturnType<ActTraversal["verifiedDetail"]>>;
@@ -254,7 +254,7 @@ export class ActTraversal {
         content: { format: "text", text: text.slice(offset, end), ...(content.title ? { title: content.title } : {}),
           ...(content.from ? { effective_from: content.from } : {}), ...(content.to ? { effective_to: content.to } : {}) },
         ...(end === text.length ? { progress: "complete" as const } : { progress: "more" as const,
-          cursor: this.continuation(reference, "read_article", 0, 0, end, limit, content.notesOnly ? this.codec.issue(reference) : token ?? this.codec.issue(reference)), explanation: "Article part only. Continue read_article with only cursor; omit locators, article_reference and snapshot_date." }) });
+          cursor: this.continuation(reference, "read_article", 0, 0, end, limit, content.notesOnly ? this.codec.issue(reference) : token ?? this.codec.issue(reference)), explanation: "Article incomplete. Continue read_article with cursor only, without asking permission." }) });
       while (!fits(make()) && end > offset) end = boundary(text, offset + Math.floor((end - offset) / 2));
       if (end === offset && text.length > offset) throw internalError("response_limit_exceeded", "The article envelope leaves no space for content.", false);
       return articlePageSchema.parse(make());
