@@ -9,18 +9,23 @@ import { UpstreamRuntime } from '../../dist/upstream.js';
 import { jsonContent } from '../../dist/serialization.js';
 
 const mode = process.argv[2] ?? 'historical';
-assert.ok(['historical', 'current', 'original', 'current-as-historical'].includes(mode));
+const configurations = {
+  historical: { date: '2014-01-01', corpus: '011G0193-2014-01-01',
+    xmlCorpus: '011G0193-2014-01-01', expectedCode: 'source_content_conflict' },
+  current: { date: '2026-10-07', corpus: '011G0193-2026-10-07',
+    xmlCorpus: '011G0193-2026-10-07', expectedCode: 'source_content_conflict' },
+  original: { date: '2012-01-01', corpus: '011G0193-2012-01-01',
+    xmlCorpus: '011G0193-2012-01-01', expectedCode: 'source_identity_conflict' },
+  'current-as-historical': { date: '2014-01-01', corpus: '011G0193-2014-01-01',
+    xmlCorpus: '011G0193-2026-10-07', expectedCode: 'snapshot_conflict' },
+};
+assert.ok(Object.hasOwn(configurations, mode));
+const { date, corpus, xmlCorpus, expectedCode } = configurations[mode];
 const base = new URL('../../../../docs/implementation/historical-attachment-controls/', import.meta.url);
 const saved = path => new URL(path, base);
 const discovery = JSON.parse(readFileSync(saved('dpr151-2014-01-01/manifest.json')))
   .results.find(row => row.operation === 'find_acts').result;
 const act_locator = discovery.traversal.items[0].act_locator;
-const date = mode === 'current' ? '2026-10-07' : mode === 'original' ? '2012-01-01' : '2014-01-01';
-const corpus = mode === 'historical' || mode === 'current-as-historical'
-  ? '011G0193-2014-01-01' : `011G0193-${date}`;
-const xmlCorpus = mode === 'current-as-historical' ? '011G0193-2026-10-07' : corpus;
-const expectedCode = mode === 'original' ? 'source_identity_conflict'
-  : mode === 'current-as-historical' ? 'snapshot_conflict' : 'source_content_conflict';
 let sourceBytes = 0;
 const attempts = [];
 globalThis.fetch = async (url, init) => {
