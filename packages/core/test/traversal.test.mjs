@@ -363,12 +363,51 @@ test('UTF-8 byte bounds include both MCP copies and continuation never splits a 
   },{detail:largeDetail});
 });
 
+test('full-act byte bounds retain escaped Unicode text and exact offsets through eviction', async () => {
+  const text = 'é😀"\\&'.repeat(8000);
+  const encoded = text.replaceAll('&', '&amp;');
+  await fixture(async () => {
+    const reader = new ActTraversal({ signingKey: key });
+    let result = await reader.readAct({ act_locator: reader.actLocator(publication), snapshot_date: date, max_chars: 64000 });
+    const parts = [];
+    for (let pages = 0;; pages++) {
+      assert.ok(pages < 12, 'bounded useful continuation');
+      assert.ok(Buffer.byteLength(JSON.stringify({ structuredContent: result, content: [{ type: 'text', text: JSON.stringify(result) }] })) <= 128 * 1024);
+      for (const segment of result.traversal.items.flatMap(item => item.segments)) {
+        assert.equal(segment.kind, 'text');
+        assert.ok(segment.text.isWellFormed());
+        parts.push(segment);
+      }
+      if (result.traversal.progress === 'complete') break;
+      reader.evict();
+      result = await reader.readAct({ cursor: result.traversal.cursor });
+    }
+    const blocks = new Map();
+    for (const part of parts) blocks.set(part.block_id, (blocks.get(part.block_id) ?? '') + part.text);
+    assert.equal([...blocks.values()].join(' '), 'Art. 13. ' + text);
+    const body = parts.filter(part => part.block_id !== parts[0].block_id);
+    let offset = 0;
+    for (const part of body) { assert.equal(part.offset, offset); offset += part.text.length; }
+    assert.equal(offset, text.length);
+  }, { xml: xml.replace('Legal text.', encoded), detail: { ...detail,
+    data: { atto: { ...detail.data.atto, articoloHtml: '<h2>Art. 13.</h2><p>' + encoded + '</p>' } } } });
+});
+
 test('production parser, queued preparations, eviction and direct restart fit the 256 MiB working-memory target', async () => {
   const {stdout} = await promisify(execFile)(process.execPath,[new URL('./fixtures/traversal-memory.mjs',import.meta.url).pathname]);
   const measured=JSON.parse(stdout);
   assert.ok(measured.max_rss_kib <= 256*1024,JSON.stringify(measured));
   assert.equal(measured.concurrent_calls,3);
   assert.equal(measured.attempts,6);
+});
+
+test('complete TUEL reading, cached first pages and evicted continuation fit the 256 MiB working-memory target', async () => {
+  const {stdout} = await promisify(execFile)(process.execPath,
+    [new URL('./fixtures/release-runtime.mjs',import.meta.url).pathname, 'tuel-reading']);
+  const measured = JSON.parse(stdout);
+  assert.equal(measured.memory_gate, 'passed');
+  assert.ok(measured.max_rss_kib <= 256 * 1024);
+  assert.ok(measured.pages.every(page => page.serialized_bytes <= 128 * 1024));
 });
 
 test('source acquisition enforces its decoded limit while receiving and cancellation does no upstream work', async () => {

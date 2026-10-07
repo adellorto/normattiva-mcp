@@ -6,22 +6,22 @@ Prerequisites on the implementation map include [Restore verified live reading a
 
 ## Gate status
 
-Latest evidence: [Final release validation checkpoint, 6 October 2026](final-release-validation.md), supplemented by the [HTTP cancellation remedy, 7 October 2026](http-cancellation-remedy.md). Earlier measurements and failed samples below remain historical evidence; the following table governs the current candidate.
+Latest evidence: [Final release validation checkpoint, 6 October 2026](final-release-validation.md), supplemented by the [HTTP cancellation remedy](http-cancellation-remedy.md) and [TUEL memory remedy](tuel-memory-remedy.md), both recorded on 7 October 2026. Earlier measurements and failed samples below remain historical evidence; the following table governs the current candidate.
 
 | Gate | Result and limit of the evidence |
 | --- | --- |
-| Deterministic regressions/build | 119/119 pass, including nine public HTTP cancellation/isolation controls and the issued-discovery-reference evaluation control. |
+| Deterministic regressions/build | 121/121 pass, including the full-TUEL memory and escaped-Unicode/eviction regressions, nine public HTTP cancellation/isolation controls and the issued-discovery-reference evaluation control. |
 | Installed npm consumer and reference portability | Final 0.2.0 tarball passes outside the workspace: parser worker, contracts, configured restart/npm-HTTP transfer, different-key rejection. |
 | Vercel built-function packaging | Latest local Node 24/60-second output passes isolated contracts/worker execution and same-instance cancellation/lane release. The preserved-symlink SDK type conflict is corrected; its initial misleading overall build success remains retained. Not deployed candidate verification. |
-| Direct-read processing overhead | Same truthful work/full serialization: warm legacy −7.81%; warm authenticated −1.90%; legacy process-cold +0.42%; authenticated process-cold +3.89%, all below +10%. Corrected cold setup and raw distributions are in the checkpoint. |
-| Runtime memory/serialized bytes | TUEL index and synthetic attachment/historical-first-occurrence samples pass. Full 295-occurrence TUEL reading **fails memory twice**, at 267.9/270.3 MiB versus 256 MiB; bytes remain bounded. Full official historical/attachment controls remain incomplete. |
+| Direct-read processing overhead | Same truthful work/full serialization: warm legacy −7.81%; warm authenticated −1.90%; legacy process-cold +0.42%; authenticated process-cold +3.89%, all below +10%. The memory remedy rechecks the same targets: warm legacy +0.83%, authenticated −8.02%; cold legacy −1.55%, authenticated +3.75%, all passing. Raw distributions remain in the checkpoint and [memory artifact](tuel-memory-measurements.json.gz). |
+| Runtime memory/serialized bytes | The [TUEL memory remedy](tuel-memory-remedy.md) passes three full 295-occurrence runs at **226.6/221.2/222.3 MiB**, including cached pages and evicted continuation; all 40 page fingerprints match pre-remedy payloads, largest response 83,908 bytes. Earlier failures remain retained. Index and direct sample memory pass; full official historical/attachment controls remain incomplete. |
 | Schema/result guidance | Prototype encodings pass. Native Qwen schema +5.11% passes but interrupted-result explanations/error messages total **64 tokens**, over the 60-token cap counting both MCP copies. |
 | Terminal client samples | Fresh Claude and restored Codex runs pass literal tool continuation and deny absence from unresolved 404. Finite stdio samples; complete coordinated named-client/HTTP matrix remains open. Claude's final quotation is not verbatim tool concatenation. |
 | Representative OpenRouter matrix | All 234 latest-schema outputs completed; six real-discovery-reference corrective outputs pass. **Failed**: Llama fabricated references and four false-absence statements; Qwen four literal handoff changes and two unnecessary continuation-confirmation prompts. DeepSeek's placeholder flags are classified separately from passing genuine-reference correction. |
 | Official-source canaries | Final rerun 15/15 checks pass, 18 paced attempts, including TUEL, Civil 2043 and Privacy historical/change boundaries. Local registration, not deployed revision or full-act historical acceptance. |
 | Default transport cancellation/timeouts | Both default transports pass real 20-second/two-attempt timeout probes. Stdio and same-process HTTP cancellation abort upstream and allow healthy follow-up work; incoming HTTP Request abort and queued cancellation pass separately. Cross-instance notification delivery and deployed request signals remain unverified and required before deployed acceptance. [Remedy and limits](http-cancellation-remedy.md). |
 | Spending | Newest prior ledger: `release-final-results.json.gz`; $0.487861267878 accounted upper bound, $0.201211634280 returned receipts, under unchanged $1 cap. All earlier reservations retained. |
-| Final release approval | **Blocked** by the remaining memory, model/native-guidance and independent historical/attachment prerequisites; deployed transport and complete named-client gates remain open. No release acceptance, push, publication or deployment. |
+| Final release approval | **Blocked** by the remaining model/native-guidance and independent historical/attachment prerequisites; deployed transport and complete named-client gates remain open. No release acceptance, push, publication or deployment. |
 
 ## Packaging correction and version preparation
 

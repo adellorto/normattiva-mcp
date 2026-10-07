@@ -280,12 +280,23 @@ export class ActTraversal {
       const items: ReadingPage["traversal"]["items"] = [];
       let failure: OperationError | undefined;
       if (index > entries.length || (index === entries.length && (segment || offset))) throw invalidInput();
+      // Size probes render the same position several times. Keep only its
+      // authenticated cursor rather than allocating a new compressor per probe.
+      let cursorPosition = "", cursorValue = "";
+      const continuation = () => {
+        const position = `${index}:${segment}:${offset}`;
+        if (position !== cursorPosition) {
+          cursorValue = this.continuation(act, "read_act", index, segment, offset, limit, attachmentToken);
+          cursorPosition = position;
+        }
+        return cursorValue;
+      };
       const make = (): ReadingPage => ({ ...this.envelope(act, attachment ? 0 : index, items.map(i => i.entry)), traversal: !items.length && index < entries.length ? { progress: "pending", items: [],
-        cursor: this.continuation(act, "read_act", index, segment, offset, limit, attachmentToken), explanation: "Preparation only. Continue read_act with only cursor; omit act_locator, attachment_ref and snapshot_date." }
+        cursor: continuation(), explanation: "Preparation only. Continue read_act with only cursor; omit act_locator, attachment_ref and snapshot_date." }
         : failure ? { progress: "interrupted", items,
-        cursor: this.continuation(act, "read_act", index, segment, offset, limit, attachmentToken), failure: { error: failure.detail, position: `${index}:${segment}:${offset}` }, explanation: "Prefix preserved; continue read_act with only cursor." }
+        cursor: continuation(), failure: { error: failure.detail, position: `${index}:${segment}:${offset}` }, explanation: "Prefix preserved; continue read_act with only cursor." }
         : index === entries.length ? { progress: "complete", items }
-        : { progress: "more", items, cursor: this.continuation(act, "read_act", index, segment, offset, limit, attachmentToken), explanation: "Full reading requires continuing read_act with cursor alone; omit act_locator, attachment_ref and snapshot_date." } });
+        : { progress: "more", items, cursor: continuation(), explanation: "Full reading requires continuing read_act with cursor alone; omit act_locator, attachment_ref and snapshot_date." } });
       while (index < entries.length && chars < limit && items.length < RESPONSE_LIMITS.indexMax) {
         const entry = entries[index]!;
         if (currentCall()!.attempts >= currentCall()!.maxAttempts && !act.verified.has(entry.selector)) break;
@@ -304,8 +315,12 @@ export class ActTraversal {
           const chunk = () => unit.kind === "text" ? { ...unit, offset: start, text: text.slice(start, end) }
             : { ...unit, cells: unit.cells.length ? [{ ...unit.cells[0]!, offset: start, text: text.slice(start, end) }] : [] };
           output.push(chunk());
-          while (!fits(make()) && end > start) { end = boundary(text, start + Math.floor((end - start) / 2)); output[output.length - 1] = chunk(); }
-          if (!fits(make()) || (end === start && text.length > start)) { output.pop(); break; }
+          let chunkFits = fits(make());
+          while (!chunkFits && end > start) {
+            end = boundary(text, start + Math.floor((end - start) / 2)); output[output.length - 1] = chunk();
+            chunkFits = fits(make());
+          }
+          if (!chunkFits || (end === start && text.length > start)) { output.pop(); break; }
           chars += characters(text.slice(start, end)); offset = end;
           if (offset === text.length) { segment++; offset = 0; } else break;
         }
