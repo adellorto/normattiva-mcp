@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-07",
+  "captured_at": "2026-10-07T13:49:37.182Z",
+  "captures": [
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+      "request": {
+        "denominazioneAtto": "DECRETO DEL PRESIDENTE DELLA REPUBBLICA",
+        "annoProvvedimento": "2011",
+        "numeroProvvedimento": "151",
+        "orderType": "recente",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "captured_at": "2026-10-07T13:49:15.471Z",
+      "failure": "UND_ERR_CONNECT_TIMEOUT",
+      "elapsed_ms": 10556
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+      "request": {
+        "denominazioneAtto": "DECRETO DEL PRESIDENTE DELLA REPUBBLICA",
+        "annoProvvedimento": "2011",
+        "numeroProvvedimento": "151",
+        "orderType": "recente",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "captured_at": "2026-10-07T13:49:26.684Z",
+      "failure": "UND_ERR_CONNECT_TIMEOUT",
+      "elapsed_ms": 10497
+    }
+  ],
+  "calls": [
+    {
+      "elapsed_ms": 21713.684038,
+      "attempts": 2,
+      "queue_ms": 1,
+      "upstream_ms": 21056
+    }
+  ],
+  "results": [
+    {
+      "error": {
+        "category": "transport_failure",
+        "code": "upstream_transport_failure",
+        "message": "A transport failure prevented contacting Normattiva.",
+        "retryability": true,
+        "transport_cause": "timeout",
+        "provider": "normattiva",
+        "operation": "/bff-opendata/v1/api/v1/ricerca/avanzata"
+      }
+    }
+  ]
+}

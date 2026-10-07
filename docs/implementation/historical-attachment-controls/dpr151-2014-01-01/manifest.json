@@ -1,0 +1,127 @@
+{
+  "date": "2014-01-01",
+  "captured_at": "2026-10-07T13:48:56.803Z",
+  "captures": [
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+      "request": {
+        "denominazioneAtto": "DECRETO DEL PRESIDENTE DELLA REPUBBLICA",
+        "annoProvvedimento": "2011",
+        "numeroProvvedimento": "151",
+        "orderType": "recente",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "captured_at": "2026-10-07T13:48:26.165Z",
+      "failure": "UND_ERR_CONNECT_TIMEOUT",
+      "elapsed_ms": 10588
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+      "request": {
+        "denominazioneAtto": "DECRETO DEL PRESIDENTE DELLA REPUBBLICA",
+        "annoProvvedimento": "2011",
+        "numeroProvvedimento": "151",
+        "orderType": "recente",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "captured_at": "2026-10-07T13:48:37.374Z",
+      "status": 200,
+      "elapsed_ms": 9334,
+      "decoded_bytes": 1474,
+      "sha256": "e09cebfcefde2e7a4f0500d0eb121db418cdb3e980d6c9584d237d29c8355890",
+      "content_type": "application/json",
+      "location": null,
+      "file": "capture-2.gz"
+    },
+    {
+      "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20140101",
+      "request": null,
+      "captured_at": "2026-10-07T13:48:46.730Z",
+      "status": 200,
+      "elapsed_ms": 5545,
+      "decoded_bytes": 146685,
+      "sha256": "2704956f5c0ad8d0eebbb93456d7c20bb950800573080a04b9a747ffcd798b4d",
+      "content_type": "text/html;charset=UTF-8",
+      "location": null,
+      "file": "capture-3.gz"
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20140101",
+      "request": null,
+      "captured_at": "2026-10-07T13:48:52.418Z",
+      "status": 200,
+      "elapsed_ms": 3822,
+      "decoded_bytes": 282265,
+      "sha256": "361851746a913ecee14a915d4c92b25d75bd9d23f7d4a19ed9a0363adb26514d",
+      "content_type": "text/xml",
+      "location": null,
+      "file": "capture-4.gz"
+    }
+  ],
+  "calls": [
+    {
+      "elapsed_ms": 20560.885863,
+      "attempts": 2,
+      "queue_ms": 0,
+      "upstream_ms": 19930
+    },
+    {
+      "elapsed_ms": 10075.886964000001,
+      "attempts": 2,
+      "queue_ms": 0,
+      "upstream_ms": 9394
+    }
+  ],
+  "results": [
+    {
+      "operation": "find_acts",
+      "result": {
+        "match": "identified",
+        "interpretation": "decreto del presidente della repubblica 151/2011",
+        "ordering": "exact_citation",
+        "corpus": "live",
+        "explanation": "Act identity is verified; current legal force is unknown.",
+        "traversal": {
+          "progress": "complete",
+          "items": [
+            {
+              "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAxMS0wOS0yMiIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAxMUcwMTkzIn0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIERFTCBQUkVTSURFTlRFIERFTExBIFJFUFVCQkxJQ0EiLCJpc3N1ZWQiOiIyMDExLTA4LTAxIiwibnVtYmVyIjoxNTEsImdhemV0dGUiOjIyMSwic3VwcGxlbWVudCI6eyJ0eXBlIjoiTk8iLCJudW1iZXIiOjB9fX0.OBBR13loW61mfhTGqifl4e5DYEVfarkZL29r4uZmqbg",
+              "publication": {
+                "data_gu": "2011-09-22",
+                "codice_redazionale": "011G0193"
+              },
+              "title": "[Regolamento recante semplificazione della disciplina dei procedimenti relativi alla prevenzione degli incendi, a  norma  dell'articolo  49, comma 4-quater, del decreto-legge 31 maggio 2010, n. 78,  convertito, con modificazioni, dalla legge 30 luglio 2010, n. 122. (11G0193)  ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-07T13:48:46.716Z",
+                  "publication": {
+                    "data_gu": "2011-09-22",
+                    "codice_redazionale": "011G0193"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata"
+                }
+              ],
+              "current": "unknown"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "error": {
+        "category": "upstream_failure",
+        "code": "source_content_conflict",
+        "message": "The independent rendered first occurrence disagrees with the AKN; the index is withheld.",
+        "retryability": false,
+        "provider": "normattiva"
+      }
+    }
+  ]
+}

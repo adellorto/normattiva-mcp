@@ -1,0 +1,66 @@
+{
+  "publication": {
+    "data_gu": "2011-09-22",
+    "codice_redazionale": "011G0193"
+  },
+  "date": "2026-10-07",
+  "captures": [
+    {
+      "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20261007",
+      "request": null,
+      "captured_at": "2026-10-07T13:46:43.972Z",
+      "status": 200,
+      "elapsed_ms": 9942,
+      "decoded_bytes": 146685,
+      "sha256": "024570a68598bb9e667506a20b911c1eee5c1f54db508165ac161e01ca88d7fc",
+      "content_type": "text/html;charset=UTF-8",
+      "location": null,
+      "file": "capture-1.gz"
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20261007",
+      "request": null,
+      "captured_at": "2026-10-07T13:46:54.129Z",
+      "status": 200,
+      "elapsed_ms": 9360,
+      "decoded_bytes": 283883,
+      "sha256": "39093a8a1407396e590e9c4a9eb59b97b725f8c5de7941fdbaf6e3b06976eec6",
+      "content_type": "text/xml",
+      "location": null,
+      "file": "capture-2.gz"
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "request": {
+        "idArticolo": 1,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1,
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2026-10-07",
+        "tipoDettaglio": "singolavigenza"
+      },
+      "captured_at": "2026-10-07T13:47:03.970Z",
+      "status": 200,
+      "elapsed_ms": 9414,
+      "decoded_bytes": 87759,
+      "sha256": "e0b73222f6402e0526221ac8cf204a952fb44344024a24b5c2f61d5fb349a650",
+      "content_type": "application/json",
+      "location": null,
+      "file": "capture-3.gz"
+    }
+  ],
+  "result": {
+    "error": {
+      "category": "upstream_failure",
+      "code": "source_identity_conflict",
+      "message": "The article detail did not verify the exact publication.",
+      "retryability": false,
+      "provider": "normattiva"
+    }
+  }
+}
