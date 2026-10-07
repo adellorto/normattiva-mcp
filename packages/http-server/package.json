@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@normattiva/core": "workspace:*",
-    "mcp-handler": "^1.1.0"
+    "@modelcontextprotocol/sdk": "^1.29.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

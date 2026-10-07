@@ -12,7 +12,7 @@ try {
   const result = await client.callTool(JSON.parse(process.argv[2]));
   await client.close();
   console.log(JSON.stringify(result));
-  process.exit(0); // mcp-handler owns a persistent cleanup timer.
+  process.exit(0); // End the isolated fixture process after its observable result.
 } catch (error) {
   console.error(error.message);
   process.exit(1);

@@ -81,7 +81,7 @@ Indice, lettura dell'atto e ricerca usano `traversal`; l'articolo singolo usa `p
 
 I limiti testuali contano punti di codice Unicode; gli offset dei segmenti sono posizioni UTF-16. Identità, dimensioni, celle, span, intestazioni e offset delle tabelle persistono tra pagine. Il limite in byte può ridurre ulteriormente una pagina: il contenuto supportato continua anziché essere saltato. Voci non rappresentabili e limiti di fonte/parser producono errori espliciti.
 
-Una sola richiesta upstream attiva per processo; scadenza condivisa di 50 secondi, massimo 20 secondi per tentativo, due tentativi per letture dirette o sedici per operazioni composte. I ritentativi richiedono ripetibilità sicura e prove di errore transitorio noto; la continuazione ha un nuovo budget. Client e hosting devono lasciare tempo per restituire la risposta dopo la scadenza; HTTP consente 60 secondi. La cancellazione interrompe lavoro in coda e attivo.
+Una sola richiesta upstream attiva per processo; scadenza condivisa di 50 secondi, massimo 20 secondi per tentativo, due tentativi per letture dirette o sedici per operazioni composte. I ritentativi richiedono ripetibilità sicura e prove di errore transitorio noto; la continuazione ha un nuovo budget. Client e hosting devono lasciare tempo per restituire la risposta dopo la scadenza; la funzione HTTP consente 60 secondi. La cancellazione interrompe lavoro in coda e attivo in stdio e nello stesso processo HTTP.
 
 ## Configurazione e fiducia nei riferimenti
 
@@ -115,6 +115,8 @@ Dopo il rilascio coordinato, i client stdio potranno eseguire `npx normattiva-mc
 ```
 
 L'endpoint esistente `https://normattiva-mcp.adellorto.com/api/mcp` non ha ancora questa migrazione. I client remoti non ricevono il segreto; lo configura il gestore. Copie compatibili ospitate autonomamente espongono gli stessi sei strumenti via Streamable HTTP, con CORS permissivo e senza autenticazione predefinita.
+
+L'inizializzazione HTTP restituisce un `Mcp-Session-Id` opaco; i client devono conservarlo nei POST successivi affinché le notifiche di cancellazione individuino le proprie richieste. Le richieste senza questo header funzionano, ma le loro notifiche non possono cancellare un POST precedente. L'interruzione del `Request.signal` in ingresso ferma anch'essa il lavoro. La sola perdita della connessione non costituisce cancellazione MCP esplicita. Il riferimento resta valido dopo riavvii con la chiave di firma conservata, mentre le notifiche raggiungono solo chiamate attive nello stesso processo. Con più istanze servono affinità o instradamento condiviso della cancellazione prima dell'accettazione in produzione; questo non è ancora verificato sull'endpoint ospitato. Un riferimento di sessione non valido restituisce HTTP 404 e richiede una nuova inizializzazione. Ogni POST contiene un solo messaggio MCP; i batch sono rifiutati. GET e DELETE restituiscono 405; le risposte usano JSON senza stream SSE riprendibile.
 
 Per Vercel configura la chiave persistente nell'ambiente del deployment, compila i pacchetti e distribuisci dalla **radice del repository** dove risiede `.vercel/project.json`. Esegui `vercel deploy --prod` solo quando pronto a pubblicare. Push, pubblicazione npm e deployment restano all'utente. Pagine e configurazioni attualmente pubblicate: [inglese](https://normattiva-mcp.adellorto.com/), [italiano](https://normattiva-mcp.adellorto.com/it/).
 

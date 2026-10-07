@@ -81,7 +81,7 @@ Index, whole-act and discovery progress is in `traversal`; a direct article uses
 
 Text limits count Unicode code points; returned segment offsets address UTF-16 positions. Table IDs, dimensions, cells, spans, headers and offsets survive pagination. Byte limits can reduce a page further; supported content resumes instead of being skipped. Unrepresentable entries and source/parser limits fail explicitly.
 
-All upstream work shares one active attempt per process, a 50-second call deadline, 20-second attempt limit and budgets of two attempts for direct reads or sixteen for composed operations. Retries require replay safety and known transient evidence; continuation gets a fresh allowance. Clients/hosting must allow response overhead beyond the deadline; the HTTP handler allows 60 seconds. Cancellation stops queued and active work.
+All upstream work shares one active attempt per process, a 50-second call deadline, 20-second attempt limit and budgets of two attempts for direct reads or sixteen for composed operations. Retries require replay safety and known transient evidence; continuation gets a fresh allowance. Clients/hosting must allow response overhead beyond the deadline; the HTTP function allows 60 seconds. Cancellation stops queued and active work in stdio and within the same HTTP process.
 
 ## Configuration and reference trust
 
@@ -115,6 +115,8 @@ After the coordinated release, stdio clients can run `npx normattiva-mcp` with p
 ```
 
 The existing hosted endpoint is `https://normattiva-mcp.adellorto.com/api/mcp`; it has not received this migration. Remote clients need no signing secret; the operator configures it. Compatible self-hosted copies expose the same six tools over Streamable HTTP, with permissive CORS and no authentication by default.
+
+HTTP initialization returns an opaque `Mcp-Session-Id`; clients must preserve it on subsequent POSTs so cancellation notifications target their own requests. Requests without that header still work, but their notifications cannot cancel an earlier POST. An aborted incoming `Request.signal` also stops its work. A lost connection alone is not an explicit MCP cancellation. The namespace works across restarts with the preserved signing key, while notification routing only reaches active calls on the same process. Multiple instances require affinity or shared cancellation routing before deployed cancellation can be accepted; this has not been verified on the hosted endpoint. Invalid namespaces return HTTP 404 and require fresh initialization. POSTs carry one MCP message; batches are rejected. GET and DELETE return 405; responses use JSON without a resumable SSE stream.
 
 For Vercel self-hosting, configure the preserved key in the deployment environment, build all packages and deploy from the **repository root** where `.vercel/project.json` lives. Use `vercel deploy --prod` only when ready to publish. The user controls push, npm publication and deployment. Existing live landing page/configs: [English](https://normattiva-mcp.adellorto.com/), [Italian](https://normattiva-mcp.adellorto.com/it/).
 

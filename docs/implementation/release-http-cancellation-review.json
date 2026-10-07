@@ -1,0 +1,23 @@
+{
+  "fixed_point": "c344071cb8f1441112f11d898b97657e08ada6d2",
+  "reviewed_code_hashes": {
+    "packages/http-server/api/mcp.ts": "62b1912790861ec7b8ee84eee3da6a7caed83a25309063e4fcd1be22eafe96f8",
+    "packages/core/src/server.ts": "1af94543bd358111c9117cd4b4791479dec59c79803d9b91d1b7fd83a30436ff",
+    "packages/core/src/upstream.ts": "4f58a78eb641e990062144c2c15a7bed32c20af67c85f3022d4cbb4449216b76",
+    "packages/core/test/fixtures/http-cancellation.mjs": "90aa574a81fbabcea9bfce67accef330d9aac5ec201b421d38baa66f51245c24",
+    "packages/core/test/fixtures/release-vercel-package.mjs": "e960816bb06a3354772fe94e8ad51efe8ba63fea895ff4992385426af4972899"
+  },
+  "standards": {
+    "hard_violations": 0,
+    "optional_smell_findings": 1,
+    "summary": "No documented-standard violation; one optional Duplicated Code judgement on abort-aware upstream/polling setup in source-handler and isolated Vercel fixtures.",
+    "disposition": "Retained local fixture setup to keep each driver explicit; observable assertions and production handler loading remain independent.",
+    "follow_up": "No new material finding after strict message-kind guard, public request-shaped cancellation regression and timing evidence."
+  },
+  "spec": {
+    "remaining_findings": 0,
+    "summary": "Cancellation and lane release, unchanged budgets, public red/green regression, message-kind isolation, request lifecycle distinction, and stateless/cross-instance limits satisfy this scoped ticket.",
+    "follow_up": "Request-shaped cancellation receives its own method-not-found RPC error and leaves the original caller active until a proper notification. No new missing requirement, scope creep, or incorrect behavior found."
+  },
+  "review_scope": "Two independent read-only agents per code-review skill, then follow-up of the additional red/green negative control; no inference, official traffic or deployment calls."
+}

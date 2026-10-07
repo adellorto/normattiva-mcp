@@ -38,12 +38,13 @@ const controller = new AbortController(), started = performance.now();
 const pending = client.callTool({ name: 'read_article', arguments: { act_locator,
   article_reference: '997', snapshot_date: '2026-10-02' } }, undefined, { signal: controller.signal, timeout: 65_000 })
   .then(result => ({ result }), error => ({ error: error.message }));
-let gate, result, healthy;
+let gate, result, healthy, cancelledAt;
 try {
   if (mode === 'cancellation') {
     const deadline = Date.now() + 5000;
     while (!(await events()).length && Date.now() < deadline) await pause(10);
     assert.ok((await events()).length, 'Stalled upstream not reached');
+    cancelledAt = Date.now();
     controller.abort();
     await pause(500);
     const trace = await events();
@@ -64,7 +65,9 @@ try {
   }
   console.log(JSON.stringify({ recorded_at: new Date().toISOString(), node: process.version,
     transport: transportName, mode, gate, elapsed_ms: performance.now() - started,
+    cancelled_at: cancelledAt,
+    cancellation_abort_ms: cancelledAt === undefined ? undefined : (await events()).find(e => e.event === 'aborted')?.at - cancelledAt,
     events: await events(), result, healthy,
     scope: 'Default built stdio / production HTTP handler; synthetic stalled upstream, production 20s attempt and 50s shared policy. Not deployed HTTP.' }, null, 2));
 } finally { await client.close(); }
-process.exit(gate === 'passed' ? 0 : 1); // HTTP cleanup timer; also stop failed stalled probes.
+process.exit(gate === 'passed' ? 0 : 1); // Also stop failed stalled probes.

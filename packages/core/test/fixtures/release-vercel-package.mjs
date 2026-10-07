@@ -44,10 +44,50 @@ await client.connect(new StreamableHTTPClientTransport(new URL('https://fixture.
 try {
   assert.equal(client.getServerVersion().version, '0.2.0');
   await checkContracts(client);
+  // Exercise cancellation in the traced function, rather than inferring it
+  // from source-handler tests or a client-side rejected promise.
+  const found = (await client.callTool({ name: 'find_acts', arguments: { request: 'decreto legislativo 267/2000' } })).structuredContent;
+  assert.equal(found.match, 'identified');
+  const act_locator = found.traversal.items[0].act_locator;
+  const boundary = globalThis.fetch, events = [];
+  globalThis.fetch = async (url, init) => {
+    if (!String(url).includes('dettaglio-atto') || JSON.parse(init.body).idArticolo !== 997) return boundary(url, init);
+    events.push({ event: 'started', at: Date.now() });
+    return new Promise((resolve, reject) => {
+      const abort = () => { events.push({ event: 'aborted', at: Date.now() }); reject(init.signal.reason); };
+      if (init.signal.aborted) abort();
+      else init.signal.addEventListener('abort', abort, { once: true });
+    });
+  };
+  const controller = new AbortController();
+  const pending = client.callTool({ name: 'read_article', arguments: {
+    act_locator, article_reference: '997', snapshot_date: '2026-10-02',
+  } }, undefined, { signal: controller.signal, timeout: 3000 }).then(() => null, error => error);
+  const until = async check => {
+    const deadline = Date.now() + 750;
+    while (!check() && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 5));
+    assert.ok(check(), 'built handler must reach and abort the upstream request');
+  };
+  let cancellationMs;
+  try {
+    await until(() => events.length > 0);
+    const cancelledAt = Date.now();
+    controller.abort();
+    await until(() => events.some(e => e.event === 'aborted'));
+    cancellationMs = events[1].at - cancelledAt;
+    const healthy = await client.callTool({ name: 'read_article', arguments: {
+      act_locator, article_reference: '13', snapshot_date: '2026-10-02',
+    } }, undefined, { timeout: 1500 });
+    assert.equal(healthy.structuredContent.outcome, 'found');
+    assert.deepEqual(events.map(e => e.event), ['started', 'aborted']);
+    assert.ok(await pending, 'caller rejects the explicitly cancelled request');
+  } finally { controller.abort(); globalThis.fetch = boundary; }
   console.log(JSON.stringify({ recorded_at: new Date().toISOString(), node: process.version,
     built_handler: config.handler, runtime: config.runtime, max_duration_seconds: config.maxDuration,
     worker_present: true, declared_file_path_mappings: Object.keys(config.filePathMap ?? {}).length,
     isolated_built_function_contracts: 'passed', package_version: client.getServerVersion().version,
-    scope: 'Dereferenced local Vercel output outside workspace; parser worker and default discovery/reading/resource/prompt contracts. Synthetic official boundaries; not deployed Vercel verification.' }, null, 2));
+    isolated_built_function_cancellation: 'passed', cancellation_abort_ms: cancellationMs,
+    cancellation_events: events,
+    scope: 'Dereferenced local Vercel output outside workspace; parser worker, default contracts and same-instance upstream cancellation/lane release. Synthetic official boundaries; not deployed Vercel verification.' }, null, 2));
 } finally { await client.close(); }
 process.exit(0);

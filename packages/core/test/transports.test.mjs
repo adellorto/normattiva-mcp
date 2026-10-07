@@ -18,7 +18,7 @@ test('the built stdio server integrates discovery, reading, resources and prompt
 });
 
 test('the production HTTP handler exposes the same focused interface on stateless requests', async () => {
-  // mcp-handler owns a persistent cleanup timer; isolate its process lifecycle.
+  // Isolate the production handler and its upstream fixture in a fresh process.
   const { stdout } = await promisify(execFile)(process.execPath,
     [fileURLToPath(new URL('./fixtures/public-http.mjs', import.meta.url))], { timeout: 30_000 });
   assert.match(stdout, /HTTP public contracts passed/);
