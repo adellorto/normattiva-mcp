@@ -8,9 +8,9 @@ import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { registerTools, ActTraversal } from '../dist/index.js';
 import { signingKey } from './fixtures/traversal-upstream.mjs';
 
-async function connected(work) {
+async function connected(work, key = signingKey) {
   const server = new McpServer({ name: 'public-contract', version: '0' });
-  registerTools(server, { signingKey });
+  registerTools(server, { signingKey: key });
   const client = new Client({ name: 'public-contract', version: '0' });
   const [a, b] = InMemoryTransport.createLinkedPair();
   await server.connect(b); await client.connect(a);
@@ -254,5 +254,34 @@ test('conflicting content or validity in the dated rendered first occurrence wit
         assert.equal(result.structuredContent.error.code, code);
       });
     }
+  } finally { globalThis.fetch = original; }
+});
+
+test('list_articles exposes a verified compound official rendering without claiming preamble coverage', async () => {
+  const base = new URL('../../../docs/implementation/historical-attachment-controls/', import.meta.url);
+  const manifest = JSON.parse(readFileSync(new URL('dpr151-2014-01-01/manifest.json', base)));
+  const locator = manifest.results.find(row => row.operation === 'find_acts').result.traversal.items[0].act_locator;
+  const page = gunzipSync(readFileSync(new URL('011G0193-2014-01-01/capture-1.gz', base))).toString();
+  const source = gunzipSync(readFileSync(new URL('011G0193-2014-01-01/capture-2.gz', base))).toString();
+  const original = globalThis.fetch;
+  const requests = [];
+  globalThis.fetch = async (url, init) => {
+    requests.push({ url: String(url), body: init?.body });
+    assert.equal(init?.body, undefined, 'the rendered first occurrence must verify before detail retrieval');
+    return new Response(String(url).includes('caricaAKN') ? source : page);
+  };
+  try {
+    await connected(async client => {
+      const result = await client.callTool({ name: 'list_articles', arguments: {
+        act_locator: locator, snapshot_date: '2014-01-01', page_size: 1,
+      } });
+      assert.equal(result.isError, undefined);
+      assert.equal(result.structuredContent.traversal.items[0].label, '1');
+      assert.equal(result.structuredContent.traversal.progress, 'more');
+      assert.equal(result.structuredContent.coverage.legal_content_complete, false);
+      assert.match(result.structuredContent.coverage.explanation, /preamble/i);
+      assert.match(result.structuredContent.snapshot.evidence[0].explanation, /explanatory notes/);
+    }, Buffer.alloc(32, 8));
+    assert.equal(requests.length, 2);
   } finally { globalThis.fetch = original; }
 });

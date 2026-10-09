@@ -6,7 +6,7 @@ import { RESPONSE_LIMITS, indexInputSchema, articleInputSchema, actInputSchema, 
   articlePageSchema, type IndexPage, type ReadingPage, type ArticlePage } from "./contracts.js";
 import { assertResponseSize } from "./serialization.js";
 import { ReferenceCodec, digest, type Reference, type Binding, type ActIdentity } from "./references.js";
-import { parsePortal, detailText, detailStructure, articleLabel, articleHeading, sourceFailure,
+import { parsePortal, detailText, detailStructure, renderedLeadingText, articleLabel, articleHeading, sourceFailure,
   type Publication, type ParsedAct, type SourceEntry, type Segment } from "./act-source.js";
 import { prepareSource, parseSource } from "./source-parser.js";
 
@@ -109,8 +109,13 @@ export class ActTraversal {
       if (first?.kind === "article" && !first.unread) {
         if (control.from > date || (control.to && control.to < date)) throw sourceFailure("snapshot_conflict", "The rendered article validity does not cover the selected date.");
         const structure = detailStructure(control.html);
-        if (structure.hasGraphics || structure.tableDigest !== first.tableDigest || digest(detailText(control.html)) !== first.contentDigest)
+        const leading = renderedLeadingText(control.html);
+        const fullMatches = digest(detailText(control.html)) === first.contentDigest;
+        const notesOnly = leading !== undefined && !fullMatches && digest(detailText(control.html, true)) === first.legalDigest;
+        const preambleMatches = !leading || (!!act.preambleDigest && digest(leading) === act.preambleDigest);
+        if (structure.hasGraphics || structure.tableDigest !== first.tableDigest || !preambleMatches || (!fullMatches && !notesOnly))
           throw sourceFailure("source_content_conflict", "The independent rendered first occurrence disagrees with the AKN; the index is withheld.");
+        if (notesOnly) act.notesOnly = true;
         act.verified.add(first.selector); act.renderedControlUrl = page.url;
       }
     }

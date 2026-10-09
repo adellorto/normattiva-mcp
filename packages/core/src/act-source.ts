@@ -17,41 +17,56 @@ export interface SourceEntry {
   explanation?: string;
 }
 export interface ParsedAct { entries: SourceEntry[]; inventoryComplete: boolean; legalComplete: boolean;
-  unmatchedArticleLabels: string[]; coverageExplanation?: string; }
+  unmatchedArticleLabels: string[]; preambleDigest?: string; coverageExplanation?: string; }
 interface XmlNode { name: string; uri: string; attrs: Record<string, string>; children: Array<XmlNode | string>; path: string; }
 const AKN = "http://docs.oasis-open.org/legaldocml/ns/akn/3.0";
 export const normalized = (text: string) => text.replace(/\s+/gu, " ").trim();
 
 /** Proven website/XML typography equivalents; no note deletion or punctuation folding. */
 export function legalText(text: string): string {
-  return normalized(text.normalize("NFC").replace(/\b([AEIOUaeiou])'/g, (_, vowel: string) => ({ a: "à", e: "è", i: "ì", o: "ò", u: "ù", A: "À", E: "È", I: "Ì", O: "Ò", U: "Ù" }[vowel]!)))
+  return normalized(text.normalize("NFC").replace(/\battivita'/g, "attività").replace(/\bcitta'/g, "città").replace(/\b([AEIOUaeiou])'/g, (_, vowel: string) => ({ a: "à", e: "è", i: "ì", o: "ò", u: "ù", A: "À", E: "È", I: "Ì", O: "Ò", U: "Ù" }[vowel]!)))
     .replace(/\bprocedera'/g, "procederà")
     .replace(/\bavra'/g, "avrà")
     .replace(/\s+([.,;:])/g, "$1")
     .replace(/^(?:Articolo|Art\.?)\s*(\d+(?:-[a-z0-9]+)?)\.?\s+/i, "Art. $1. ");
 }
-export function detailText(html: string, omitExplanatoryNotes = false): string {
+function scanDetailText(html: string, mode: "article" | "leading", omitExplanatoryNotes = false): { text: string; articleMarkers: number } {
   const parser = new SAXParser(), parts: string[] = [];
   const stack: Array<{ tag: string; hidden: boolean }> = [];
   const voidTags = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]);
   const breaks = new Set(["br", "p", "div", "h2", "tr", "td", "th"]);
-  let count = 0;
+  let count = 0, articleMarkers = 0;
+  const collecting = () => mode === "article" || !articleMarkers;
   parser.on("startTag", token => {
     if (++count > 100_000 || stack.length >= 96) throw sourceFailure("parse_limit_exceeded", "The article HTML exceeds its element or depth limit.");
     const classes = token.attrs.find(a => a.name === "class")?.value.split(/\s+/) ?? [];
-    if (classes.includes("article-num-akn")) parts.length = 0;
+    if (classes.includes("article-num-akn")) { articleMarkers++; if (mode === "article") parts.length = 0; }
     const hidden = ["script", "style", "template"].includes(token.tagName) || (omitExplanatoryNotes && classes.includes("note-akn"));
     if (!voidTags.has(token.tagName) && !token.selfClosing) stack.push({ tag: token.tagName, hidden });
-    if (voidTags.has(token.tagName) && breaks.has(token.tagName) && !stack.some(n => n.hidden)) parts.push(" ");
+    if (collecting() && voidTags.has(token.tagName) && breaks.has(token.tagName) && !stack.some(n => n.hidden)) parts.push(" ");
   });
-  parser.on("text", token => { if (!stack.some(n => n.hidden)) parts.push(token.text); });
+  parser.on("text", token => { if (collecting() && !stack.some(n => n.hidden)) parts.push(token.text); });
   parser.on("endTag", token => {
     const position = stack.map(n => n.tag).lastIndexOf(token.tagName);
     if (position >= 0) stack.length = position;
-    if (breaks.has(token.tagName) && !stack.some(n => n.hidden)) parts.push(" ");
+    if (collecting() && breaks.has(token.tagName) && !stack.some(n => n.hidden)) parts.push(" ");
   });
   parser.end(html);
-  return legalText(parts.join(""));
+  return { text: legalText(parts.join("")), articleMarkers };
+}
+
+export function detailText(html: string, omitExplanatoryNotes = false): string {
+  return scanDetailText(html, "article", omitExplanatoryNotes).text;
+}
+
+/** Text explicitly rendered before the article heading in a compound body.
+ * Undefined means the body has no structural article marker and cannot be
+ * partitioned; an empty string means the marker is the first substantive part. */
+export function renderedLeadingText(html: string): string | undefined {
+  const { text, articleMarkers } = scanDetailText(html, "leading");
+  if (!articleMarkers) return undefined;
+  if (articleMarkers !== 1) throw sourceFailure("source_unverified", "The rendered body does not identify one exact first article occurrence.");
+  return text;
 }
 
 export function sourceFailure(code: string, message: string): OperationError {
@@ -437,10 +452,12 @@ export function parseAct(xml: string, publication: Publication, date: string, po
   const visitedArticles = entries.filter(e => e.kind === "article" && !e.hierarchy.some(h => h.kind === "doc")).length;
   if (parsedArticles !== visitedArticles) throw sourceFailure("unsupported_structure", "Nested articles cannot be silently omitted from the inventory.");
   const outerLegalText = outside.some(n => normalized(xmlText(n)));
+  const preamble = child(act, "preamble");
   const explanations: string[] = [];
   if (unmatchedArticleLabels.length) explanations.push("Unmatched official navigation addresses leave membership unresolved.");
   if (outerLegalText) explanations.push("Preface, preamble and conclusion sections lack a verified reading adapter.");
   if (entries.some(e => e.unread)) explanations.push("Unread components may conceal content or articles; references appear on their index pages.");
   return { entries, inventoryComplete, legalComplete: inventoryComplete && !outerLegalText && entries.every(e => !e.unread),
-    unmatchedArticleLabels, ...(explanations.length ? { coverageExplanation: explanations.join(" ") } : {}) };
+    unmatchedArticleLabels, ...(preamble ? { preambleDigest: digest(legalText(segmentText(segments(preamble)))) } : {}),
+    ...(explanations.length ? { coverageExplanation: explanations.join(" ") } : {}) };
 }

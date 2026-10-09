@@ -115,6 +115,12 @@ test('exact article references read in one request after restart and continue in
 });
 
 const saved = name => gunzipSync(readFileSync(new URL('./fixtures/acts/' + name, import.meta.url))).toString();
+const retainedDpr = (date, capture) => gunzipSync(readFileSync(new URL(
+  `../../../docs/implementation/historical-attachment-controls/011G0193-${date}/capture-${capture}.gz`, import.meta.url,
+))).toString();
+const retainedDprLocator = () => JSON.parse(readFileSync(new URL(
+  '../../../docs/implementation/historical-attachment-controls/dpr151-2014-01-01/manifest.json', import.meta.url,
+))).results.find(row => row.operation === 'find_acts').result.traversal.items[0].act_locator;
 function* walk(node) { yield node; for (const child of node.childNodes ?? []) yield* walk(child); }
 function capturedDetail(html, pub) {
   const nodes = [...walk(parse(html))];
@@ -213,6 +219,51 @@ test('historical source controls reject current exports, matching counts and for
         ['snapshot_conflict','source_content_conflict'].includes(error.detail.code));
     }, { page: html, xml: candidate, detail: capturedDetail(html, pub) });
   }
+});
+
+test('compound rendered preamble and identified notes verify without weakening exact content checks', async () => {
+  const run = async (date, rendered, source, expectedCode) => {
+    const original = globalThis.fetch;
+    const requests = [];
+    globalThis.fetch = async (url, init) => {
+      requests.push({ url: String(url), body: init?.body });
+      assert.equal(init?.body, undefined, 'the independently rendered first occurrence must decide before API detail calls');
+      return new Response(String(url).includes('caricaAKN') ? source : rendered);
+    };
+    try {
+      const reader = new ActTraversal({ signingKey: Buffer.alloc(32, 8) });
+      if (expectedCode) {
+        await assert.rejects(reader.listArticles({ act_locator: retainedDprLocator(), snapshot_date: date, page_size: 1 }),
+          error => error.detail.code === expectedCode);
+      } else {
+        const result = indexPageSchema.parse(await reader.listArticles({
+          act_locator: retainedDprLocator(), snapshot_date: date, page_size: 1,
+        }));
+        assert.equal(result.traversal.items[0].label, '1');
+        assert.equal(result.traversal.progress, 'more');
+        assert.equal(result.coverage.legal_content_complete, false);
+        assert.match(result.coverage.explanation, /preamble/i);
+        assert.match(result.snapshot.evidence[0].explanation, /explanatory notes/);
+      }
+      assert.equal(requests.length, 2);
+    } finally { globalThis.fetch = original; }
+  };
+  const historicalPage = retainedDpr('2014-01-01', 1);
+  const historicalSource = retainedDpr('2014-01-01', 2);
+  await run('2014-01-01', historicalPage, historicalSource);
+  await run('2026-10-07', retainedDpr('2026-10-07', 1), retainedDpr('2026-10-07', 2));
+  await run('2014-01-01', historicalPage.replace('IL PRESIDENTE DELLA REPUBBLICA', 'IL PRESIDENTE DEL SENATO'), historicalSource, 'source_content_conflict');
+  await run('2014-01-01', historicalPage.replace('Comando provinciale dei vigili del fuoco', 'Comando regionale dei vigili del fuoco'), historicalSource, 'source_content_conflict');
+  const unmarked = historicalPage.replace(/<div class="bodyTesto">[\s\S]*?<h2 class="article-num-akn"[^>]*>/, '<div class="bodyTesto"><h2 class="unclassified-article">');
+  assert.notEqual(unmarked, historicalPage);
+  await run('2014-01-01', unmarked, historicalSource, 'source_content_conflict');
+  const falseEquivalentPage = historicalPage.replace(/(<h2 class="article-num-akn"[\s\S]*?)attivit&agrave;/, '$1p&ograve;');
+  const falseEquivalentSource = historicalSource.replace(/(<article eId="art_1"[\s\S]*?)attivita'/, "$1po'");
+  assert.notEqual(falseEquivalentPage, historicalPage);
+  assert.notEqual(falseEquivalentSource, historicalSource);
+  await run('2014-01-01', falseEquivalentPage, falseEquivalentSource, 'source_content_conflict');
+  await run('2012-01-01', retainedDpr('2012-01-01', 1), retainedDpr('2012-01-01', 2), 'source_identity_conflict');
+  await run('2014-01-01', historicalPage, retainedDpr('2026-10-07', 2), 'snapshot_conflict');
 });
 
 test('changed representations refuse continuation after eviction even with equal article counts', async () => {
