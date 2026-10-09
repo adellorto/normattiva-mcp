@@ -12,7 +12,7 @@ const output = process.argv[3];
 const planOnly = process.argv.includes('--plan');
 const priorIndex = process.argv.indexOf('--prior-report');
 const prior = priorIndex < 0 ? undefined : JSON.parse(await readFile(process.argv[priorIndex + 1], 'utf8'));
-const models = (process.env.OPENROUTER_MODELS ?? 'qwen/qwen3-14b,deepseek/deepseek-v4.1-flash,meta-llama/llama-3.1-8b-instruct').split(',');
+const models = (process.env.OPENROUTER_MODELS ?? 'qwen/qwen3-14b,deepseek/deepseek-v4.1-flash').split(',');
 const providerTag = process.env.OPENROUTER_PROVIDER;
 assert.ok(!providerTag || models.length === 1, 'Endpoint pinning requires one model per report.');
 const ceiling = Math.min(1, Number(process.env.OPENROUTER_MAX_COST_USD ?? 1));

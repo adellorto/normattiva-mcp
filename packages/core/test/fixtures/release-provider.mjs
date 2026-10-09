@@ -2,8 +2,10 @@
 import { appendFileSync, writeFileSync } from 'node:fs';
 let attempts = 0;
 globalThis.fetch = async (url, init) => {
-  if (String(url).endsWith('/models')) return Response.json({ data: [{ id: 'fixture-model',
-    pricing: { prompt: '0.00000012', completion: '0.00000024' }, supported_parameters: ['tools'] }] });
+  if (String(url).endsWith('/models')) return Response.json({ data: process.env.RELEASE_PROVIDER_MODE === 'default-scope'
+    ? ['qwen/qwen3-14b', 'deepseek/deepseek-v4.1-flash'].map(id => ({ id,
+      pricing: { prompt: '0.00000012', completion: '0.00000024' }, supported_parameters: ['tools'] }))
+    : [{ id: 'fixture-model', pricing: { prompt: '0.00000012', completion: '0.00000024' }, supported_parameters: ['tools'] }] });
   if (String(url).endsWith('/key')) return Response.json({ data: { limit_remaining: 1 } });
   if (String(url).endsWith('/fixture-model/endpoints')) return Response.json({ data: { endpoints: [{
     tag: 'fixture/fp8', provider_name: 'Fixture provider', status: 0,
