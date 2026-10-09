@@ -128,6 +128,17 @@ test('higher endpoint prices can reject a pinned plan before any paid dispatch',
   assert.equal(report.runs.length, 0);
 });
 
+test('a bounded completion ceiling is recorded in the provider plan', async () => {
+  const f = await fixture('error');
+  f.env.OPENROUTER_CASES = 'edge-law-short-year';
+  f.env.OPENROUTER_MAX_TOKENS = '1520';
+  await promisify(execFile)(process.execPath, [...f.args, '--plan'], { env: f.env });
+  const report = JSON.parse(await readFile(f.output, 'utf8'));
+  assert.equal(report.settings.max_tokens, 1520);
+  assert.equal(report.planned_calls, 2);
+  assert.equal(report.runs.length, 0);
+});
+
 test('silently repairing an inverted range remains a measured routing failure', async () => {
   const f = await fixture('repair-invalid');
   f.env.OPENROUTER_CASES = 'edge-reversed-range';

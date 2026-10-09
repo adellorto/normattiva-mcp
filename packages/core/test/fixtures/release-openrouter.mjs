@@ -17,7 +17,12 @@ const providerTag = process.env.OPENROUTER_PROVIDER;
 assert.ok(!providerTag || models.length === 1, 'Endpoint pinning requires one model per report.');
 const ceiling = Math.min(1, Number(process.env.OPENROUTER_MAX_COST_USD ?? 1));
 assert.ok(Number.isFinite(ceiling) && ceiling > 0);
-const repetitions = 2, maxTokens = 1536;
+const repetitions = 2, maxTokens = Number(process.env.OPENROUTER_MAX_TOKENS ?? 1536);
+// The accepted matrix used 1,536 tokens. Permit only the measured 1.04%
+// reduction needed to keep the complete matrix inside its cumulative cap;
+// a length-truncated response still fails below.
+assert.ok(Number.isInteger(maxTokens) && maxTokens >= 1520 && maxTokens <= 1536,
+  'OPENROUTER_MAX_TOKENS must remain between 1520 and the accepted 1536-token ceiling.');
 // Give each resolved address time to connect on this evaluation host. The
 // overall per-request deadline remains 120 seconds, including connection work.
 const connectionAttemptMs = 2000;
