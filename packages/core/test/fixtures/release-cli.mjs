@@ -1,8 +1,9 @@
 // One explicit, bounded terminal-client fixture session; never contacts Normattiva.
-// Usage: node .../release-cli.mjs claude|codex OUTPUT.json
+// Usage: node .../release-cli.mjs claude|codex OUTPUT.json stdio|http --plan|--execute
 // Uses existing subscription login. Do not run as part of pnpm test.
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
+import { createServer as createHttpServer } from 'node:http';
 import { promisify } from 'node:util';
 import { mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -10,14 +11,61 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { signingKey } from './traversal-upstream.mjs';
 
-const [client, output] = process.argv.slice(2);
-assert.ok(['claude', 'codex'].includes(client) && output, 'Specify client and output file; this command runs inference.');
+const [client, output, transportName, ...options] = process.argv.slice(2);
+assert.equal(options.length, 1, 'Specify exactly one of --plan or --execute.');
+assert.ok(['--plan', '--execute'].includes(options[0]), 'Specify exactly one of --plan or --execute.');
+const planOnly = options[0] === '--plan';
+assert.ok(['claude', 'codex'].includes(client) && output && ['stdio', 'http'].includes(transportName),
+  'Specify client, output file and stdio|http transport; execution runs inference.');
+const exec = promisify(execFile);
+const version = planOnly ? undefined : (await exec(client, ['--version'])).stdout;
 const scratch = await mkdtemp(join(tmpdir(), 'normattiva-release-client-'));
 const prompt = 'Trova il decreto legislativo 267/2000 e leggine articolo 13, max_chars 4 prima, max_chars 100 seconda. Poi chiedi 999 stesso atto snapshot 2026-10-02, senza elencare tutti articoli. Riporta testo completo 13 e dimmi se 999 prova nonesistenza. Non altri servizi o file.';
-const server = { command: process.execPath, args: ['--import',
+const stdioServer = { command: process.execPath, args: ['--import',
   fileURLToPath(new URL('./release-upstream.mjs', import.meta.url)),
   fileURLToPath(new URL('../../../stdio-server/dist/index.js', import.meta.url))],
   env: { NORMATTIVA_REFERENCE_KEY: signingKey.toString('hex') } };
+
+async function localHttpFixture() {
+  process.env.NORMATTIVA_REFERENCE_KEY = signingKey.toString('hex');
+  await import('./release-upstream.mjs');
+  const handlers = await import('../../../http-server/api/mcp.ts');
+  const server = createHttpServer(async (incoming, outgoing) => {
+    try {
+      const chunks = [];
+      for await (const chunk of incoming) chunks.push(chunk);
+      const controller = new AbortController();
+      incoming.once('aborted', () => controller.abort());
+      const method = incoming.method ?? 'POST';
+      const handler = handlers[method] ?? handlers.POST;
+      const request = new Request(`http://${incoming.headers.host}${incoming.url}`, {
+        method, headers: incoming.headers,
+        body: ['GET', 'HEAD'].includes(method) ? undefined : Buffer.concat(chunks),
+        signal: controller.signal,
+      });
+      const response = await handler(request);
+      outgoing.writeHead(response.status, Object.fromEntries(response.headers));
+      outgoing.end(Buffer.from(await response.arrayBuffer()));
+    } catch (error) {
+      outgoing.writeHead(500, { 'content-type': 'text/plain' });
+      outgoing.end(error instanceof Error ? error.message : String(error));
+    }
+  });
+  await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', resolve);
+  });
+  const address = server.address();
+  assert.ok(address && typeof address === 'object');
+  return { server, url: `http://127.0.0.1:${address.port}/api/mcp` };
+}
+
+let httpFixture;
+const httpUrl = transportName === 'http'
+  ? (planOnly ? process.env.RELEASE_CLIENT_HTTP_URL : (httpFixture = await localHttpFixture()).url)
+  : undefined;
+assert.ok(transportName !== 'http' || httpUrl, 'HTTP plan requires RELEASE_CLIENT_HTTP_URL.');
+const server = transportName === 'http' ? { type: 'http', url: httpUrl } : stdioServer;
 const config = join(scratch, 'mcp.json');
 await writeFile(config, JSON.stringify({ mcpServers: { normattiva: server } }));
 const args = client === 'claude' ? ['--print', '--model', 'sonnet', '--effort', 'low',
@@ -28,12 +76,17 @@ const args = client === 'claude' ? ['--print', '--model', 'sonnet', '--effort', 
   : ['exec', '--ignore-user-config', '--ignore-rules', '--ephemeral', '--json',
     '--skip-git-repo-check', '--sandbox', 'read-only', '-C', scratch, '--model', 'gpt-5.6-terra',
     '-c', 'model_reasoning_effort="low"', '-c', 'features.apps=false',
-    '-c', `mcp_servers.normattiva.command=${JSON.stringify(server.command)}`,
-    '-c', `mcp_servers.normattiva.args=${JSON.stringify(server.args)}`,
-    '-c', `mcp_servers.normattiva.env.NORMATTIVA_REFERENCE_KEY=${JSON.stringify(server.env.NORMATTIVA_REFERENCE_KEY)}`,
+    ...(transportName === 'http'
+      ? ['-c', `mcp_servers.normattiva.url=${JSON.stringify(httpUrl)}`]
+      : ['-c', `mcp_servers.normattiva.command=${JSON.stringify(stdioServer.command)}`,
+        '-c', `mcp_servers.normattiva.args=${JSON.stringify(stdioServer.args)}`,
+        '-c', `mcp_servers.normattiva.env.NORMATTIVA_REFERENCE_KEY=${JSON.stringify(stdioServer.env.NORMATTIVA_REFERENCE_KEY)}`]),
     '-c', 'mcp_servers.normattiva.default_tools_approval_mode="approve"', prompt];
-const exec = promisify(execFile);
-const { stdout: version } = await exec(client, ['--version']);
+if (planOnly) {
+  console.log(JSON.stringify({ execution: 'disabled', client, transport: transportName,
+    mcp_config: { mcpServers: { normattiva: server } } }));
+  process.exit(0);
+}
 const execution = exec(client, args, { cwd: scratch, timeout: 120_000, maxBuffer: 4 * 1024 * 1024 });
 // Codex 0.160.1 also reads a piped stdin when a positional prompt exists.
 // execFile leaves that pipe open unless the parent explicitly ends it.
@@ -100,10 +153,12 @@ for (const call of calls) {
   }
 }
 await writeFile(output, JSON.stringify({ recorded_at: new Date().toISOString(), client, version: version.trim(),
+  transport: transportName,
   requested_model: client === 'claude' ? 'sonnet' : 'gpt-5.6-terra', actual_models: actualModels,
-  scope: 'One synthetic stdio terminal-client sample; semantic review required. No live source or general model acceptance.',
+  scope: `One synthetic ${transportName} terminal-client sample; semantic review required. No live source or general model acceptance.`,
   settings: args, prompt, calls, continuation_checks: continuationChecks, messages, usage,
   reported_list_cost_usd: reportedCost, execution_error: executionError,
   client_errors: events.filter(event => ['error', 'turn.failed'].includes(event.type)).map(event => redact(event.message ?? event.error?.message)),
   billing: 'Existing subscription login; no separate API charge demonstrated.' }, null, 2) + '\n');
+if (httpFixture) await new Promise(resolve => httpFixture.server.close(resolve));
 console.log(`Recorded ${client} fixture session: ${output}`);

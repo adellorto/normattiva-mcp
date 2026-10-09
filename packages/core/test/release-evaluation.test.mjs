@@ -371,3 +371,59 @@ test('retained DPR controls complete historical and attachment traversal from in
     assert.equal(report.full_official_attachment_gate, 'incomplete');
   }
 });
+
+test('the bounded terminal-client plan can target the production HTTP transport without inference', async () => {
+  const runner = fileURLToPath(new URL('./fixtures/release-cli.mjs', import.meta.url));
+  const scratch = await mkdtemp(join(tmpdir(), 'normattiva-release-client-plan-'));
+  const output = join(scratch, 'result.json');
+  const { stdout } = await promisify(execFile)(process.execPath,
+    [runner, 'claude', output, 'http', '--plan'], { env: {
+      ...process.env, PATH: '', RELEASE_CLIENT_HTTP_URL: 'http://127.0.0.1:43123/api/mcp',
+    } });
+  const plan = JSON.parse(stdout);
+  assert.equal(plan.execution, 'disabled');
+  assert.equal(plan.client, 'claude');
+  assert.equal(plan.transport, 'http');
+  assert.deepEqual(plan.mcp_config, { mcpServers: { normattiva: {
+    type: 'http', url: 'http://127.0.0.1:43123/api/mcp',
+  } } });
+  await assert.rejects(readFile(output), error => error.code === 'ENOENT');
+});
+
+test('the terminal-client evaluator rejects missing or unknown execution modes before launching a client', async () => {
+  const runner = fileURLToPath(new URL('./fixtures/release-cli.mjs', import.meta.url));
+  const scratch = await mkdtemp(join(tmpdir(), 'normattiva-release-client-mode-'));
+  for (const [name, option] of [['missing', undefined], ['typo', '--paln']]) {
+    const output = join(scratch, `${name}.json`);
+    const args = [runner, 'claude', output, 'http', ...(option ? [option] : [])];
+    await assert.rejects(promisify(execFile)(process.execPath, args, { env: {
+      ...process.env, PATH: '', RELEASE_CLIENT_HTTP_URL: 'http://127.0.0.1:43123/api/mcp',
+    } }), error => error.stderr.includes('Specify exactly one of --plan or --execute'));
+    await assert.rejects(readFile(output), error => error.code === 'ENOENT');
+  }
+});
+
+test('the retained representative terminal client crosses HTTP with literal continuation and absence honesty', async () => {
+  const report = JSON.parse(await readFile(new URL('../../../docs/implementation/release-final-claude-http.json', import.meta.url)));
+  assert.equal(report.client, 'claude');
+  assert.equal(report.transport, 'http');
+  assert.match(report.version, /^2\.1\.295 /);
+  assert.deepEqual(report.actual_models, ['claude-sonnet-5-5']);
+  assert.equal(report.execution_error, undefined);
+  assert.deepEqual(report.client_errors, []);
+  assert.ok(report.reported_list_cost_usd <= 0.50);
+  assert.equal(report.usage.server_tool_use.web_search_requests, 0);
+  assert.equal(report.usage.server_tool_use.web_fetch_requests, 0);
+  assert.deepEqual(report.calls.map(call => call.tool), [
+    'mcp__normattiva__find_acts',
+    'mcp__normattiva__read_article',
+    'mcp__normattiva__read_article',
+    'mcp__normattiva__read_article',
+  ]);
+  assert.equal(report.calls[0].result.match, 'identified');
+  assert.equal(report.calls[1].result.progress, 'more');
+  assert.equal(report.calls[2].result.outcome, 'unresolved');
+  assert.equal(report.calls[3].result.progress, 'complete');
+  assert.deepEqual(report.continuation_checks, [{ literal: true }]);
+  assert.match(report.messages.join('\n'), /non prova quindi l'inesistenza/i);
+});
