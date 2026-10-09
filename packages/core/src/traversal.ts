@@ -182,7 +182,7 @@ export class ActTraversal {
       const make = (): IndexPage => ({ ...this.envelope(act, index, items), traversal: !items.length && index < act.entries.length ? { progress: "pending", items: [],
         cursor: this.continuation(act, "list_articles", index, 0, 0, limit), explanation: "Preparation only. Continue list_articles with only cursor; omit act_locator and snapshot_date." }
         : failure ? { progress: "interrupted", items,
-        cursor: this.continuation(act, "list_articles", index, 0, 0, limit), failure: { error: failure.detail, position: String(index) }, explanation: "Continue list_articles with cursor only, without asking again." }
+        cursor: this.continuation(act, "list_articles", index, 0, 0, limit), failure: { error: failure.detail, position: String(index) }, explanation: "Case-sensitive cursor: copy exactly into list_articles alone." }
         : index === act.entries.length ? { progress: "complete", items }
         : { progress: "more", items, cursor: this.continuation(act, "list_articles", index, 0, 0, limit), explanation: "Index page only. Continue list_articles with only cursor; omit act_locator and snapshot_date." } });
       while (index < act.entries.length && items.length < limit) {

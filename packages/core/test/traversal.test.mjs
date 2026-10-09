@@ -323,6 +323,10 @@ test('index and reading interruptions preserve the exact prefix and first unfini
       assert.equal(result.traversal.items.length, 1);
       assert.equal(result.traversal.failure.error.http_status, 503);
       assert.equal(result.coverage.article_inventory_complete, false);
+      if (method === 'listArticles') {
+        assert.match(result.traversal.explanation, /case-sensitive/i);
+        assert.match(result.traversal.explanation, /copy.*exact/i);
+      }
       continuation = result.traversal.cursor;
     }, { xml: twoXml, page: twoPage });
     await fixture(async requests => {

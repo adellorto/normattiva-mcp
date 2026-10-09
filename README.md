@@ -61,7 +61,7 @@ Select the returned candidate's opaque `act_locator`; never put a human citation
 
 For suffixes, structured or repeated occurrences, select an exact `article_locator` from `list_articles`. Never reconstruct internal coordinates or choose a generation from model memory. If discovery remains `candidates`, selection is still required. Alias review/live identity verification does not prove current legal force: candidates currently report `current: "unknown"`.
 
-Discovery pagination uses `continue_acts({cursor})`. Reading/index pagination calls the same tool again with `{cursor}` and an optional new budget. Copy the cursor literally; omit the original target/date. `find_acts` and `continue_acts` take no public page-size argument.
+Discovery pagination uses `continue_acts({cursor})`. Reading/index pagination calls the same tool again with `{cursor}` and an optional new budget. Treat every cursor as opaque and case-sensitive: reuse the exact returned string without retyping, normalizing, decoding, repairing or changing letter case, and omit the original target/date. `find_acts` and `continue_acts` take no public page-size argument.
 
 Reading resolves an omitted date to a concrete UTC date on the initial call. Reading references retain that snapshot and acquired representation through restarts and cache eviction. Start a new request to change the date. Search pages remain live and may change membership/order across calls; within-page changes fail explicitly rather than silently shifting position.
 

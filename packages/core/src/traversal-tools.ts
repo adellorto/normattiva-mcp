@@ -19,7 +19,7 @@ export function registerTraversalTools(server: McpServer, reader: ActTraversal, 
   const locator = z.string().min(1).max(4096).optional().describe(
     "INITIAL calls ONLY. FORBIDDEN when cursor is present, even if previously supplied. Copy a tool-returned opaque reference; never a citation or a value built from memory.");
   const cursor = z.string().min(1).max(16384).optional().describe(
-    "Copy the complete cursor from this tool's earlier result character for character, including its signature. Supply only cursor and optional page_size or max_chars. NEVER add snapshot_date or original targets, even when known. No returned cursor means no continuation call.");
+    "CASE-SENSITIVE OPAQUE VALUE. Reuse the exact string from the tool result; never retype, normalize, repair, decode or change letter case. Supply only cursor and optional page_size or max_chars. NEVER add snapshot_date or original targets, even when known. No returned cursor means no continuation call.");
   const max_chars = z.number().int().min(1).max(RESPONSE_LIMITS.textMax).optional();
   // Semantic date validation belongs to the reader so impossible dates use the
   // same typed caller-error envelope as other well-shaped invalid inputs.

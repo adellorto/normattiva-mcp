@@ -1,0 +1,67 @@
+{
+  "tokenizers_version": "0.23.2",
+  "tokenizer_sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+  "schema_without_descriptions": 16485,
+  "schema_with_descriptions": 17559,
+  "guidance_percent": 6.515013648771606,
+  "samples": {
+    "identified_currentness_unknown": {
+      "explanatory_tokens_both_representations": 22,
+      "full_mcp_tokens": 828
+    },
+    "index_more": {
+      "explanatory_tokens_both_representations": 46,
+      "full_mcp_tokens": 2912
+    },
+    "article_more": {
+      "explanatory_tokens_both_representations": 28,
+      "full_mcp_tokens": 2946
+    },
+    "article_unresolved": {
+      "explanatory_tokens_both_representations": 28,
+      "full_mcp_tokens": 753
+    },
+    "suffix_unresolved": {
+      "explanatory_tokens_both_representations": 34,
+      "full_mcp_tokens": 759
+    },
+    "reading_more": {
+      "explanatory_tokens_both_representations": 50,
+      "full_mcp_tokens": 2973
+    },
+    "invalid_cursor": {
+      "explanatory_tokens_both_representations": 30,
+      "full_mcp_tokens": 73
+    },
+    "index_pending": {
+      "explanatory_tokens_both_representations": 46,
+      "full_mcp_tokens": 1859
+    },
+    "discovery_more": {
+      "explanatory_tokens_both_representations": 50,
+      "full_mcp_tokens": 2731
+    },
+    "degraded_discovery": {
+      "explanatory_tokens_both_representations": 30,
+      "full_mcp_tokens": 824
+    },
+    "no_candidates": {
+      "explanatory_tokens_both_representations": 44,
+      "full_mcp_tokens": 157
+    },
+    "index_interrupted": {
+      "explanatory_tokens_both_representations": 60,
+      "full_mcp_tokens": 3040
+    },
+    "changed_snapshot": {
+      "explanatory_tokens_both_representations": 38,
+      "full_mcp_tokens": 1243
+    },
+    "attachment_coverage": {
+      "explanatory_tokens_both_representations": 56,
+      "full_mcp_tokens": 4569
+    }
+  },
+  "scope": "Native vocabulary on compact tools/list and full MCP results, without client/provider chat wrappers. Conservative description-free interface baseline.",
+  "gate": "passed"
+}

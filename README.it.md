@@ -61,7 +61,7 @@ Seleziona l'`act_locator` opaco del candidato restituito; non inserire mai una c
 
 Per suffissi, atti strutturati o occorrenze ripetute, scegli l'`article_locator` esatto da `list_articles`. Non ricostruire coordinate interne e non scegliere una generazione dalla memoria del modello. `candidates` richiede ancora selezione. Alias controllati e identità verificata live non provano la vigenza attuale: i candidati indicano al momento `current: "unknown"`.
 
-La ricerca prosegue con `continue_acts({cursor})`. Indice e lettura proseguono richiamando lo stesso strumento con `{cursor}` ed eventuale nuovo limite. Copia il cursore letteralmente e ometti riferimenti/data originali. `find_acts` e `continue_acts` non espongono un limite pubblico di candidati.
+La ricerca prosegue con `continue_acts({cursor})`. Indice e lettura proseguono richiamando lo stesso strumento con `{cursor}` ed eventuale nuovo limite. Tratta ogni cursore come opaco e sensibile alle maiuscole: riusa esattamente la stringa restituita senza ridigitarla, normalizzarla, decodificarla, correggerla o cambiarne le maiuscole, e ometti riferimenti/data originali. `find_acts` e `continue_acts` non espongono un limite pubblico di candidati.
 
 La lettura risolve una data omessa alla data UTC concreta della prima chiamata. I riferimenti mantengono istantanea e rappresentazione anche dopo riavvio o svuotamento della cache. Per cambiare data, avvia una nuova richiesta. Le pagine di ricerca restano live e possono cambiare ordine o appartenenza; modifiche durante una continuazione interna alla pagina producono errore esplicito.
 

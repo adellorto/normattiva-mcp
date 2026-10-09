@@ -26,6 +26,13 @@ test('default registration exposes focused discovery and locator reading without
         assert.equal(legacy in tool.inputSchema.properties, false, `${tool.name}: ${legacy}`);
       }
     }
+    for (const name of ['list_articles', 'read_article', 'read_act']) {
+      const description = tools.find(tool => tool.name === name).inputSchema.properties.cursor.description;
+      assert.match(description, /opaque/i, name);
+      assert.match(description, /case-sensitive/i, name);
+      assert.match(description, /exact.*tool result/i, name);
+      assert.match(description, /never.*change.*case/i, name);
+    }
   });
 });
 
