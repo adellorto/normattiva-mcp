@@ -193,7 +193,53 @@ test('incomplete provider reports retain every available call replay without cla
   assert.equal(review.rows[1].provider_error, 'Provider unavailable');
 });
 
-test('retained DPR controls measure useful pages without promoting missing detail captures', async () => {
+test('independent DPR acquisition plans every non-anchor occurrence within the composed-call budget', async () => {
+  const acquisition = fileURLToPath(new URL('../../../docs/implementation/historical-attachment-controls/acquire-independent.mjs', import.meta.url));
+  const run = async (...args) => JSON.parse((await promisify(execFile)(process.execPath, [acquisition, ...args])).stdout);
+  const report = await run();
+  assert.equal(report.plan.length, 28);
+  for (const snapshot of ['2014-01-01', '2026-10-07']) {
+    const rows = report.plan.filter(row => row.request.dataVigenza === snapshot);
+    assert.equal(rows.length, 14);
+    assert.deepEqual(rows.map(row => row.label), [
+      '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', 'Allegato I', 'Allegato II',
+    ]);
+    assert.equal(new Set(rows.map(row => row.supplied_navigation_url)).size, 14);
+    assert.equal(2 + rows.length, 16, 'portal, AKN and detail attempts must fit the composed-call ceiling');
+  }
+  const articles = await run('--only=articles');
+  assert.equal(articles.plan.length, 24);
+  assert.ok(articles.plan.every(row => /^\d+$/.test(row.label)));
+  const attachments = await run('--only=attachments');
+  assert.equal(attachments.plan.length, 4);
+  assert.ok(attachments.plan.every(row => row.label.startsWith('Allegato ')));
+});
+
+test('Privacy boundary acquisition reuses the exact successful dated detail controls', async () => {
+  const acquisition = fileURLToPath(new URL('../../../docs/implementation/historical-attachment-controls/acquire-privacy-boundary.mjs', import.meta.url));
+  const report = JSON.parse((await promisify(execFile)(process.execPath, [acquisition])).stdout);
+  assert.equal(report.plan.length, 2);
+  assert.deepEqual(report.plan.map(row => row.request.dataVigenza), ['2018-09-18', '2018-09-19']);
+  assert.ok(report.plan.every(row => row.request.codiceRedazionale === '003G0218'
+    && row.request.idArticolo === 1 && row.request.tipoDettaglio === 'singolavigenza'));
+  assert.ok(report.plan.every(row => row.provenance_file === 'release-live-canaries-2026-10-06.json'
+    && Number.isInteger(row.provenance_attempt)));
+});
+
+test('independent inspection verifies every DPR detail and preserves the blocked Privacy boundary', async () => {
+  const inspection = fileURLToPath(new URL('../../../docs/implementation/historical-attachment-controls/inspect-independent.py', import.meta.url));
+  const report = JSON.parse((await promisify(execFile)('python3', [inspection])).stdout);
+  assert.deepEqual(report.snapshots, ['2012-01-01', '2014-01-01', '2026-10-07']);
+  assert.deepEqual(report.verified_details, { '2014-01-01': 14, '2026-10-07': 14 });
+  assert.deepEqual(report.ascii_attachment_shapes, {
+    '2014-01-01': [[1, 1], [1, 1]], '2026-10-07': [[1, 1], [1, 1]],
+  });
+  assert.equal(report.privacy_boundary.status, 'incomplete');
+  assert.equal(report.privacy_boundary.attempted, '2018-09-18');
+  assert.equal(report.privacy_boundary.failure, 'UND_ERR_CONNECT_TIMEOUT');
+});
+
+test('retained DPR controls complete historical and attachment traversal from independent details', async () => {
   const runner = fileURLToPath(new URL('./fixtures/release-independent-controls.mjs', import.meta.url));
   for (const [mode, snapshot] of [['historical', '2014-01-01'], ['current', '2026-10-07']]) {
     const { stdout } = await promisify(execFile)(process.execPath, [runner, mode]);
@@ -203,21 +249,24 @@ test('retained DPR controls measure useful pages without promoting missing detai
     assert.deepEqual(report.occurrence_set, {
       expected: 15,
       source_order_independently_checked: 15,
-      runtime_verified: 1,
-      detail_capture_status: 'blocked',
+      runtime_verified: 15,
+      detail_capture_status: 'complete',
     });
     assert.ok(report.cold_first_useful_page_ms >= 0);
     assert.ok(report.cached_first_useful_page_ms >= 0);
     assert.ok(report.cold_reading_first_useful_page_ms >= 0);
     assert.ok(report.cached_reading_first_useful_page_ms >= 0);
     assert.ok(report.evicted_continuation_ms >= 0);
-    assert.equal(report.full_historical_traversal_gate, 'incomplete');
-    assert.equal(report.full_official_attachment_gate, 'incomplete');
-    assert.equal(report.complete_traversal_ms, null);
-    assert.equal(report.attachment_first_useful_page_ms, null);
+    assert.equal(report.full_historical_traversal_gate, 'passed');
+    assert.equal(report.full_official_attachment_gate, 'passed');
+    assert.ok(report.complete_traversal_ms >= report.cold_reading_first_useful_page_ms);
+    assert.ok(report.attachment_first_useful_page_ms >= 0);
+    assert.equal(report.completed_occurrences.length, 15);
+    assert.deepEqual(report.completed_occurrences.slice(-2), ['Allegato I', 'Allegato II']);
     assert.ok(report.pages.every(page => page.serialized_bytes <= 128 * 1024));
     assert.ok(report.calls.some(call => call.attempts === 0));
     assert.ok(report.calls.every(call => call.attempts <= 16));
+    assert.ok(report.calls.some(call => call.attempts === 16));
     assert.ok(report.max_rss_kib <= 256 * 1024);
   }
   for (const [mode, code] of [['original', 'source_identity_conflict'], ['current-as-historical', 'snapshot_conflict']]) {

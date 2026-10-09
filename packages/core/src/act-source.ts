@@ -10,7 +10,7 @@ export type Segment = z.infer<typeof contentSegmentSchema>;
 export type Hierarchy = Array<{ kind: string; label: string; occurrence: string }>;
 export interface SourceEntry {
   kind: "article" | "attachment"; label: string; heading?: string; selector: string; hierarchy: Hierarchy;
-  segments: Segment[]; contentDigest: string; address?: RetrievalAddress;
+  segments: Segment[]; contentDigest: string; contentLength: number; trailingDigest?: string; address?: RetrievalAddress;
   legalDigest: string;
   tableDigest: string;
   officialUrl?: string; unread: boolean;
@@ -22,11 +22,25 @@ interface XmlNode { name: string; uri: string; attrs: Record<string, string>; ch
 const AKN = "http://docs.oasis-open.org/legaldocml/ns/akn/3.0";
 export const normalized = (text: string) => text.replace(/\s+/gu, " ").trim();
 
+const asciiAccents = new Map(Object.entries({
+  addi: "addì", agibilita: "agibilità", attivita: "attività", autorita: "autorità", avra: "avrà",
+  caffe: "caffè", capacita: "capacità", citta: "città", complessita: "complessità", conformita: "conformità",
+  da: "dà", densita: "densità", e: "è", fattibilita: "fattibilità", finalita: "finalità", gia: "già",
+  gioventu: "gioventù", incolumita: "incolumità", infiammabilita: "infiammabilità", modalita: "modalità",
+  ne: "nè", necessita: "necessità", nonche: "nonchè", neutralita: "neutralità", permeabilita: "permeabilità",
+  piu: "più", potenzialita: "potenzialità", procedera: "procederà", promiscuita: "promiscuità", puo: "può",
+  quantita: "quantità", responsabilita: "responsabilità", sara: "sarà", titolarita: "titolarità",
+  uniformita: "uniformità", unita: "unità",
+}));
+
 /** Proven website/XML typography equivalents; no note deletion or punctuation folding. */
 export function legalText(text: string): string {
-  return normalized(text.normalize("NFC").replace(/\battivita'/g, "attività").replace(/\bcitta'/g, "città").replace(/\b([AEIOUaeiou])'/g, (_, vowel: string) => ({ a: "à", e: "è", i: "ì", o: "ò", u: "ù", A: "À", E: "È", I: "Ì", O: "Ò", U: "Ù" }[vowel]!)))
-    .replace(/\bprocedera'/g, "procederà")
-    .replace(/\bavra'/g, "avrà")
+  return normalized(text.normalize("NFC").replace(/[A-Za-z]+'/g, value => {
+    const word = value.slice(0, -1), replacement = asciiAccents.get(word.toLowerCase());
+    if (!replacement) return value;
+    if (word === word.toUpperCase()) return replacement.toUpperCase();
+    return word[0] === word[0]?.toUpperCase() ? replacement[0]!.toUpperCase() + replacement.slice(1) : replacement;
+  }))
     .replace(/\s+([.,;:])/g, "$1")
     .replace(/^(?:Articolo|Art\.?)\s*(\d+(?:-[a-z0-9]+)?)\.?\s+/i, "Art. $1. ");
 }
@@ -318,11 +332,12 @@ export function parseAct(xml: string, publication: Publication, date: string, po
   let inventoryComplete = true;
   const add = (node: XmlNode, kind: SourceEntry["kind"], label: string, hierarchy: Hierarchy, component: string) => {
     const items = segments(node);
+    const content = legalText(segmentText(items));
     const graphics = [...xmlWalk(node)].filter(n => n.name === "img" || n.name === "embeddedStructure");
     const unread = graphics.length > 0;
     if (unread) inventoryComplete = false; // Graphics may conceal further article occurrences.
     const entry: SourceEntry = { kind, label, selector: node.path, hierarchy, segments: items,
-      contentDigest: digest(legalText(segmentText(items))), legalDigest: digest(legalText(segmentText(segments(node, true)))), tableDigest: tableDigest(segments(node, true)), unread };
+      contentDigest: digest(content), contentLength: content.length, legalDigest: digest(legalText(segmentText(segments(node, true)))), tableDigest: tableDigest(segments(node, true)), unread };
     const heading = child(node, "heading");
     if (heading) entry.heading = normalized(xmlText(heading));
     if (kind === "article") {
@@ -444,7 +459,7 @@ export function parseAct(xml: string, publication: Publication, date: string, po
     entries.push({ kind: "attachment", label: candidate.label, selector: `navigation:${position}`, hierarchy: [
       ...(candidate.component ? [{ kind: "doc", label: candidate.component, occurrence: `navigation:${position}:component` }] : []),
       ...candidate.hierarchy,
-    ], segments: [], contentDigest: digest(""), legalDigest: digest(""), tableDigest: tableDigest([]),
+    ], segments: [], contentDigest: digest(""), contentLength: 0, legalDigest: digest(""), tableDigest: tableDigest([]),
       address: candidate.address, officialUrl: candidate.officialUrl, unread: true,
       explanation: "Official navigation identifies a component missing from the acquired AKN; its historical membership and content remain unresolved." });
   }
@@ -453,6 +468,11 @@ export function parseAct(xml: string, publication: Publication, date: string, po
   if (parsedArticles !== visitedArticles) throw sourceFailure("unsupported_structure", "Nested articles cannot be silently omitted from the inventory.");
   const outerLegalText = outside.some(n => normalized(xmlText(n)));
   const preamble = child(act, "preamble");
+  const conclusion = child(act, "conclusions");
+  if (conclusion && normalized(xmlText(conclusion))) {
+    const lastArticle = [...entries].reverse().find(entry => entry.kind === "article" && !entry.hierarchy.some(item => item.kind === "doc"));
+    if (lastArticle) lastArticle.trailingDigest = digest(legalText(segmentText(segments(conclusion))));
+  }
   const explanations: string[] = [];
   if (unmatchedArticleLabels.length) explanations.push("Unmatched official navigation addresses leave membership unresolved.");
   if (outerLegalText) explanations.push("Preface, preamble and conclusion sections lack a verified reading adapter.");

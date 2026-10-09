@@ -42,6 +42,42 @@ test('a dated official link, publication, structure and independent article cont
   });
 });
 
+test('official ASCII accent spellings match independently rendered Unicode typography', async () => {
+  const akn = "Finalita' e conformita', nonche' modalita', puo' dare responsabilita'";
+  const rendered = 'Finalità e conformità, nonchè modalità, può dare responsabilità';
+  await fixture(async () => {
+    const reader = new ActTraversal({ signingKey: key });
+    const result = await reader.listArticles({ act_locator: reader.actLocator(publication), snapshot_date: date });
+    assert.equal(result.traversal.progress, 'complete');
+  }, { xml: xml.replace('Legal text.', akn), detail: { ...detail, data: { atto: { ...detail.data.atto,
+    articoloHtml: `<h2>Art. 13.</h2><p>${rendered}</p>`,
+  } } } });
+});
+
+test('a last-article detail may append only the independently matched AKN conclusion', async () => {
+  const withConclusion = xml.replace('</body>', '</body><conclusions><formula>Closing formula.</formula></conclusions>');
+  const appended = { ...detail, data: { atto: { ...detail.data.atto,
+    articoloHtml: '<h2>Art. 13.</h2><p>Legal text.</p><p>Closing formula.</p>',
+  } } };
+  await fixture(async () => {
+    const reader = new ActTraversal({ signingKey: key });
+    const index = await reader.listArticles({ act_locator: reader.actLocator(publication), snapshot_date: date });
+    assert.equal(index.traversal.progress, 'complete');
+    assert.equal(index.coverage.legal_content_complete, false);
+    const article = await new ActTraversal({ signingKey: key }).readArticle({ article_locator: index.traversal.items[0].article_locator });
+    assert.equal(article.outcome, 'found');
+    assert.equal(article.content.text, 'Art. 13. Legal text.');
+    assert.match(article.evidence[0].explanation, /conclusion/i);
+  }, { xml: withConclusion, detail: appended });
+  await fixture(async () => {
+    const reader = new ActTraversal({ signingKey: key });
+    await assert.rejects(reader.listArticles({ act_locator: reader.actLocator(publication), snapshot_date: date }),
+      error => error.detail?.code === 'source_content_conflict');
+  }, { xml: withConclusion, detail: { ...appended, data: { atto: { ...appended.data.atto,
+    articoloHtml: appended.data.atto.articoloHtml.replace('Closing formula.', 'Changed closing formula.'),
+  } } } });
+});
+
 test('structured acquisition keeps the website session through its AKN download and reacquires it after restart', async () => {
   const original = globalThis.fetch;
   let session = 0;
@@ -180,6 +216,26 @@ test('table cells and large attachments retain positions and spans over bounded 
     assert.equal(segments.filter(s=>s.kind === 'text').map(s=>s.text).join(''), 'Tail.');
   }, { xml: xml.replace('</act>', attachment+'</act>'), page: page + nav('Tariff table',900),
     detail: request => request.idArticolo === 900 ? { ...detail, data: { atto: { ...detail.data.atto, articoloHtml: table } } } : detail });
+});
+
+test('a one-cell AKN ASCII layout can be verified by its exact flat official rendering', async () => {
+  const attachment = '<attachments><attachment><doc name="ASCII"><mainBody><table><tr><td>| A |</td></tr></table></mainBody></doc></attachment></attachments>';
+  await fixture(async () => {
+    const reader = new ActTraversal({ signingKey: key });
+    const index = await reader.listArticles({ act_locator: reader.actLocator(publication), snapshot_date: date });
+    assert.equal(index.traversal.progress, 'complete');
+    const entry = index.traversal.items.find(item => item.label === 'ASCII');
+    assert.ok(entry?.attachment_ref);
+    const reading = await reader.readAct({ act_locator: reader.actLocator(publication), snapshot_date: date,
+      attachment_ref: entry.attachment_ref });
+    assert.equal(reading.traversal.progress, 'complete');
+    const table = reading.traversal.items[0].segments.find(segment => segment.kind === 'table');
+    assert.deepEqual([table.row_count, table.column_count, table.cells.length], [1, 1, 1]);
+    assert.equal(table.cells[0].text, '| A |');
+  }, { xml: xml.replace('</act>', `${attachment}</act>`), page: page + nav('ASCII', 900),
+    detail: request => request.idArticolo === 900 ? { ...detail, data: { atto: { ...detail.data.atto,
+      articoloHtml: '<span class="table-akn">| A |</span>',
+    } } } : detail });
 });
 
 test('verified inventory absence differs from an ambiguous HTTP failure', async () => {

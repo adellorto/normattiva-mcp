@@ -23,7 +23,9 @@ const binding = { publication: publicationSchema, date: calendarDateSchema, sour
 const position = { index: z.number().int().nonnegative(), segment: z.number().int().nonnegative(), offset: z.number().int().nonnegative() };
 const targetFields = { selector: z.string().max(1024), label: z.string().max(300), contentDigest: z.string().regex(/^[a-f0-9]{64}$/) };
 const articleFields = { ...targetFields, address: addressSchema,
-  legalDigest: z.string().regex(/^[a-f0-9]{64}$/).optional(), tableDigest: z.string().regex(/^[a-f0-9]{64}$/).optional(), unread: z.boolean().optional() };
+  legalDigest: z.string().regex(/^[a-f0-9]{64}$/).optional(), tableDigest: z.string().regex(/^[a-f0-9]{64}$/).optional(),
+  contentLength: z.number().int().nonnegative().max(24 * 1024 * 1024).optional(),
+  trailingDigest: z.string().regex(/^[a-f0-9]{64}$/).optional(), unread: z.boolean().optional() };
 const referenceSchema = z.discriminatedUnion("kind", [
   z.object({ v: z.literal(1), kind: z.literal("article"), ...binding, ...articleFields }).strict(),
   z.object({ v: z.literal(1), kind: z.literal("attachment"), ...binding, ...targetFields }).strict(),

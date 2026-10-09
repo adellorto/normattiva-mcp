@@ -12,6 +12,15 @@ import { prepareSource, parseSource } from "./source-parser.js";
 
 interface Acquired extends Binding, ParsedAct { checkedAt: string; verified: Set<string>; notesOnly?: boolean; renderedControlUrl?: string; }
 interface Options { signingKey: Uint8Array; upstream?: UpstreamRuntime; cacheBytes?: number; }
+interface DetailExpectation {
+  contentDigest?: string;
+  legalDigest?: string;
+  tableDigest?: string;
+  identity?: ActIdentity;
+  contentLength?: number;
+  trailingDigest?: string;
+  flatSingleCell?: boolean;
+}
 type Cursor = Extract<Reference, { kind: "cursor" }>;
 type ArticleReference = Extract<Reference, { kind: "article" }>;
 const invalidInput = () => new OperationError({ category: "invalid_input", code: "invalid_input", message: "Use one valid target or literal continuation cursor with bounded inputs.", retryability: false });
@@ -56,7 +65,8 @@ export class ActTraversal {
   private entry(act: Acquired, entry: SourceEntry): IndexPage["traversal"]["items"][number] {
     const target = { v: 1 as const, ...binding(act), selector: entry.selector, label: entry.label, contentDigest: entry.contentDigest };
     const common = { label: entry.label, ...(entry.heading ? { heading: entry.heading } : {}), hierarchy: entry.hierarchy };
-    return entry.kind === "article" ? { ...common, kind: "article", article_locator: this.codec.issue({ ...target, kind: "article", address: entry.address!, legalDigest: entry.legalDigest, tableDigest: entry.tableDigest, unread: entry.unread }) }
+    return entry.kind === "article" ? { ...common, kind: "article", article_locator: this.codec.issue({ ...target, kind: "article", address: entry.address!, legalDigest: entry.legalDigest, tableDigest: entry.tableDigest,
+      contentLength: entry.contentLength, ...(entry.trailingDigest ? { trailingDigest: entry.trailingDigest } : {}), unread: entry.unread }) }
       : { ...common, kind: "attachment", attachment_ref: this.codec.issue({ ...target, kind: "attachment" }), text_available: !entry.unread,
         historical_link_verified: false, ...(entry.officialUrl ? { official_url: entry.officialUrl } : {}),
         ...(entry.unread ? { explanation: entry.explanation ?? "This component contains unread graphics. Its full contents were not retrieved." } : {}) };
@@ -131,11 +141,20 @@ export class ActTraversal {
   private async verifyEntry(act: Acquired, entry: SourceEntry): Promise<void> {
     if (entry.unread || act.verified.has(entry.selector)) return;
     if (!entry.address) throw sourceFailure("address_unverified", "No exact historical retrieval address is available.");
-    const detail = await this.verifiedDetail(act.publication, act.date, entry.kind === "article" ? entry.label : undefined, entry.address, entry.contentDigest, entry.legalDigest, entry.tableDigest, act.identity);
+    const tables = entry.segments.filter((segment): segment is Extract<Segment, { kind: "table" }> => segment.kind === "table");
+    const flatSingleCell = tables.length === 1 && tables[0]!.row_count === 1 && tables[0]!.column_count === 1
+      && tables[0]!.cells.length === 1 && tables[0]!.cells[0]!.row_span === 1 && tables[0]!.cells[0]!.column_span === 1;
+    const detail = await this.verifiedDetail(act.publication, act.date, entry.kind === "article" ? entry.label : undefined, entry.address, {
+      contentDigest: entry.contentDigest, legalDigest: entry.legalDigest, tableDigest: entry.tableDigest,
+      identity: act.identity, contentLength: entry.contentLength, trailingDigest: entry.trailingDigest, flatSingleCell,
+    });
     if (detail.notesOnly) act.notesOnly = true;
     act.verified.add(entry.selector);
   }
-  private async verifiedDetail(publication: Publication, date: string, label: string | undefined, address: ArticleReference["address"], expectedDigest?: string, expectedLegalDigest?: string, expectedTableDigest?: string, identity?: ActIdentity) {
+  private async verifiedDetail(publication: Publication, date: string, label: string | undefined,
+    address: ArticleReference["address"], expectation: DetailExpectation = {}) {
+    const { contentDigest: expectedDigest, legalDigest: expectedLegalDigest, tableDigest: expectedTableDigest,
+      identity, contentLength: expectedLength, trailingDigest, flatSingleCell = false } = expectation;
     const result = await dettaglioAtto({ ...address, dataGU: publication.data_gu, codiceRedazionale: publication.codice_redazionale,
       dataVigenza: date, tipoDettaglio: "singolavigenza" });
     const atto = result.data?.atto;
@@ -158,12 +177,18 @@ export class ActTraversal {
     const text = detailText(atto.articoloHtml);
     const structure = detailStructure(atto.articoloHtml);
     if (structure.hasGraphics) throw sourceFailure("graphic_content_unread", "This article includes unread graphics. Full content cannot be certified without interpreting them.");
-    if (expectedTableDigest && structure.tableDigest !== expectedTableDigest) throw sourceFailure("source_table_conflict", "The official copies disagree on table relationships or cell values; the result is withheld.");
-    const heading = articleHeading(text);
+    const trailingMatched = !!expectedDigest && expectedLength !== undefined && !!trailingDigest && text.length > expectedLength
+      && digest(text.slice(0, expectedLength)) === expectedDigest && digest(text.slice(expectedLength).trim()) === trailingDigest;
+    const verifiedText = trailingMatched ? text.slice(0, expectedLength) : text;
+    const textMatched = !!expectedDigest && digest(verifiedText) === expectedDigest;
+    const flatTableMatched = flatSingleCell && !structure.hasTables && textMatched;
+    if (expectedTableDigest && structure.tableDigest !== expectedTableDigest && !flatTableMatched) throw sourceFailure("source_table_conflict", "The official copies disagree on table relationships or cell values; the result is withheld.");
+    const heading = articleHeading(verifiedText);
     if (label && articleLabel(heading ?? "") !== label) throw sourceFailure("article_identity_conflict", "The returned article heading does not match the requested occurrence.");
-    const notesOnly = !!expectedDigest && digest(text) !== expectedDigest && !!expectedLegalDigest && digest(detailText(atto.articoloHtml, true)) === expectedLegalDigest;
-    if (expectedDigest && digest(text) !== expectedDigest && !notesOnly) throw sourceFailure("source_content_conflict", "The structured and direct sources disagree on legal content or unclassified notes; the result is withheld.");
-    return { text, from, to, title: atto.titolo, notesOnly, tableDigest: structure.tableDigest, hasTables: structure.hasTables };
+    const notesOnly = !!expectedDigest && !textMatched && !!expectedLegalDigest && digest(detailText(atto.articoloHtml, true)) === expectedLegalDigest;
+    if (expectedDigest && !textMatched && !notesOnly) throw sourceFailure("source_content_conflict", "The structured and direct sources disagree on legal content or unclassified notes; the result is withheld.");
+    return { text: verifiedText, from, to, title: atto.titolo, notesOnly, trailingMatched,
+      tableDigest: flatTableMatched ? expectedTableDigest! : structure.tableDigest, hasTables: structure.hasTables || flatTableMatched };
   }
   async listArticles(value: unknown, signal?: AbortSignal): Promise<IndexPage> {
     const args = this.input(indexInputSchema, value);
@@ -240,7 +265,11 @@ export class ActTraversal {
       let content: Awaited<ReturnType<ActTraversal["verifiedDetail"]>>;
       const address = exact?.address ?? { idArticolo: Number(label), sottoArticolo: 1, sottoArticolo1: 0, flagTipoArticolo: "0", idGruppo: 0, progressivo: 0, versione: 0 };
       try {
-        content = await this.verifiedDetail(publication, date, label, address, exact?.contentDigest, cursor ? undefined : exact?.legalDigest, exact?.tableDigest, identity);
+        content = await this.verifiedDetail(publication, date, label, address, {
+          contentDigest: exact?.contentDigest, legalDigest: cursor ? undefined : exact?.legalDigest,
+          tableDigest: exact?.tableDigest, identity, contentLength: exact?.contentLength,
+          trailingDigest: exact?.trailingDigest,
+        });
       } catch (error) {
         if (!(error instanceof OperationError)) throw error;
         if (error.detail.http_status !== 404 && !["target_unresolved", "source_identity_conflict", "snapshot_conflict", "article_identity_conflict", "source_content_conflict", "source_table_conflict", "graphic_content_unread"].includes(error.detail.code)) throw error;
@@ -250,6 +279,7 @@ export class ActTraversal {
         evidence: [{ ...evidence[0]!, explanation: "Use read_act for this publication and snapshot date to preserve table cells, headers and spans in bounded pages." }] };
       const text = content.text, offset = cursor?.offset ?? 0;
       if (content.notesOnly) evidence[0] = { ...evidence[0]!, ...{ explanation: "The official copies differ only within identified explanatory notes; this read uses the validated direct copy." } };
+      if (content.trailingMatched) evidence[0] = { ...evidence[0]!, ...{ explanation: "The official detail appended the independently matched AKN conclusion; this read returns only the exact article occurrence." } };
       if (offset >= text.length && offset !== 0) throw invalidInput();
       let end = characterEnd(text, offset, limit);
       const source = exact?.source ?? ARTICLE_DETAIL_URL;
