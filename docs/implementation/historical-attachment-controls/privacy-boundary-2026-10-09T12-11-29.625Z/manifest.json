@@ -1,0 +1,101 @@
+{
+  "retained_manifest": "privacy-boundary-2026-10-09T10-59-26.911Z/manifest.json",
+  "started_at": "2026-10-09T12:11:29.626Z",
+  "updated_at": "2026-10-09T12:11:55.564Z",
+  "elapsed_ms": 25937.156205,
+  "policy": {
+    "max_attempts_per_coordinate": 3,
+    "max_new_requests": 5,
+    "transient_circuit_breaker": 3,
+    "circuit_scope": "new requests in this resumed run",
+    "retry_backoff_ms": [
+      15000,
+      60000
+    ],
+    "coordinate_pace_ms": 1100,
+    "request_timeout_ms": 20000,
+    "decoded_source_limit_bytes": 25165824,
+    "traffic": "strictly sequential"
+  },
+  "prior_attempts": [
+    {
+      "name": "privacy-article-1-2018-09-18",
+      "attempts": 1,
+      "lastOutcome": "transient_failure",
+      "failure": "UND_ERR_CONNECT_TIMEOUT"
+    }
+  ],
+  "captures": [
+    {
+      "name": "privacy-article-1-2018-09-18",
+      "provenance_file": "release-live-canaries-2026-10-06.json",
+      "provenance_attempt": 16,
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "request": {
+        "idArticolo": 1,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 0,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 0,
+        "dataGU": "2003-07-29",
+        "codiceRedazionale": "003G0218",
+        "dataVigenza": "2018-09-18",
+        "tipoDettaglio": "singolavigenza"
+      },
+      "attempt": 2,
+      "state": "complete",
+      "captured_at": "2026-10-09T12:11:44.635Z",
+      "status": 200,
+      "retry_after_ms": 0,
+      "decoded_bytes": 6811,
+      "file": "privacy-article-1-2018-09-18-attempt-2.json.gz",
+      "sha256": "73c17e043e01cb3f4d812aa5963cbf6d84a871956fc19ce7b1b09eae0ae7eefd",
+      "classification": "success",
+      "elapsed_ms": 9550.076409000001
+    },
+    {
+      "name": "privacy-article-1-2018-09-19",
+      "provenance_file": "release-live-canaries-2026-10-06.json",
+      "provenance_attempt": 17,
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "request": {
+        "idArticolo": 1,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 0,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 0,
+        "dataGU": "2003-07-29",
+        "codiceRedazionale": "003G0218",
+        "dataVigenza": "2018-09-19",
+        "tipoDettaglio": "singolavigenza"
+      },
+      "attempt": 1,
+      "state": "complete",
+      "captured_at": "2026-10-09T12:11:55.287Z",
+      "status": 200,
+      "retry_after_ms": 0,
+      "decoded_bytes": 9345,
+      "file": "privacy-article-1-2018-09-19-attempt-1.json.gz",
+      "sha256": "bb899e57ac80b73d0790d654dc8774535822bdc9c3ed53fb3ab09976f1d0d58a",
+      "classification": "success",
+      "elapsed_ms": 276.9407109999993
+    }
+  ],
+  "coordinates": [
+    {
+      "name": "privacy-article-1-2018-09-18",
+      "total_attempts": 2,
+      "outcome": "succeeded"
+    },
+    {
+      "name": "privacy-article-1-2018-09-19",
+      "total_attempts": 1,
+      "outcome": "succeeded"
+    }
+  ],
+  "outcome": "complete"
+}

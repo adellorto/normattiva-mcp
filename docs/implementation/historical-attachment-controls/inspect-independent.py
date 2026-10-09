@@ -213,10 +213,60 @@ def main():
         assert len(labels) == len(set(labels)) == 15
     privacy_manifests = sorted(ROOT.glob("privacy-boundary-*/manifest.json"))
     assert privacy_manifests
-    privacy_capture = json.loads(privacy_manifests[-1].read_text())["captures"][0]
-    privacy_boundary = {"status": "incomplete", "attempted": privacy_capture["request"]["dataVigenza"],
-                        "failure": privacy_capture["failure"], "elapsed_ms": privacy_capture["elapsed_ms"],
-                        "second_request_sent": False, "raw_body_received": False}
+    privacy_manifest_path = privacy_manifests[-1]
+    privacy_manifest = json.loads(privacy_manifest_path.read_text())
+    assert privacy_manifest["outcome"] == "complete"
+    assert privacy_manifest["policy"]["max_new_requests"] == 5
+    assert privacy_manifest["policy"]["max_attempts_per_coordinate"] == 3
+    assert privacy_manifest["policy"]["traffic"] == "strictly sequential"
+    assert privacy_manifest["prior_attempts"] == [{
+        "name": "privacy-article-1-2018-09-18", "attempts": 1,
+        "lastOutcome": "transient_failure", "failure": "UND_ERR_CONNECT_TIMEOUT",
+    }]
+    provenance_path = ROOT.parent / "release-live-canaries-2026-10-06.json"
+    provenance = json.loads(provenance_path.read_text())
+    expected_text = {
+        "2018-09-18": "Art. 1. Diritto alla protezione dei dati personali 1. Chiunque ha diritto alla protezione dei dati personali che lo riguardano. ((PERIODO SOPPRESSO DALLA L. 4 NOVEMBRE 2010, N. 183)).",
+        "2018-09-19": "Art. 1. (( (Oggetto). )) ((Il trattamento dei dati personali avviene secondo le norme del regolamento (UE) 2016/679 del Parlamento europeo e del Consiglio, del 27 aprile 2016, di seguito «Regolamento», e del presente codice, nel rispetto della dignità umana, dei diritti e delle libertà fondamentali della persona.))",
+    }
+    expected_ranges = {
+        "2018-09-18": ["20101124", "20180918"],
+        "2018-09-19": ["20180919", "99999999"],
+    }
+    privacy_controls = []
+    assert len(privacy_manifest["captures"]) == 2
+    for capture in privacy_manifest["captures"]:
+        date = capture["request"]["dataVigenza"]
+        assert capture["state"] == "complete" and capture["classification"] == "success"
+        assert capture["status"] == 200 and capture["decoded_bytes"] <= 24 * 1024 * 1024
+        provenance_attempt = provenance["attempts"][capture["provenance_attempt"]]
+        assert capture["provenance_file"] == provenance_path.name
+        assert capture["url"] == provenance_attempt["url"]
+        assert capture["request"] == provenance_attempt["request"]
+        raw = gzip.decompress((privacy_manifest_path.parent / capture["file"]).read_bytes())
+        assert hashlib.sha256(raw).hexdigest() == capture["sha256"]
+        envelope = json.loads(raw)
+        assert envelope["success"] is True
+        atto = envelope["data"]["atto"]
+        parser = DetailText()
+        parser.feed(atto["articoloHtml"])
+        assert parser.text == expected_text[date]
+        actual_range = [atto["articoloDataInizioVigenza"], atto["articoloDataFineVigenza"]]
+        assert actual_range == expected_ranges[date]
+        selected = date.replace("-", "")
+        assert actual_range[0] <= selected <= actual_range[1]
+        assert [atto["annoGU"], atto["meseGU"], atto["giornoGU"]] == [2003, 7, 29]
+        privacy_controls.append({"date": date, "request": capture["request"],
+            "raw_sha256": capture["sha256"], "raw_decoded_bytes": capture["decoded_bytes"],
+            "text": parser.text, "text_sha256": hashlib.sha256(parser.text.encode()).hexdigest(),
+            "effective_range": actual_range, "provenance_attempt": capture["provenance_attempt"]})
+    assert [row["date"] for row in privacy_controls] == ["2018-09-18", "2018-09-19"]
+    privacy_boundary = {"status": "verified", "dates": [row["date"] for row in privacy_controls],
+        "effective_ranges": [row["effective_range"] for row in privacy_controls],
+        "wording": ["Diritto alla protezione dei dati personali", "Oggetto"],
+        "total_new_requests": len(privacy_manifest["captures"]),
+        "total_attempts_including_retained_failure": len(privacy_manifest["captures"]) + 1,
+        "manifest": str(privacy_manifest_path.relative_to(ROOT)), "controls": privacy_controls}
     output = {"method": "Python ElementTree + HTMLParser; exact source-order/detail comparison independent of TypeScript parser",
               "controls": controls, "privacy_boundary": privacy_boundary}
     payload = (json.dumps(output, ensure_ascii=False, indent=2) + "\n").encode()
@@ -225,7 +275,8 @@ def main():
                       "verified_details": {c["snapshot"]: len(c["detail_controls"]) for c in controls if c["detail_controls"]},
                       "ascii_attachment_shapes": {c["snapshot"]: [[t["rows"], len(t["cells_in_source_order"])] for t in c["xml_table_shapes"]]
                                                    for c in controls if c["detail_controls"]},
-                      "privacy_boundary": privacy_boundary}))
+                      "privacy_boundary": {key: privacy_boundary[key] for key in ["status", "dates", "effective_ranges", "wording",
+                          "total_new_requests", "total_attempts_including_retained_failure"]}}))
 
 
 if __name__ == "__main__":

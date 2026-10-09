@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises';
 import { gunzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { pathToFileURL } from 'node:url';
 import { execFile, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
 
@@ -215,6 +216,18 @@ test('independent DPR acquisition plans every non-anchor occurrence within the c
   assert.ok(attachments.plan.every(row => row.label.startsWith('Allegato ')));
 });
 
+async function privacyCaptureFixture(prefix, policy = {}) {
+  const { captureDetails } = await import('../../../docs/implementation/historical-attachment-controls/capture-details.mjs');
+  const scratch = await mkdtemp(join(tmpdir(), `normattiva-privacy-${prefix}-`));
+  return { captureDetails, scratch, root: pathToFileURL(scratch + '/'),
+    plan: ['2018-09-18', '2018-09-19'].map(date => ({ name: `privacy-${date}`,
+      url: 'https://fixture.invalid/detail', request: { dataVigenza: date } })),
+    priorAttempts: [{ name: 'privacy-2018-09-18', attempts: 1, lastOutcome: 'transient_failure' }],
+    policy: { maxAttemptsPerCoordinate: 3, maxNewRequests: 5,
+      transientCircuitBreaker: 3, retryBackoffMs: [15_000, 60_000], coordinatePaceMs: 1_100,
+      ...policy } };
+}
+
 test('Privacy boundary acquisition reuses the exact successful dated detail controls', async () => {
   const acquisition = fileURLToPath(new URL('../../../docs/implementation/historical-attachment-controls/acquire-privacy-boundary.mjs', import.meta.url));
   const report = JSON.parse((await promisify(execFile)(process.execPath, [acquisition])).stdout);
@@ -224,9 +237,85 @@ test('Privacy boundary acquisition reuses the exact successful dated detail cont
     && row.request.idArticolo === 1 && row.request.tipoDettaglio === 'singolavigenza'));
   assert.ok(report.plan.every(row => row.provenance_file === 'release-live-canaries-2026-10-06.json'
     && Number.isInteger(row.provenance_attempt)));
+  assert.deepEqual(report.retained_attempts, [{ name: 'privacy-article-1-2018-09-18',
+    attempts: 1, lastOutcome: 'transient_failure', failure: 'UND_ERR_CONNECT_TIMEOUT' }]);
+  assert.deepEqual(report.traffic_policy, { maxAttemptsPerCoordinate: 3, maxNewRequests: 5,
+    transientCircuitBreaker: 3, retryBackoffMs: [15_000, 60_000], coordinatePaceMs: 1_100 });
+  assert.equal(report.terminal_manifest, 'privacy-boundary-2026-10-09T12-11-29.625Z/manifest.json');
+  assert.equal(report.execution_required, false);
 });
 
-test('independent inspection verifies every DPR detail and preserves the blocked Privacy boundary', async () => {
+test('bounded Privacy acquisition retries transient failures without suppressing either date', async () => {
+  const fixture = await privacyCaptureFixture('capture');
+  const outcomes = new Map([
+    ['2018-09-18', [503, 200]],
+    ['2018-09-19', [503, 200]],
+  ]);
+  const waits = [];
+  const seen = [];
+  const fetchImpl = async (_url, init) => {
+    const date = JSON.parse(init.body).dataVigenza;
+    seen.push(date);
+    const directories = await readdir(fixture.scratch);
+    const inFlight = JSON.parse(await readFile(join(fixture.scratch, directories[0], 'manifest.json'), 'utf8'));
+    assert.equal(inFlight.captures.at(-1).state, 'in_flight', 'manifest must precede dispatch');
+    const status = outcomes.get(date).shift();
+    return new Response(status === 200
+      ? JSON.stringify({ success: true, data: { atto: { articoloHtml: `<p>${date}</p>` } } })
+      : JSON.stringify({ success: false }), { status });
+  };
+  const result = await fixture.captureDetails({ root: fixture.root, directoryPrefix: 'privacy-test', plan: fixture.plan,
+    priorAttempts: fixture.priorAttempts, policy: fixture.policy,
+    dependencies: { fetchImpl, wait: async milliseconds => waits.push(milliseconds) } });
+  assert.deepEqual(seen, ['2018-09-18', '2018-09-18', '2018-09-19', '2018-09-19']);
+  assert.deepEqual(waits, [15_000, 60_000, 1_100, 15_000]);
+  assert.equal(result.manifest.outcome, 'complete');
+  assert.equal(result.manifest.policy.max_new_requests, 5);
+  assert.equal(result.manifest.captures.length, 4);
+  assert.ok(result.manifest.captures.every(row => row.state === 'complete'));
+  assert.deepEqual(result.manifest.coordinates.map(row => [row.name, row.total_attempts, row.outcome]), [
+    ['privacy-2018-09-18', 3, 'succeeded'],
+    ['privacy-2018-09-19', 2, 'succeeded'],
+  ]);
+});
+
+test('bounded Privacy acquisition opens its resumed-run circuit only after both dates get an initial attempt', async () => {
+  const fixture = await privacyCaptureFixture('circuit');
+  const seen = [];
+  const previousExitCode = process.exitCode;
+  try {
+    const result = await fixture.captureDetails({ root: fixture.root, directoryPrefix: 'privacy-test', plan: fixture.plan,
+      priorAttempts: fixture.priorAttempts, policy: fixture.policy,
+      dependencies: { fetchImpl: async (_url, init) => {
+        seen.push(JSON.parse(init.body).dataVigenza);
+        return new Response('{}', { status: 503 });
+      }, wait: async () => {} } });
+    assert.deepEqual(seen, ['2018-09-18', '2018-09-18', '2018-09-19']);
+    assert.equal(result.manifest.outcome, 'circuit_open');
+    assert.equal(result.manifest.policy.circuit_scope, 'new requests in this resumed run');
+    assert.deepEqual(result.manifest.coordinates.map(row => [row.name, row.outcome]), [
+      ['privacy-2018-09-18', 'transient_attempts_exhausted'],
+      ['privacy-2018-09-19', 'circuit_open'],
+    ]);
+    assert.ok(result.manifest.captures.every(row => row.state === 'complete'));
+  } finally { process.exitCode = previousExitCode; }
+});
+
+test('bounded Privacy acquisition cannot exceed its declared global new-request cap', async () => {
+  const fixture = await privacyCaptureFixture('cap', { transientCircuitBreaker: 99 });
+  const previousExitCode = process.exitCode;
+  try {
+    const result = await fixture.captureDetails({ root: fixture.root, directoryPrefix: 'privacy-test', plan: fixture.plan,
+      priorAttempts: fixture.priorAttempts, policy: fixture.policy,
+      dependencies: { fetchImpl: async () => new Response('{}', { status: 503 }), wait: async () => {} } });
+    assert.equal(result.manifest.captures.length, 5);
+    assert.equal(result.manifest.outcome, 'not_currently_verifiable_under_bounded_policy');
+    assert.deepEqual(result.manifest.coordinates.map(row => row.total_attempts), [3, 3]);
+    assert.ok(result.manifest.captures.every(row => row.state === 'complete'));
+  } finally { process.exitCode = previousExitCode; }
+});
+
+test('independent inspection verifies every DPR detail and the exact Privacy wording boundary', async () => {
   const inspection = fileURLToPath(new URL('../../../docs/implementation/historical-attachment-controls/inspect-independent.py', import.meta.url));
   const report = JSON.parse((await promisify(execFile)('python3', [inspection])).stdout);
   assert.deepEqual(report.snapshots, ['2012-01-01', '2014-01-01', '2026-10-07']);
@@ -234,9 +323,14 @@ test('independent inspection verifies every DPR detail and preserves the blocked
   assert.deepEqual(report.ascii_attachment_shapes, {
     '2014-01-01': [[1, 1], [1, 1]], '2026-10-07': [[1, 1], [1, 1]],
   });
-  assert.equal(report.privacy_boundary.status, 'incomplete');
-  assert.equal(report.privacy_boundary.attempted, '2018-09-18');
-  assert.equal(report.privacy_boundary.failure, 'UND_ERR_CONNECT_TIMEOUT');
+  assert.deepEqual(report.privacy_boundary, {
+    status: 'verified',
+    dates: ['2018-09-18', '2018-09-19'],
+    effective_ranges: [['20101124', '20180918'], ['20180919', '99999999']],
+    wording: ['Diritto alla protezione dei dati personali', 'Oggetto'],
+    total_new_requests: 2,
+    total_attempts_including_retained_failure: 3,
+  });
 });
 
 test('retained DPR controls complete historical and attachment traversal from independent details', async () => {
