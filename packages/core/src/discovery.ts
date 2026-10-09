@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { ricercaAvanzata, ricercaSemplice, BASE_URL } from "./api.js";
 import { ReferenceCodec, digest, referenceError, actIdentitySchema } from "./references.js";
-import { AuthenticatedTokens } from "./authenticated-tokens.js";
+import { AuthenticatedTokens, TOKEN_WIRE_FORMATS } from "./authenticated-tokens.js";
 import { RESPONSE_LIMITS, publicationSchema, discoveryInputSchema, discoveryContinuationInputSchema, discoveryPageSchema, type DiscoveryPage } from "./contracts.js";
 import { discoveryPlanSchema, planDiscovery, invalidRequest, type DiscoveryPlan, type Citation } from "./discovery-plan.js";
 import { currentCall, upstreamRuntime, type UpstreamRuntime } from "./upstream.js";
@@ -56,7 +56,9 @@ export class ActDiscovery {
     if (!parsed.success) throw invalidRequest("Supply only the literal discovery cursor.", "invalid_input");
     let state: SearchCursor;
     try {
-      state = cursorSchema.parse(this.tokens.decode("d1_", parsed.data.cursor, 16384));
+      const current = parsed.data.cursor.startsWith("d2_");
+      state = cursorSchema.parse(this.tokens.decode(current ? "d2_" : "d1_", parsed.data.cursor, 16384,
+        current ? TOKEN_WIRE_FORMATS.lowercaseCompact : TOKEN_WIRE_FORMATS.json));
       // The serialized plan is authoritative; never reparse its request as a
       // new search. Validate state relationships before scheduling traffic.
       if ((state.plan.route === "exact" && !state.plan.citation)
@@ -115,7 +117,9 @@ export class ActDiscovery {
         : { explanation: identified ? "Act identity is verified; current legal force is unknown."
           : "Select a candidate; current legal force is unknown." }) };
   }
-  private continuation(state: SearchCursor): string { return this.tokens.issue("d1_", cursorSchema.parse(state), 16384); }
+  private continuation(state: SearchCursor): string {
+    return this.tokens.issue("d2_", cursorSchema.parse(state), 16384, TOKEN_WIRE_FORMATS.lowercaseCompact);
+  }
   private more(state: SearchCursor, items: Candidate[]): DiscoveryPage {
     return this.envelope(state, { progress: "more", items, cursor: this.continuation(state),
       explanation: "Page only; continue with the literal cursor. Live search pages may change." });

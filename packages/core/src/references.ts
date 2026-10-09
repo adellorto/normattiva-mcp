@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { z } from "zod";
 import { calendarDateSchema, publicationSchema } from "./contracts.js";
 import { OperationError } from "./errors.js";
-import { AuthenticatedTokens } from "./authenticated-tokens.js";
+import { AuthenticatedTokens, TOKEN_WIRE_FORMATS } from "./authenticated-tokens.js";
 import { ARTICLE_DETAIL_URL } from "./api.js";
 
 export const digest = (value: string) => createHash("sha256").update(value).digest("hex");
@@ -86,14 +86,18 @@ export class ReferenceCodec {
     }
     const compact = compactReferenceSchema.parse({ ...parsed, v: 2,
       ...(parsed.kind === "cursor" ? { target } : {}) });
-    return this.tokens.issue("n2_", compact, parsed.kind === "cursor" ? 16384 : 4096, true);
+    return parsed.kind === "cursor"
+      ? this.tokens.issue("n3_", compact, 16384, TOKEN_WIRE_FORMATS.lowercaseCompact)
+      : this.tokens.issue("n2_", compact, 4096, TOKEN_WIRE_FORMATS.compact);
   }
   decode(token: string, kind: Reference["kind"], operation?: string): Reference {
     try {
       const limit = kind === "cursor" ? 16384 : 4096;
       let value: unknown;
-      if (token.startsWith("n2_")) {
-        const compact = compactReferenceSchema.parse(this.tokens.decode("n2_", token, limit, true));
+      if (token.startsWith("n2_") || (kind === "cursor" && token.startsWith("n3_"))) {
+        const prefix = token.startsWith("n3_") ? "n3_" : "n2_";
+        const compact = compactReferenceSchema.parse(this.tokens.decode(prefix, token, limit,
+          prefix === "n3_" ? TOKEN_WIRE_FORMATS.lowercaseCompact : TOKEN_WIRE_FORMATS.compact));
         value = { ...compact, v: 1, ...(compact.kind === "cursor" ? { target: compact.target && this.issue({
           v: 1, publication: compact.publication, date: compact.date, source: compact.source,
           digest: compact.digest, identity: compact.identity, ...compact.target,

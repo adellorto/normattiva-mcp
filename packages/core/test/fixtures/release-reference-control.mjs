@@ -2,15 +2,21 @@
 // node .../release-reference-control.mjs CURRENT_INPUT.json > LEGACY_INPUT.json
 // Synthetic signing trust only; no legal calls or inference.
 import { readFile } from 'node:fs/promises';
-import { AuthenticatedTokens } from '../../dist/authenticated-tokens.js';
+import { AuthenticatedTokens, TOKEN_WIRE_FORMATS } from '../../dist/authenticated-tokens.js';
 import { ReferenceCodec } from '../../dist/references.js';
 import { signingKey } from './traversal-upstream.mjs';
 
 const tokens = new AuthenticatedTokens(signingKey), codec = new ReferenceCodec(signingKey);
 const input = JSON.parse(await readFile(process.argv[2], 'utf8'));
 function legacy(token) {
-  if (!token.startsWith('n2_')) return token;
-  const wire = tokens.decode('n2_', token, 16384, true);
+  if (token.startsWith('d2_')) {
+    const data = tokens.decode('d2_', token, 16384, TOKEN_WIRE_FORMATS.lowercaseCompact);
+    return tokens.issue('d1_', data, 16384);
+  }
+  if (!token.startsWith('n2_') && !token.startsWith('n3_')) return token;
+  const currentCursor = token.startsWith('n3_');
+  const wire = tokens.decode(currentCursor ? 'n3_' : 'n2_', token, 16384,
+    currentCursor ? TOKEN_WIRE_FORMATS.lowercaseCompact : TOKEN_WIRE_FORMATS.compact);
   const data = codec.decode(token, wire.kind, wire.operation);
   if (data.kind === 'cursor' && data.target) data.target = legacy(data.target);
   return tokens.issue('n1_', data, data.kind === 'cursor' ? 16384 : 4096);

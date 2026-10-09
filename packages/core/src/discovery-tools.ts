@@ -20,7 +20,7 @@ export function registerDiscoveryTools(server: McpServer, finder: ActDiscovery, 
   }, async (args, extra) => runTool("composed", extra.signal, context, args,
     async () => jsonContent(await finder.findActs(args, extra.signal))));
   server.registerTool("continue_acts", {
-    description: "ONLY discovery pagination: copy the actual d1_ cursor returned by find_acts or continue_acts. Never call this for list_articles, read_article or read_act results; continue those with the SAME tool. Without a returned discovery cursor, ask for it without tools. Never invent references. Live search completion is traversal completion, not exhaustive legal relevance.",
+    description: "ONLY discovery pagination: copy the actual cursor returned by find_acts or continue_acts. Never call this for list_articles, read_article or read_act results; continue those with the SAME tool. Without a returned discovery cursor, ask for it without tools. Never invent references. Live search completion is traversal completion, not exhaustive legal relevance.",
     inputSchema: discoveryContinuationInputSchema, outputSchema: resultSchema,
   }, async (args, extra) => runTool("composed", extra.signal, context, args,
     async () => jsonContent(await finder.continueActs(args, extra.signal))));

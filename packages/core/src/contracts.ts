@@ -170,7 +170,7 @@ export const discoveryPageSchema = z.object({
 export const discoveryInputSchema = z.object({ request: z.string().trim().min(1).max(4096).describe(
   "REQUIRED: copy the FULL original user message, including reading instructions, dates and currentness. Preserve every character and punctuation mark; JSON escapes must decode to the original characters. Never append filters, key=value pairs or normalized dates: the server interprets them. Do not extract, shorten, repair, translate or add citations.") }).strict();
 export const discoveryContinuationInputSchema = z.object({ cursor: cursor.describe(
-  "Copy an actual d1_ cursor from an earlier TOOL result in this conversation, character for character. No earlier discovery TOOL result with a cursor means NO CALL: ask the user for it. Never construct or guess a value.") }).strict();
+  "Copy an actual discovery cursor from an earlier TOOL result in this conversation, character for character. No earlier discovery TOOL result with a cursor means NO CALL: ask the user for it. Never construct or guess a value.") }).strict();
 export const indexInputSchema = z.union([
   z.object({ act_locator: locator, snapshot_date: calendarDateSchema.optional(),
     page_size: z.number().int().min(1).max(RESPONSE_LIMITS.indexMax).default(RESPONSE_LIMITS.indexDefault) }).strict(),

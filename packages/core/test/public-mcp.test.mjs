@@ -33,6 +33,10 @@ test('default registration exposes focused discovery and locator reading without
       assert.match(description, /exact.*tool result/i, name);
       assert.match(description, /never.*change.*case/i, name);
     }
+    const discoveryContinuation = tools.find(tool => tool.name === 'continue_acts');
+    assert.match(discoveryContinuation.description, /actual.*returned.*cursor/i);
+    assert.doesNotMatch(discoveryContinuation.description, /d1_/);
+    assert.doesNotMatch(discoveryContinuation.inputSchema.properties.cursor.description, /d1_/);
   });
 });
 

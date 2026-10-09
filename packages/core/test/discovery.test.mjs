@@ -146,6 +146,7 @@ test('literal discovery cursors resume the exact live-search position in a fresh
     const first = await discovery().findActs({ request: 'trasparenza amministrativa' });
     assert.equal(first.traversal.progress, 'more');
     assert.equal(first.match, 'candidates');
+    assert.match(first.traversal.cursor, /^d2_[a-z2-7]+\.[a-z2-7]+$/);
     const next = await discovery().continueActs({ cursor: first.traversal.cursor });
     assert.equal(next.traversal.progress, 'complete');
     assert.deepEqual([...first.traversal.items, ...next.traversal.items].map(item => item.publication.codice_redazionale),
@@ -153,6 +154,13 @@ test('literal discovery cursors resume the exact live-search position in a fresh
     assert.equal(next.ordering, 'observed_relevance');
     assert.equal(next.corpus, 'live');
     assert.equal(requests[1].body.paginazione.paginaCorrente, 2);
+    const legacyState = { v: 1, operation: 'continue_acts', alias_version: 1,
+      plan: { request: 'trasparenza amministrativa', route: 'relevance', uncertainTime: false,
+        query: 'trasparenza amministrativa', filters: {} }, target: 0, page: 2, offset: 0, limit: 5, degraded: false };
+    const legacyBody = Buffer.from(JSON.stringify(legacyState)).toString('base64url');
+    const legacyCursor = `d1_${legacyBody}.${createHmac('sha256', key).update(legacyBody).digest('base64url')}`;
+    const legacy = await discovery().continueActs({ cursor: legacyCursor });
+    assert.deepEqual(legacy.traversal.items.map(item => item.publication.codice_redazionale), ['SYN6','SYN7']);
     const before = requests.length;
     for (const input of [{ cursor: 'invented' }, { cursor: first.traversal.cursor, request: 'different' },
       { cursor: first.traversal.cursor.slice(0,-1) + 'x' }]) {
@@ -416,8 +424,10 @@ test('captured official CAD, TUEL and relevance responses cross the production d
 
 test('incompatible signed cursor plans and operations fail before continuation traffic',async()=>{
   await fixture(()=>Response.json(searchPage([1,2,3,4,5].map(n=>candidate(n)),1,2,6)),async requests=>{
-    const first=await discovery().findActs({request:'topic'});
-    const original=JSON.parse(Buffer.from(first.traversal.cursor.slice(3).split('.')[0],'base64url').toString());
+    await discovery().findActs({request:'topic'});
+    const original={v:1,operation:'continue_acts',alias_version:1,
+      plan:{request:'topic',route:'relevance',uncertainTime:false,query:'topic',filters:{}},
+      target:0,page:2,offset:0,limit:5,degraded:false};
     const before=requests.length;
     for(const change of [data=>{data.v=2},data=>{data.operation='read_act'},data=>{delete data.plan.query},
       data=>{data.plan.route='exact';data.plan.citation={type:'LEGGE',year:'1990',number:'241'}},data=>{data.plan.filters={classeProvvedimento:'3'}}]) {
