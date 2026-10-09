@@ -1,0 +1,48 @@
+{
+  "recorded_at": "2026-10-09T10:11:50.285Z",
+  "node": "v24.15.0",
+  "mode": "current",
+  "production_revision": "676e47ebc6096bbb22b2cd428d6221e95c8d2720",
+  "source_basis": "Unmodified captured official portal/XML with independently captured exact-discovery identity; streamed replay, no network. Direct occurrence details remain unavailable.",
+  "snapshot_date": "2026-10-07",
+  "occurrence_set": {
+    "expected": 15,
+    "source_order_independently_checked": 15,
+    "runtime_verified": 1,
+    "detail_capture_status": "blocked"
+  },
+  "pages": [
+    { "phase": "cold-index-first-page", "elapsed_ms": 758.2975329999999, "serialized_bytes": 6410, "returned_items": 1, "progress": "more" },
+    { "phase": "cached-index-first-page", "elapsed_ms": 6.222072000000026, "serialized_bytes": 6410, "returned_items": 1, "progress": "more" },
+    { "phase": "cold-reading-first-page", "elapsed_ms": 561.753193, "serialized_bytes": 10590, "returned_items": 1, "progress": "more" },
+    { "phase": "cached-reading-first-page", "elapsed_ms": 10.113022999999885, "serialized_bytes": 10590, "returned_items": 1, "progress": "more" },
+    { "phase": "evicted-reading-continuation", "elapsed_ms": 516.762907, "serialized_bytes": 9150, "returned_items": 1, "progress": "more" }
+  ],
+  "calls": [
+    { "elapsed_ms": 747.151317, "attempts": 2, "decoded_bytes": 430568, "queue_ms": 0, "upstream_ms": 73, "residual_local_ms": 674.151317 },
+    { "elapsed_ms": 4.750171000000137, "attempts": 0, "decoded_bytes": 0, "queue_ms": 0, "upstream_ms": 0, "residual_local_ms": 4.750171000000137 },
+    { "elapsed_ms": 559.4421600000001, "attempts": 2, "decoded_bytes": 430568, "queue_ms": 0, "upstream_ms": 17, "residual_local_ms": 542.4421600000001 },
+    { "elapsed_ms": 9.32188300000007, "attempts": 0, "decoded_bytes": 0, "queue_ms": 0, "upstream_ms": 0, "residual_local_ms": 9.32188300000007 },
+    { "elapsed_ms": 514.4482270000001, "attempts": 2, "decoded_bytes": 430568, "queue_ms": 0, "upstream_ms": 19, "residual_local_ms": 495.4482270000001 }
+  ],
+  "attempts": [
+    { "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20261007", "file": "011G0193-2026-10-07/capture-1.gz", "decoded_bytes": 146685 },
+    { "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20261007", "file": "011G0193-2026-10-07/capture-2.gz", "decoded_bytes": 283883 },
+    { "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20261007", "file": "011G0193-2026-10-07/capture-1.gz", "decoded_bytes": 146685 },
+    { "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20261007", "file": "011G0193-2026-10-07/capture-2.gz", "decoded_bytes": 283883 },
+    { "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20261007", "file": "011G0193-2026-10-07/capture-1.gz", "decoded_bytes": 146685 },
+    { "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20261007", "file": "011G0193-2026-10-07/capture-2.gz", "decoded_bytes": 283883 }
+  ],
+  "decoded_source_bytes": 1291704,
+  "cold_first_useful_page_ms": 758.2975329999999,
+  "cached_first_useful_page_ms": 6.222072000000026,
+  "cold_reading_first_useful_page_ms": 561.753193,
+  "cached_reading_first_useful_page_ms": 10.113022999999885,
+  "evicted_continuation_ms": 516.762907,
+  "complete_traversal_ms": null,
+  "attachment_first_useful_page_ms": null,
+  "max_rss_kib": 152552,
+  "measured_partial_workload_memory_target": "passed",
+  "full_historical_traversal_gate": "incomplete",
+  "full_official_attachment_gate": "incomplete"
+}

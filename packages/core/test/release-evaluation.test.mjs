@@ -192,3 +192,39 @@ test('incomplete provider reports retain every available call replay without cla
   assert.equal(review.rows[0].calls[0].replay.result.error.category, 'invalid_cursor');
   assert.equal(review.rows[1].provider_error, 'Provider unavailable');
 });
+
+test('retained DPR controls measure useful pages without promoting missing detail captures', async () => {
+  const runner = fileURLToPath(new URL('./fixtures/release-independent-controls.mjs', import.meta.url));
+  for (const [mode, snapshot] of [['historical', '2014-01-01'], ['current', '2026-10-07']]) {
+    const { stdout } = await promisify(execFile)(process.execPath, [runner, mode]);
+    const report = JSON.parse(stdout);
+    assert.equal(report.mode, mode);
+    assert.equal(report.snapshot_date, snapshot);
+    assert.deepEqual(report.occurrence_set, {
+      expected: 15,
+      source_order_independently_checked: 15,
+      runtime_verified: 1,
+      detail_capture_status: 'blocked',
+    });
+    assert.ok(report.cold_first_useful_page_ms >= 0);
+    assert.ok(report.cached_first_useful_page_ms >= 0);
+    assert.ok(report.cold_reading_first_useful_page_ms >= 0);
+    assert.ok(report.cached_reading_first_useful_page_ms >= 0);
+    assert.ok(report.evicted_continuation_ms >= 0);
+    assert.equal(report.full_historical_traversal_gate, 'incomplete');
+    assert.equal(report.full_official_attachment_gate, 'incomplete');
+    assert.equal(report.complete_traversal_ms, null);
+    assert.equal(report.attachment_first_useful_page_ms, null);
+    assert.ok(report.pages.every(page => page.serialized_bytes <= 128 * 1024));
+    assert.ok(report.calls.some(call => call.attempts === 0));
+    assert.ok(report.calls.every(call => call.attempts <= 16));
+    assert.ok(report.max_rss_kib <= 256 * 1024);
+  }
+  for (const [mode, code] of [['original', 'source_identity_conflict'], ['current-as-historical', 'snapshot_conflict']]) {
+    const { stdout } = await promisify(execFile)(process.execPath, [runner, mode]);
+    const report = JSON.parse(stdout);
+    assert.equal(report.measurements[0].error.code, code);
+    assert.equal(report.full_historical_traversal_gate, 'incomplete');
+    assert.equal(report.full_official_attachment_gate, 'incomplete');
+  }
+});
