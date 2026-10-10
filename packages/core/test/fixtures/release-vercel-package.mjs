@@ -35,6 +35,7 @@ const worker = join(scratch, 'packages/core/dist/act-parser-worker.js');
 await access(worker);
 assert.ok((await realpath(worker)).startsWith(scratch + '/'));
 assert.equal(config.maxDuration, 60);
+assert.equal(config.supportsCancellation, true);
 process.env.NORMATTIVA_REFERENCE_KEY = signingKey.toString('hex');
 const { POST } = await import(pathToFileURL(join(scratch, config.handler)));
 const client = new Client({ name: 'release-vercel-function', version: '1' });
@@ -84,6 +85,7 @@ try {
   } finally { controller.abort(); globalThis.fetch = boundary; }
   console.log(JSON.stringify({ recorded_at: new Date().toISOString(), node: process.version,
     built_handler: config.handler, runtime: config.runtime, max_duration_seconds: config.maxDuration,
+    downstream_cancellation_enabled: config.supportsCancellation,
     worker_present: true, declared_file_path_mappings: Object.keys(config.filePathMap ?? {}).length,
     isolated_built_function_contracts: 'passed', package_version: client.getServerVersion().version,
     isolated_built_function_cancellation: 'passed', cancellation_abort_ms: cancellationMs,

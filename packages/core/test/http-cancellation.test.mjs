@@ -1,8 +1,16 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { execFile } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
+
+test('Vercel opts the MCP function into downstream disconnect cancellation', async () => {
+  const config = JSON.parse(await readFile(
+    new URL('../../http-server/vercel.json', import.meta.url), 'utf8',
+  ));
+  assert.equal(config.functions['api/mcp.ts'].supportsCancellation, true);
+});
 
 test('HTTP caller cancellation aborts upstream and releases the shared lane', async () => {
   const { stdout } = await promisify(execFile)(process.execPath, [

@@ -1,0 +1,79 @@
+{
+  "recorded_at": "2026-10-10T16:42:00.000Z",
+  "reviewed_base_commit": "db2b7781bac4a6f6268ecd6d703a06019ea05845",
+  "resolution_branch": "issue33-vercel-cancellation",
+  "old_preview": {
+    "deployment_id": "dpl_4dn9oJWT5gt5LzaSjjvefaRDaSPd",
+    "url": "https://normattiva-mcp-http-d7yq7uvv8-adellorto-s-projects.vercel.app",
+    "supports_cancellation": false,
+    "client_abort_elapsed_ms": 255,
+    "runtime_response_status": 200,
+    "result": "failed"
+  },
+  "corrected_preview": {
+    "deployment_id": "dpl_3dHEoErZjE2v5gX2JSj5MqakaWTj",
+    "url": "https://normattiva-mcp-http-j66swsai8-adellorto-s-projects.vercel.app",
+    "target": "preview",
+    "state": "READY",
+    "runtime": "nodejs24.x",
+    "max_duration_seconds": 60,
+    "supports_cancellation": true,
+    "fluid_compute": true,
+    "provenance": "Prebuilt artifact from the isolated issue-33 worktree based on reviewed commit db2b778 plus the staged cancellation correction; no new commit or push existed at deployment time.",
+    "production_changed": false
+  },
+  "build_validation": {
+    "vercel_build_target": "preview",
+    "generated_function_supports_cancellation": true,
+    "declared_file_path_mappings": 18,
+    "isolated_built_function_contracts": "passed",
+    "isolated_upstream_abort_ms": 7
+  },
+  "authentication": "Each run established Vercel's short-lived bypass cookie before application requests and reused it in one persistent Node client. No credential is retained in this report.",
+  "probes": [
+    {
+      "probe_id": "issue33-ab77a630-48ea-45c6-bc2e-d27007489707",
+      "requested_abort_delay_ms": 255,
+      "client_abort_elapsed_ms": 260,
+      "client_result": "AbortError",
+      "runtime_log_status": 0,
+      "runtime_log_at": "2026-10-10T16:39:17.248Z",
+      "healthy_ping_elapsed_ms": 1060,
+      "healthy_ping_runtime_status": 200,
+      "literal_continuation_progress": "more",
+      "literal_continuation_runtime_status": 200
+    },
+    {
+      "probe_id": "issue33-77142ef1-33e4-4b93-8bbc-316e990fb233",
+      "requested_abort_delay_ms": 255,
+      "client_abort_elapsed_ms": 261,
+      "client_result": "AbortError",
+      "runtime_log_status": "not retained; request may have been cancelled before function invocation",
+      "healthy_ping_elapsed_ms": 477,
+      "literal_continuation_progress": "more"
+    },
+    {
+      "probe_id": "issue33-b20d599e-6ec0-4b7e-9f04-4b222c5f2218",
+      "requested_abort_delay_ms": 750,
+      "client_abort_elapsed_ms": 760,
+      "client_result": "AbortError",
+      "runtime_log_status": 0,
+      "runtime_log_at": "2026-10-10T16:41:15.385Z",
+      "healthy_ping_elapsed_ms": 1120,
+      "healthy_ping_runtime_status": 200,
+      "literal_continuation_progress": "more",
+      "literal_continuation_runtime_status": 200
+    }
+  ],
+  "stable_reference_hashes": {
+    "act_locator_sha256": "1ac46a58e7915b2172e214f4ce9ed7d0272e20dee29e177e9005644a2bb40235",
+    "cursor_sha256": "1b10934213356f06e6596be0d4491273dc3ae73d7485484d5a857232e1c1a574"
+  },
+  "decision": "Outcome A: retain Request.signal cancellation and opt the Vercel function into supported downstream-disconnect propagation.",
+  "acceptance": "passed",
+  "limitations": [
+    "Vercel documents signal delivery and function termination, not a client-visible or logged HTTP 202 after the client disconnects.",
+    "Vercel documents no maximum propagation latency.",
+    "Separate MCP cancellation notifications still require same-instance routing; no cross-instance notification guarantee is added."
+  ]
+}
