@@ -1,0 +1,41 @@
+{
+  "recorded_at": "2026-10-09",
+  "reviewer": "local evidence review",
+  "scope": "Both DeepSeek v4.1 Flash outputs from the single bounded interrupted-index correction after issuing lowercase-only versioned cursors at the default MCP seam.",
+  "acceptance": "passed for this bounded corrective case",
+  "criteria": {
+    "zero_observed_false_absence": "Not exercised by this continuation-only corrective sample.",
+    "zero_observed_fabricated_references": "Passed in 2/2 outputs. Both repetitions copied the issued 602-character cursor exactly, and every generated call replayed successfully through a fresh default MCP instance.",
+    "zero_observed_unsupported_completion": "Not exercised by this continuation-only corrective sample. Neither output produced caller-visible prose."
+  },
+  "counts": {
+    "planned_calls": 2,
+    "dispatched_calls": 2,
+    "completed_outputs": 2,
+    "provider_errors": 0,
+    "truncated_outputs": 0,
+    "rows_with_automatic_failures": 0,
+    "generated_calls": 2,
+    "successful_fresh_mcp_replays": 2,
+    "caller_visible_prose_answers": 0
+  },
+  "reference_checks": [
+    {
+      "repetition": 1,
+      "expected_length": 602,
+      "actual_length": 602,
+      "expected_sha256": "8fb599e70725b529f0cefe5574b2c1054980640e9423151c4fe80694671ad484",
+      "actual_sha256": "8fb599e70725b529f0cefe5574b2c1054980640e9423151c4fe80694671ad484",
+      "replay_result": "accepted; continuation resumed successfully"
+    },
+    {
+      "repetition": 2,
+      "expected_length": 602,
+      "actual_length": 602,
+      "expected_sha256": "8fb599e70725b529f0cefe5574b2c1054980640e9423151c4fe80694671ad484",
+      "actual_sha256": "8fb599e70725b529f0cefe5574b2c1054980640e9423151c4fe80694671ad484",
+      "replay_result": "accepted; continuation resumed successfully"
+    }
+  ],
+  "conclusion": "The single authorized correction passes the previously failing retained-model cursor gate. Earlier mixed-case failures remain failed evidence. Two passing outputs do not guarantee future model behavior, named-client behavior, deployment behavior or final coordinated release acceptance."
+}

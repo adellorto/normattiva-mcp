@@ -1,0 +1,78 @@
+{
+  "publication": {
+    "data_gu": "2011-09-22",
+    "codice_redazionale": "011G0193"
+  },
+  "date": "2014-01-01",
+  "captures": [
+    {
+      "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20140101",
+      "request": null,
+      "captured_at": "2026-10-07T13:45:58.027Z",
+      "status": 200,
+      "elapsed_ms": 9796,
+      "decoded_bytes": 146685,
+      "sha256": "2704956f5c0ad8d0eebbb93456d7c20bb950800573080a04b9a747ffcd798b4d",
+      "content_type": "text/html;charset=UTF-8",
+      "location": null,
+      "file": "capture-1.gz"
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20140101",
+      "request": null,
+      "captured_at": "2026-10-07T13:46:08.014Z",
+      "status": 200,
+      "elapsed_ms": 8585,
+      "decoded_bytes": 282265,
+      "sha256": "361851746a913ecee14a915d4c92b25d75bd9d23f7d4a19ed9a0363adb26514d",
+      "content_type": "text/xml",
+      "location": null,
+      "file": "capture-2.gz"
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "request": {
+        "idArticolo": 1,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1,
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2014-01-01",
+        "tipoDettaglio": "singolavigenza"
+      },
+      "captured_at": "2026-10-07T13:46:17.057Z"
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "request": {
+        "idArticolo": 1,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1,
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2014-01-01",
+        "tipoDettaglio": "singolavigenza"
+      },
+      "captured_at": "2026-10-07T13:46:27.945Z"
+    }
+  ],
+  "result": {
+    "error": {
+      "category": "transport_failure",
+      "code": "upstream_transport_failure",
+      "message": "A transport failure prevented contacting Normattiva.",
+      "retryability": true,
+      "transport_cause": "dns",
+      "provider": "normattiva",
+      "operation": "/bff-opendata/v1/api/v1/atto/dettaglio-atto"
+    }
+  }
+}

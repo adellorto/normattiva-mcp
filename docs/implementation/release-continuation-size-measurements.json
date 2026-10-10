@@ -1,0 +1,90 @@
+{
+  "scope": "Same current production MCP schemas/results and authenticated identity; legacy control changes reading-reference encoding only. Full serialization includes both copies. Synthetic controls; lengths are examples, not universal cursor ceilings.",
+  "serialized_byte_ceiling": 131072,
+  "samples": {
+    "identified_currentness_unknown": {
+      "legacy_cursor_chars": null,
+      "compact_cursor_chars": null,
+      "full_mcp_utf8_bytes": 1940,
+      "legacy_full_mcp_utf8_bytes": 1940
+    },
+    "index_more": {
+      "legacy_cursor_chars": 667,
+      "compact_cursor_chars": 501,
+      "full_mcp_utf8_bytes": 5046,
+      "legacy_full_mcp_utf8_bytes": 6238
+    },
+    "article_more": {
+      "legacy_cursor_chars": 2057,
+      "compact_cursor_chars": 765,
+      "full_mcp_utf8_bytes": 4986,
+      "legacy_full_mcp_utf8_bytes": 8430
+    },
+    "article_unresolved": {
+      "legacy_cursor_chars": null,
+      "compact_cursor_chars": null,
+      "full_mcp_utf8_bytes": 1682,
+      "legacy_full_mcp_utf8_bytes": 1682
+    },
+    "suffix_unresolved": {
+      "legacy_cursor_chars": null,
+      "compact_cursor_chars": null,
+      "full_mcp_utf8_bytes": 1748,
+      "legacy_full_mcp_utf8_bytes": 1748
+    },
+    "reading_more": {
+      "legacy_cursor_chars": 661,
+      "compact_cursor_chars": 495,
+      "full_mcp_utf8_bytes": 5316,
+      "legacy_full_mcp_utf8_bytes": 6508
+    },
+    "invalid_cursor": {
+      "legacy_cursor_chars": null,
+      "compact_cursor_chars": null,
+      "full_mcp_utf8_bytes": 340,
+      "legacy_full_mcp_utf8_bytes": 340
+    },
+    "index_pending": {
+      "legacy_cursor_chars": 669,
+      "compact_cursor_chars": 501,
+      "full_mcp_utf8_bytes": 3488,
+      "legacy_full_mcp_utf8_bytes": 3824
+    },
+    "discovery_more": {
+      "legacy_cursor_chars": 382,
+      "compact_cursor_chars": 382,
+      "full_mcp_utf8_bytes": 6338,
+      "legacy_full_mcp_utf8_bytes": 6338
+    },
+    "degraded_discovery": {
+      "legacy_cursor_chars": null,
+      "compact_cursor_chars": null,
+      "full_mcp_utf8_bytes": 2038,
+      "legacy_full_mcp_utf8_bytes": 2038
+    },
+    "no_candidates": {
+      "legacy_cursor_chars": null,
+      "compact_cursor_chars": null,
+      "full_mcp_utf8_bytes": 586,
+      "legacy_full_mcp_utf8_bytes": 586
+    },
+    "index_interrupted": {
+      "legacy_cursor_chars": 669,
+      "compact_cursor_chars": 502,
+      "full_mcp_utf8_bytes": 5630,
+      "legacy_full_mcp_utf8_bytes": 6824
+    },
+    "changed_snapshot": {
+      "legacy_cursor_chars": null,
+      "compact_cursor_chars": null,
+      "full_mcp_utf8_bytes": 2450,
+      "legacy_full_mcp_utf8_bytes": 3154
+    },
+    "attachment_coverage": {
+      "legacy_cursor_chars": null,
+      "compact_cursor_chars": null,
+      "full_mcp_utf8_bytes": 8226,
+      "legacy_full_mcp_utf8_bytes": 10452
+    }
+  }
+}

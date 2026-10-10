@@ -1,0 +1,490 @@
+{
+  "recorded_at": "2026-10-09T11:06:47.557Z",
+  "node": "v24.15.0",
+  "mode": "historical",
+  "candidate_baseline": "676e47ebc6096bbb22b2cd428d6221e95c8d2720",
+  "source_basis": "Unmodified captured official portal/XML and exact direct details with independently captured exact-discovery identity; streamed replay, no network.",
+  "snapshot_date": "2014-01-01",
+  "occurrence_set": {
+    "expected": 15,
+    "source_order_independently_checked": 15,
+    "runtime_verified": 15,
+    "detail_capture_status": "complete"
+  },
+  "completed_occurrences": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "Allegato I",
+    "Allegato II"
+  ],
+  "pages": [
+    {
+      "phase": "cold-index-first-page",
+      "elapsed_ms": 525.540602,
+      "serialized_bytes": 30388,
+      "returned_items": 15,
+      "progress": "complete"
+    },
+    {
+      "phase": "cached-index-first-page",
+      "elapsed_ms": 12.871356999999989,
+      "serialized_bytes": 30388,
+      "returned_items": 15,
+      "progress": "complete"
+    },
+    {
+      "phase": "cold-reading-first-page",
+      "elapsed_ms": 322.958934,
+      "serialized_bytes": 41186,
+      "returned_items": 1,
+      "progress": "more"
+    },
+    {
+      "phase": "cached-reading-first-page",
+      "elapsed_ms": 6.669654999999921,
+      "serialized_bytes": 41186,
+      "returned_items": 1,
+      "progress": "more"
+    },
+    {
+      "phase": "reading-continuation-1",
+      "elapsed_ms": 3.937287999999853,
+      "serialized_bytes": 38776,
+      "returned_items": 1,
+      "progress": "more"
+    },
+    {
+      "phase": "reading-continuation-2",
+      "elapsed_ms": 4.23764099999994,
+      "serialized_bytes": 38750,
+      "returned_items": 1,
+      "progress": "more"
+    },
+    {
+      "phase": "reading-continuation-3",
+      "elapsed_ms": 45.08188000000018,
+      "serialized_bytes": 58890,
+      "returned_items": 7,
+      "progress": "more"
+    },
+    {
+      "phase": "reading-continuation-4",
+      "elapsed_ms": 54.81851000000006,
+      "serialized_bytes": 58836,
+      "returned_items": 6,
+      "progress": "more"
+    },
+    {
+      "phase": "reading-continuation-5",
+      "elapsed_ms": 57.11988300000007,
+      "serialized_bytes": 43860,
+      "returned_items": 3,
+      "progress": "more"
+    },
+    {
+      "phase": "reading-continuation-6",
+      "elapsed_ms": 2.8892359999999826,
+      "serialized_bytes": 38738,
+      "returned_items": 1,
+      "progress": "more"
+    },
+    {
+      "phase": "reading-continuation-7",
+      "elapsed_ms": 23.608347999999978,
+      "serialized_bytes": 41004,
+      "returned_items": 2,
+      "progress": "more"
+    },
+    {
+      "phase": "reading-continuation-8",
+      "elapsed_ms": 2.8973419999999805,
+      "serialized_bytes": 38742,
+      "returned_items": 1,
+      "progress": "more"
+    },
+    {
+      "phase": "reading-continuation-9",
+      "elapsed_ms": 2.4975479999998242,
+      "serialized_bytes": 31534,
+      "returned_items": 1,
+      "progress": "complete"
+    },
+    {
+      "phase": "attachment-first-useful-page",
+      "elapsed_ms": 346.5439369999999,
+      "serialized_bytes": 39166,
+      "returned_items": 1,
+      "progress": "more"
+    },
+    {
+      "phase": "attachment-continuation-1",
+      "elapsed_ms": 3.4883899999999812,
+      "serialized_bytes": 39000,
+      "returned_items": 1,
+      "progress": "more"
+    },
+    {
+      "phase": "attachment-continuation-2",
+      "elapsed_ms": 2.2352180000000317,
+      "serialized_bytes": 11612,
+      "returned_items": 1,
+      "progress": "complete"
+    },
+    {
+      "phase": "evicted-reading-continuation",
+      "elapsed_ms": 309.280984,
+      "serialized_bytes": 38776,
+      "returned_items": 1,
+      "progress": "more"
+    }
+  ],
+  "calls": [
+    {
+      "elapsed_ms": 519.52226,
+      "attempts": 16,
+      "decoded_bytes": 813124,
+      "queue_ms": 2,
+      "upstream_ms": 80,
+      "residual_local_ms": 437.52225999999996
+    },
+    {
+      "elapsed_ms": 12.14460900000006,
+      "attempts": 0,
+      "decoded_bytes": 0,
+      "queue_ms": 0,
+      "upstream_ms": 0,
+      "residual_local_ms": 12.14460900000006
+    },
+    {
+      "elapsed_ms": 321.85151999999994,
+      "attempts": 2,
+      "decoded_bytes": 428950,
+      "queue_ms": 0,
+      "upstream_ms": 11,
+      "residual_local_ms": 310.85151999999994
+    },
+    {
+      "elapsed_ms": 6.10546700000009,
+      "attempts": 0,
+      "decoded_bytes": 0,
+      "queue_ms": 0,
+      "upstream_ms": 0,
+      "residual_local_ms": 6.10546700000009
+    },
+    {
+      "elapsed_ms": 2.235588999999891,
+      "attempts": 0,
+      "decoded_bytes": 0,
+      "queue_ms": 0,
+      "upstream_ms": 0,
+      "residual_local_ms": 2.235588999999891
+    },
+    {
+      "elapsed_ms": 3.1334430000001703,
+      "attempts": 0,
+      "decoded_bytes": 0,
+      "queue_ms": 0,
+      "upstream_ms": 0,
+      "residual_local_ms": 3.1334430000001703
+    },
+    {
+      "elapsed_ms": 44.12890000000016,
+      "attempts": 6,
+      "decoded_bytes": 26711,
+      "queue_ms": 0,
+      "upstream_ms": 14,
+      "residual_local_ms": 30.128900000000158
+    },
+    {
+      "elapsed_ms": 54.03366200000005,
+      "attempts": 5,
+      "decoded_bytes": 34406,
+      "queue_ms": 0,
+      "upstream_ms": 7,
+      "residual_local_ms": 47.03366200000005
+    },
+    {
+      "elapsed_ms": 55.92620499999998,
+      "attempts": 2,
+      "decoded_bytes": 180506,
+      "queue_ms": 0,
+      "upstream_ms": 7,
+      "residual_local_ms": 48.92620499999998
+    },
+    {
+      "elapsed_ms": 2.0430109999999786,
+      "attempts": 0,
+      "decoded_bytes": 0,
+      "queue_ms": 0,
+      "upstream_ms": 0,
+      "residual_local_ms": 2.0430109999999786
+    },
+    {
+      "elapsed_ms": 22.928460000000086,
+      "attempts": 1,
+      "decoded_bytes": 142551,
+      "queue_ms": 0,
+      "upstream_ms": 3,
+      "residual_local_ms": 19.928460000000086
+    },
+    {
+      "elapsed_ms": 2.1509470000000874,
+      "attempts": 0,
+      "decoded_bytes": 0,
+      "queue_ms": 0,
+      "upstream_ms": 0,
+      "residual_local_ms": 2.1509470000000874
+    },
+    {
+      "elapsed_ms": 1.7119390000000294,
+      "attempts": 0,
+      "decoded_bytes": 0,
+      "queue_ms": 0,
+      "upstream_ms": 0,
+      "residual_local_ms": 1.7119390000000294
+    },
+    {
+      "elapsed_ms": 345.6391699999999,
+      "attempts": 3,
+      "decoded_bytes": 605583,
+      "queue_ms": 1,
+      "upstream_ms": 18,
+      "residual_local_ms": 326.6391699999999
+    },
+    {
+      "elapsed_ms": 1.9871239999999943,
+      "attempts": 0,
+      "decoded_bytes": 0,
+      "queue_ms": 0,
+      "upstream_ms": 0,
+      "residual_local_ms": 1.9871239999999943
+    },
+    {
+      "elapsed_ms": 1.4019969999999375,
+      "attempts": 0,
+      "decoded_bytes": 0,
+      "queue_ms": 0,
+      "upstream_ms": 0,
+      "residual_local_ms": 1.4019969999999375
+    },
+    {
+      "elapsed_ms": 308.53740400000015,
+      "attempts": 2,
+      "decoded_bytes": 428950,
+      "queue_ms": 0,
+      "upstream_ms": 16,
+      "residual_local_ms": 292.53740400000015
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20140101",
+      "file": "011G0193-2014-01-01/capture-1.gz",
+      "decoded_bytes": 146685
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20140101",
+      "file": "011G0193-2014-01-01/capture-2.gz",
+      "decoded_bytes": 282265
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-2.json.gz",
+      "decoded_bytes": 7238
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-3.json.gz",
+      "decoded_bytes": 2718
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-4.json.gz",
+      "decoded_bytes": 7359
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-5.json.gz",
+      "decoded_bytes": 2455
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-6.json.gz",
+      "decoded_bytes": 3416
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-7.json.gz",
+      "decoded_bytes": 3525
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-8.json.gz",
+      "decoded_bytes": 1774
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-9.json.gz",
+      "decoded_bytes": 1689
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-10.json.gz",
+      "decoded_bytes": 7231
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-11.json.gz",
+      "decoded_bytes": 10411
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-12.json.gz",
+      "decoded_bytes": 13301
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-13.json.gz",
+      "decoded_bytes": 3873
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-56-21.125Z/dpr151-2014-01-01-Allegato-I.json.gz",
+      "decoded_bytes": 176633
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-56-21.125Z/dpr151-2014-01-01-Allegato-II.json.gz",
+      "decoded_bytes": 142551
+    },
+    {
+      "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20140101",
+      "file": "011G0193-2014-01-01/capture-1.gz",
+      "decoded_bytes": 146685
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20140101",
+      "file": "011G0193-2014-01-01/capture-2.gz",
+      "decoded_bytes": 282265
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-2.json.gz",
+      "decoded_bytes": 7238
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-3.json.gz",
+      "decoded_bytes": 2718
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-4.json.gz",
+      "decoded_bytes": 7359
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-5.json.gz",
+      "decoded_bytes": 2455
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-6.json.gz",
+      "decoded_bytes": 3416
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-7.json.gz",
+      "decoded_bytes": 3525
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-8.json.gz",
+      "decoded_bytes": 1774
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-9.json.gz",
+      "decoded_bytes": 1689
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-10.json.gz",
+      "decoded_bytes": 7231
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-11.json.gz",
+      "decoded_bytes": 10411
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-12.json.gz",
+      "decoded_bytes": 13301
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-57-56.003Z/dpr151-2014-01-01-13.json.gz",
+      "decoded_bytes": 3873
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-56-21.125Z/dpr151-2014-01-01-Allegato-I.json.gz",
+      "decoded_bytes": 176633
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-56-21.125Z/dpr151-2014-01-01-Allegato-II.json.gz",
+      "decoded_bytes": 142551
+    },
+    {
+      "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20140101",
+      "file": "011G0193-2014-01-01/capture-1.gz",
+      "decoded_bytes": 146685
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20140101",
+      "file": "011G0193-2014-01-01/capture-2.gz",
+      "decoded_bytes": 282265
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "file": "independent-details-2026-10-09T10-56-21.125Z/dpr151-2014-01-01-Allegato-I.json.gz",
+      "decoded_bytes": 176633
+    },
+    {
+      "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20140101",
+      "file": "011G0193-2014-01-01/capture-1.gz",
+      "decoded_bytes": 146685
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20140101",
+      "file": "011G0193-2014-01-01/capture-2.gz",
+      "decoded_bytes": 282265
+    }
+  ],
+  "decoded_source_bytes": 2660781,
+  "cold_first_useful_page_ms": 525.540602,
+  "cached_first_useful_page_ms": 12.871356999999989,
+  "cold_reading_first_useful_page_ms": 322.958934,
+  "cached_reading_first_useful_page_ms": 6.669654999999921,
+  "evicted_continuation_ms": 309.280984,
+  "complete_traversal_ms": 529.6511810000001,
+  "attachment_first_useful_page_ms": 346.684616,
+  "attachment_complete_ms": 352.61546,
+  "max_rss_kib": 199128,
+  "memory_target": "passed",
+  "full_historical_traversal_gate": "passed",
+  "full_official_attachment_gate": "passed"
+}

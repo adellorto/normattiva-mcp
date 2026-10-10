@@ -1,0 +1,119 @@
+{
+  "recorded_at": "2026-10-07T14:02:09.238Z",
+  "node": "v24.15.0",
+  "mode": "current-as-historical",
+  "production_revision": "d0e1d836cf530684dc5f43300fc341d7235760fc",
+  "source_basis": "Unmodified captured official portal/XML with independently captured exact-discovery identity; streamed replay, no network.",
+  "snapshot_date": "2014-01-01",
+  "measurements": [
+    {
+      "phase": "cold-index",
+      "time_to_typed_failure_ms": 287.23609,
+      "error": {
+        "category": "upstream_failure",
+        "code": "snapshot_conflict",
+        "message": "A component expression cannot establish the requested snapshot.",
+        "retryability": false,
+        "provider": "normattiva"
+      },
+      "serialized_bytes": 458,
+      "returned_items": 0,
+      "useful_page": false
+    },
+    {
+      "phase": "repeat-index",
+      "time_to_typed_failure_ms": 204.37628300000006,
+      "error": {
+        "category": "upstream_failure",
+        "code": "snapshot_conflict",
+        "message": "A component expression cannot establish the requested snapshot.",
+        "retryability": false,
+        "provider": "normattiva"
+      },
+      "serialized_bytes": 458,
+      "returned_items": 0,
+      "useful_page": false
+    },
+    {
+      "phase": "cold-reading",
+      "time_to_typed_failure_ms": 173.598931,
+      "error": {
+        "category": "upstream_failure",
+        "code": "snapshot_conflict",
+        "message": "A component expression cannot establish the requested snapshot.",
+        "retryability": false,
+        "provider": "normattiva"
+      },
+      "serialized_bytes": 458,
+      "returned_items": 0,
+      "useful_page": false
+    }
+  ],
+  "calls": [
+    {
+      "elapsed_ms": 282.408713,
+      "attempts": 2,
+      "decoded_bytes": 430568,
+      "queue_ms": 0,
+      "upstream_ms": 37,
+      "residual_local_ms": 245.40871299999998
+    },
+    {
+      "elapsed_ms": 203.673762,
+      "attempts": 2,
+      "decoded_bytes": 430568,
+      "queue_ms": 0,
+      "upstream_ms": 8,
+      "residual_local_ms": 195.673762
+    },
+    {
+      "elapsed_ms": 172.11550799999998,
+      "attempts": 2,
+      "decoded_bytes": 430568,
+      "queue_ms": 0,
+      "upstream_ms": 9,
+      "residual_local_ms": 163.11550799999998
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20140101",
+      "file": "011G0193-2014-01-01/capture-1.gz",
+      "decoded_bytes": 146685
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20140101",
+      "file": "011G0193-2026-10-07/capture-2.gz",
+      "decoded_bytes": 283883
+    },
+    {
+      "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20140101",
+      "file": "011G0193-2014-01-01/capture-1.gz",
+      "decoded_bytes": 146685
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20140101",
+      "file": "011G0193-2026-10-07/capture-2.gz",
+      "decoded_bytes": 283883
+    },
+    {
+      "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20140101",
+      "file": "011G0193-2014-01-01/capture-1.gz",
+      "decoded_bytes": 146685
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20140101",
+      "file": "011G0193-2026-10-07/capture-2.gz",
+      "decoded_bytes": 283883
+    }
+  ],
+  "decoded_source_bytes": 1291704,
+  "cold_first_useful_page_ms": null,
+  "cached_first_useful_page_ms": null,
+  "complete_traversal_ms": null,
+  "cache_status": "Source rejected before verified cache insertion; repeat-index is not a cached useful-page benchmark.",
+  "max_rss_kib": 149288,
+  "failure_workload_memory_target": "passed",
+  "full_historical_traversal_gate": "incomplete",
+  "full_official_attachment_gate": "incomplete"
+}

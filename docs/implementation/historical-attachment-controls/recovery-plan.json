@@ -1,0 +1,539 @@
+{
+  "scope": "Dry-run; no requests sent.",
+  "selection": "all non-anchor occurrences",
+  "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+  "plan": [
+    {
+      "name": "dpr151-2014-01-01-2",
+      "label": "2",
+      "supplied_navigation_file": "011G0193-2014-01-01/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=2&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=2&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2014-01-01",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 2,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 2
+      }
+    },
+    {
+      "name": "dpr151-2014-01-01-3",
+      "label": "3",
+      "supplied_navigation_file": "011G0193-2014-01-01/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=3&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2014-01-01",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 3,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2014-01-01-4",
+      "label": "4",
+      "supplied_navigation_file": "011G0193-2014-01-01/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=4&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2014-01-01",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 4,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2014-01-01-5",
+      "label": "5",
+      "supplied_navigation_file": "011G0193-2014-01-01/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=5&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2014-01-01",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 5,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2014-01-01-6",
+      "label": "6",
+      "supplied_navigation_file": "011G0193-2014-01-01/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=6&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2014-01-01",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 6,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2014-01-01-7",
+      "label": "7",
+      "supplied_navigation_file": "011G0193-2014-01-01/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=7&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2014-01-01",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 7,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2014-01-01-8",
+      "label": "8",
+      "supplied_navigation_file": "011G0193-2014-01-01/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=8&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2014-01-01",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 8,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2014-01-01-9",
+      "label": "9",
+      "supplied_navigation_file": "011G0193-2014-01-01/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=9&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2014-01-01",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 9,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2014-01-01-10",
+      "label": "10",
+      "supplied_navigation_file": "011G0193-2014-01-01/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=10&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2014-01-01",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 10,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2014-01-01-11",
+      "label": "11",
+      "supplied_navigation_file": "011G0193-2014-01-01/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=3&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=11&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2014-01-01",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 11,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 3
+      }
+    },
+    {
+      "name": "dpr151-2014-01-01-12",
+      "label": "12",
+      "supplied_navigation_file": "011G0193-2014-01-01/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=12&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2014-01-01",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 12,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2014-01-01-13",
+      "label": "13",
+      "supplied_navigation_file": "011G0193-2014-01-01/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=13&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2014-01-01",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 13,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2014-01-01-Allegato-I",
+      "label": "Allegato I",
+      "supplied_navigation_file": "011G0193-2014-01-01/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=1&art.codiceRedazionale=011G0193&art.idArticolo=1&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2014-01-01",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 1,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "1",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2014-01-01-Allegato-II",
+      "label": "Allegato II",
+      "supplied_navigation_file": "011G0193-2014-01-01/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=2&art.codiceRedazionale=011G0193&art.idArticolo=1&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2014-01-01",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 1,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "2",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2026-10-07-2",
+      "label": "2",
+      "supplied_navigation_file": "011G0193-2026-10-07/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=2&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=2&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2026-10-07",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 2,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 2
+      }
+    },
+    {
+      "name": "dpr151-2026-10-07-3",
+      "label": "3",
+      "supplied_navigation_file": "011G0193-2026-10-07/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=3&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2026-10-07",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 3,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2026-10-07-4",
+      "label": "4",
+      "supplied_navigation_file": "011G0193-2026-10-07/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=4&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2026-10-07",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 4,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2026-10-07-5",
+      "label": "5",
+      "supplied_navigation_file": "011G0193-2026-10-07/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=5&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2026-10-07",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 5,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2026-10-07-6",
+      "label": "6",
+      "supplied_navigation_file": "011G0193-2026-10-07/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=6&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2026-10-07",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 6,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2026-10-07-7",
+      "label": "7",
+      "supplied_navigation_file": "011G0193-2026-10-07/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=7&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2026-10-07",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 7,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2026-10-07-8",
+      "label": "8",
+      "supplied_navigation_file": "011G0193-2026-10-07/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=8&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2026-10-07",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 8,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2026-10-07-9",
+      "label": "9",
+      "supplied_navigation_file": "011G0193-2026-10-07/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=9&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2026-10-07",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 9,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2026-10-07-10",
+      "label": "10",
+      "supplied_navigation_file": "011G0193-2026-10-07/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=10&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2026-10-07",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 10,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2026-10-07-11",
+      "label": "11",
+      "supplied_navigation_file": "011G0193-2026-10-07/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=4&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=11&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2026-10-07",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 11,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 4
+      }
+    },
+    {
+      "name": "dpr151-2026-10-07-12",
+      "label": "12",
+      "supplied_navigation_file": "011G0193-2026-10-07/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=12&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2026-10-07",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 12,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2026-10-07-13",
+      "label": "13",
+      "supplied_navigation_file": "011G0193-2026-10-07/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=0&art.codiceRedazionale=011G0193&art.idArticolo=13&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2026-10-07",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 13,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2026-10-07-Allegato-I",
+      "label": "Allegato I",
+      "supplied_navigation_file": "011G0193-2026-10-07/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=1&art.codiceRedazionale=011G0193&art.idArticolo=1&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2026-10-07",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 1,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "1",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    },
+    {
+      "name": "dpr151-2026-10-07-Allegato-II",
+      "label": "Allegato II",
+      "supplied_navigation_file": "011G0193-2026-10-07/capture-1.gz",
+      "supplied_navigation_url": "https://www.normattiva.it/atto/caricaArticolo?art.versione=1&art.idGruppo=0&art.flagTipoArticolo=2&art.codiceRedazionale=011G0193&art.idArticolo=1&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=2011-09-22&art.progressivo=0&",
+      "request": {
+        "dataGU": "2011-09-22",
+        "codiceRedazionale": "011G0193",
+        "dataVigenza": "2026-10-07",
+        "tipoDettaglio": "singolavigenza",
+        "idArticolo": 1,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 10,
+        "flagTipoArticolo": "2",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 1
+      }
+    }
+  ]
+}

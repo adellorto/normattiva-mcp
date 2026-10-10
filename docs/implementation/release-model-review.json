@@ -1,0 +1,3189 @@
+{
+  "recorded_on": "2026-10-05",
+  "scope": "Manual inspection of caller-visible text and every tool call, plus offline public input-schema and literal-reference comparisons. No generated tool call was executed against live legal sources.",
+  "acceptance": "failed; remaining model, live-source and deployment gates are open",
+  "limitations": [
+    "One function-adapter response per case, not an end-to-end workflow.",
+    "Automated routing scores inspect only the first call; all calls are checked separately here.",
+    "Llama had no successful completion, so the planned three-family matrix is incomplete.",
+    "Two repetitions at temperature zero with variable eligible providers; not a reliability bound.",
+    "Clarification of the reversed range is semantically sound even where the route scorer expects a call.",
+    "No false-absence statement observed in the 12 targeted completed outputs; this does not guarantee arbitrary behavior.",
+    "One Qwen claim of completed main text overstates an incomplete article inventory; counted conservatively as unsupported completion."
+  ],
+  "costs": {
+    "completion_receipts_usd": 0.05119435719999997,
+    "accounted_upper_bound_usd": 0.0566696372,
+    "post_run_key_usage_usd": 0.051474554,
+    "key_limit_usd": 10,
+    "software_cap_usd": 1,
+    "claude_previous_list_price_usd": 0.0711992,
+    "codex": "Existing subscription quota; no monetary cost reported",
+    "note": "Key usage exceeds completion receipts by $0.0002801968, within retained failed-request reservations. No unexplained fee is treated as free."
+  },
+  "counts": [
+    {
+      "model": "qwen/qwen3-14b",
+      "attempted": 78,
+      "completed": 78,
+      "automated_failure_rows": 40
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "attempted": 78,
+      "completed": 78,
+      "automated_failure_rows": 41
+    },
+    {
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "attempted": 1,
+      "completed": 0,
+      "automated_failure_rows": 0
+    }
+  ],
+  "rows": [
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "civil-code-2043",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "nonexistent-article-320",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "contracts-article-119",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "cad-article-52",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "contracts-current-article-108",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "exact-law-241",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "topic-transparency",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "publication-window",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "faceted-contracts",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "conflicting-civil-code",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-law-short-year",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-dpr-full-date",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-regio-decreto",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-decreto-legge",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-cad-unknown",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-tuel-common-name",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-current-contracts",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-faceted-contracts",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_constraint_annoProvvedimento"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-ai-topic",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-publication-window",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-issuance-window",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "request_rejected_by_production_planner",
+        "lost_constraint_denominazioneAtto",
+        "lost_constraint_dataInizioEmanazione",
+        "lost_constraint_dataFineEmanazione"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-in-force-on",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "request_rejected_by_production_planner",
+        "lost_constraint_vigenza"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-repealed-codes",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-conflicting-code",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-reversed-range",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_invalid_constraint"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-nonexistent-law",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-cursor",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "continue_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-missing-cursor",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "missing_cursor_requires_clarification",
+        "lost_user_facts",
+        "decomposed_unsupported_inputs"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "continue_acts",
+          "issues": [
+            "reference_not_issued_in_input:cursor"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "no_candidates",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_absence_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "article_unresolved",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_absence_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "suffix_unresolved",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_absence_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "index_pending",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "fabricated_or_conflicting_cursor"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "list_articles",
+          "issues": [
+            "public_input_schema_rejected",
+            "conflicting_continuation_inputs"
+          ]
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "index_more",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "fabricated_or_conflicting_cursor"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "list_articles",
+          "issues": [
+            "public_input_schema_rejected",
+            "conflicting_continuation_inputs"
+          ]
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "index_interrupted",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "continue_acts",
+          "issues": [
+            "wrong_continuation_tool"
+          ]
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "article_more",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "fabricated_or_conflicting_cursor"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "read_article",
+          "issues": [
+            "public_input_schema_rejected",
+            "altered_cursor",
+            "conflicting_continuation_inputs"
+          ]
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "reading_more",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route"
+      ],
+      "tool_call_checks": [],
+      "false_completion_observed": false,
+      "notes": [
+        "Explicitly states incomplete reading, but asks permission instead of executing the requested continuation."
+      ]
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "changed_snapshot",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "attachment_coverage",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_completion_observed": false,
+      "notes": [
+        "Correctly rejects full coverage; suggests targeting attachments without demonstrating that a historically verified address is available."
+      ]
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "identified_currentness_unknown",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "civil-code-2043",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "nonexistent-article-320",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "contracts-article-119",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "cad-article-52",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "contracts-current-article-108",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "exact-law-241",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "topic-transparency",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "publication-window",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "faceted-contracts",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "conflicting-civil-code",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-law-short-year",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-dpr-full-date",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-regio-decreto",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-decreto-legge",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-cad-unknown",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-tuel-common-name",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-current-contracts",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-faceted-contracts",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_constraint_annoProvvedimento"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-ai-topic",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-publication-window",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-issuance-window",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "request_rejected_by_production_planner",
+        "lost_constraint_denominazioneAtto",
+        "lost_constraint_dataInizioEmanazione",
+        "lost_constraint_dataFineEmanazione"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-in-force-on",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "request_rejected_by_production_planner",
+        "lost_constraint_vigenza"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-repealed-codes",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-conflicting-code",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-reversed-range",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-nonexistent-law",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-cursor",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "continue_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "edge-missing-cursor",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "missing_cursor_requires_clarification",
+        "lost_user_facts",
+        "decomposed_unsupported_inputs"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "continue_acts",
+          "issues": [
+            "reference_not_issued_in_input:cursor"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "no_candidates",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_absence_observed": false,
+      "notes": [
+        "Correctly rejects legal absence; proposes broadening an exact citation and presents legge.it as an official source without evidence."
+      ]
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "article_unresolved",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_absence_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "suffix_unresolved",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_absence_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "index_pending",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "fabricated_or_conflicting_cursor"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "list_articles",
+          "issues": [
+            "public_input_schema_rejected",
+            "conflicting_continuation_inputs"
+          ]
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "index_more",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "fabricated_or_conflicting_cursor"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "list_articles",
+          "issues": [
+            "public_input_schema_rejected",
+            "conflicting_continuation_inputs"
+          ]
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "index_interrupted",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "fabricated_or_conflicting_cursor"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "list_articles",
+          "issues": [
+            "public_input_schema_rejected",
+            "conflicting_continuation_inputs"
+          ]
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "article_more",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "fabricated_or_conflicting_cursor"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "read_article",
+          "issues": [
+            "public_input_schema_rejected",
+            "altered_cursor",
+            "conflicting_continuation_inputs"
+          ]
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "reading_more",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "fabricated_or_conflicting_cursor"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "read_act",
+          "issues": [
+            "public_input_schema_rejected",
+            "conflicting_continuation_inputs"
+          ]
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "changed_snapshot",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "attachment_coverage",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_completion_observed": true,
+      "notes": [
+        "Rejects all-attachment completeness, but its claim that the main text is complete overstates article_inventory_complete:false. Treat as unsupported completion language, not an accepted completion proof."
+      ]
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "identified_currentness_unknown",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "civil-code-2043",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "nonexistent-article-320",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "read_article",
+          "issues": [
+            "reference_not_issued_in_input:act_locator"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "contracts-article-119",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "cad-article-52",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "contracts-current-article-108",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "exact-law-241",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "topic-transparency",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 2,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 3,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "publication-window",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "faceted-contracts",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "request_rejected_by_production_planner"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "conflicting-civil-code",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-law-short-year",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "read_article",
+          "issues": [
+            "reference_not_issued_in_input:act_locator"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-dpr-full-date",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_user_facts",
+        "lost_citation_year",
+        "decomposed_unsupported_inputs",
+        "request_rejected_by_production_planner",
+        "changed_exact_citation"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "read_article",
+          "issues": [
+            "reference_not_issued_in_input:act_locator"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-regio-decreto",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "read_article",
+          "issues": [
+            "reference_not_issued_in_input:act_locator"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-decreto-legge",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-cad-unknown",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-tuel-common-name",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_user_facts",
+        "invented_alias_citation"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "read_article",
+          "issues": [
+            "reference_not_issued_in_input:act_locator"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-current-contracts",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_user_facts",
+        "invented_alias_citation"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-faceted-contracts",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-ai-topic",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 2,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 3,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-publication-window",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-issuance-window",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_constraint_dataInizioEmanazione",
+        "lost_constraint_dataFineEmanazione"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-in-force-on",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_constraint_vigenza"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-repealed-codes",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-conflicting-code",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_user_facts",
+        "lost_invalid_constraint"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "read_article",
+          "issues": [
+            "reference_not_issued_in_input:act_locator"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-reversed-range",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-nonexistent-law",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-cursor",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "continue_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "edge-missing-cursor",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "missing_cursor_requires_clarification"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": [
+        "Restarts discovery instead of obtaining the missing literal cursor; no cursor fabrication, but violates the accepted clarification route."
+      ]
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "no_candidates",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_absence_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "article_unresolved",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_absence_observed": false,
+      "notes": [
+        "Correctly rejects legal absence; inaccurately calls the supplied prior tool arguments arbitrary and proposes continue_acts for article continuation in prose."
+      ]
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "suffix_unresolved",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_absence_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "index_pending",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "fabricated_or_conflicting_cursor"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "list_articles",
+          "issues": [
+            "altered_cursor"
+          ]
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "index_more",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "list_articles",
+          "issues": []
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "index_interrupted",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "list_articles",
+          "issues": []
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "article_more",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "read_article",
+          "issues": []
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "reading_more",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "read_act",
+          "issues": []
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "changed_snapshot",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "attachment_coverage",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "read_act",
+          "issues": []
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "identified_currentness_unknown",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "civil-code-2043",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "nonexistent-article-320",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "read_article",
+          "issues": [
+            "reference_not_issued_in_input:act_locator"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "contracts-article-119",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "cad-article-52",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "contracts-current-article-108",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "exact-law-241",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "topic-transparency",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "publication-window",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "faceted-contracts",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "conflicting-civil-code",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-law-short-year",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "read_article",
+          "issues": [
+            "reference_not_issued_in_input:act_locator"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-dpr-full-date",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "read_article",
+          "issues": [
+            "reference_not_issued_in_input:act_locator"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-regio-decreto",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "read_article",
+          "issues": [
+            "reference_not_issued_in_input:act_locator"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-decreto-legge",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-cad-unknown",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "read_article",
+          "issues": [
+            "reference_not_issued_in_input:act_locator"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-tuel-common-name",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_user_facts",
+        "invented_alias_citation"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "read_article",
+          "issues": [
+            "reference_not_issued_in_input:act_locator"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-current-contracts",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_user_facts",
+        "invented_alias_citation"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-faceted-contracts",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_constraint_annoProvvedimento"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-ai-topic",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 2,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 3,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-publication-window",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-issuance-window",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_constraint_dataInizioEmanazione",
+        "lost_constraint_dataFineEmanazione"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-in-force-on",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_constraint_vigenza"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-repealed-codes",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-conflicting-code",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "lost_user_facts",
+        "lost_invalid_constraint"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        },
+        {
+          "index": 1,
+          "tool": "read_article",
+          "issues": [
+            "reference_not_issued_in_input:act_locator"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-reversed-range",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route"
+      ],
+      "tool_call_checks": [],
+      "notes": [
+        "Asks for clarification of the reversed range without changing it. Automatic wrong_or_missing_tool_route is not semantic constraint loss; no acceptance-spec revision inferred.",
+        "Manual reclassification, 6 October 2026: explicitly asks the user to clarify the inverted range without making a tool call. This is appropriate invalid-input clarification, not semantic constraint loss. Original automatic wrong_or_missing_tool_route flag is retained as historical evidence; the corrective scorer now distinguishes this case."
+      ]
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-nonexistent-law",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-cursor",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "continue_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "edge-missing-cursor",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "missing_cursor_requires_clarification"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": [
+        "Restarts discovery instead of obtaining the missing literal cursor; no cursor fabrication, but violates the accepted clarification route."
+      ]
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "no_candidates",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_absence_observed": false,
+      "notes": [
+        "Correctly rejects legal absence; claims to have repeated a search, but only the supplied fixture tool turn exists. Unsupported execution claim."
+      ]
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "article_unresolved",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_absence_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "suffix_unresolved",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "list_articles",
+          "issues": []
+        }
+      ],
+      "false_absence_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "index_pending",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route",
+        "fabricated_or_conflicting_cursor"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "continue_acts",
+          "issues": [
+            "altered_cursor",
+            "wrong_continuation_tool"
+          ]
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "index_more",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "wrong_or_missing_tool_route"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "continue_acts",
+          "issues": [
+            "wrong_continuation_tool"
+          ]
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "index_interrupted",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "list_articles",
+          "issues": []
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "article_more",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "read_article",
+          "issues": []
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "reading_more",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "read_act",
+          "issues": []
+        }
+      ],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "changed_snapshot",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "attachment_coverage",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "false_completion_observed": false,
+      "notes": []
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "identified_currentness_unknown",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "read_act",
+          "issues": []
+        }
+      ],
+      "notes": [
+        "Requests read_act with the returned act locator but gives no final currentness answer; this one-turn sample is inconclusive, not a completed semantic pass."
+      ]
+    },
+    {
+      "attempt": "bounded-concurrent",
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "repetition": 1,
+      "case": "civil-code-2043",
+      "status": "provider-blocked; no model acceptance",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "notes": []
+    }
+  ],
+  "prior_rows": [
+    {
+      "attempt": "serial-timeout",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "civil-code-2043",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "serial-timeout",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "nonexistent-article-320",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "serial-timeout",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "contracts-article-119",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "serial-timeout",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "cad-article-52",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "serial-timeout",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "contracts-current-article-108",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "serial-timeout",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "exact-law-241",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "serial-timeout",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "topic-transparency",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "serial-timeout",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "publication-window",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "serial-timeout",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "faceted-contracts",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "serial-timeout",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "conflicting-civil-code",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "serial-timeout",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-law-short-year",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "serial-timeout",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-dpr-full-date",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "serial-timeout",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-regio-decreto",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "serial-timeout",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-decreto-legge",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "serial-timeout",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-cad-unknown",
+      "status": "reviewed caller-visible output and every tool call",
+      "automated_failures": [
+        "lost_user_facts"
+      ],
+      "tool_call_checks": [
+        {
+          "index": 0,
+          "tool": "find_acts",
+          "issues": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "attempt": "serial-timeout",
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "edge-tuel-common-name",
+      "status": "provider-blocked; no model acceptance",
+      "automated_failures": [],
+      "tool_call_checks": [],
+      "notes": []
+    }
+  ]
+}

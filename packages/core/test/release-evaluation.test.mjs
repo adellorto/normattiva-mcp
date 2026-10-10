@@ -1,0 +1,429 @@
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises';
+import { gunzipSync } from 'node:zlib';
+import { createHash } from 'node:crypto';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { pathToFileURL } from 'node:url';
+import { execFile, spawn } from 'node:child_process';
+import { promisify } from 'node:util';
+
+async function fixture(mode, priorAmount = .01) {
+  const scratch = await mkdtemp(join(tmpdir(), 'normattiva-release-budget-'));
+  const input = join(scratch, 'input.json'), prior = join(scratch, 'prior.json'), output = join(scratch, 'report.json');
+  await writeFile(input, gunzipSync(await readFile(new URL('../../../docs/implementation/release-model-input.json.gz', import.meta.url))));
+  await writeFile(prior, JSON.stringify({ runs: [], recorded_cost_usd: 0, accounted_upper_bound_usd: priorAmount }));
+  return { input, output, attempts: join(scratch, 'attempts'),
+    args: ['--import', fileURLToPath(new URL('./fixtures/release-provider.mjs', import.meta.url)),
+      fileURLToPath(new URL('./fixtures/release-openrouter.mjs', import.meta.url)), input, output, '--prior-report', prior],
+    env: { ...process.env, OPENROUTER_API_KEY: 'fixture-eval-key', OPENROUTER_MODELS: 'fixture-model',
+      OPENROUTER_MAX_COST_USD: '1', OPENROUTER_CONCURRENCY: '1',
+      RELEASE_PROVIDER_MODE: mode, RELEASE_ATTEMPT_FILE: join(scratch, 'attempts') } };
+}
+test('prior unknown spending can block the whole plan before any inference dispatch', async () => {
+  const f = await fixture('error', .99);
+  await assert.rejects(promisify(execFile)(process.execPath, f.args, { env: f.env }),
+    error => error.stderr.includes('including prior attempts exceeds spend limit'));
+  await assert.rejects(readFile(f.attempts), error => error.code === 'ENOENT');
+  const report = JSON.parse(await readFile(f.output, 'utf8'));
+  assert.equal(report.accounted_upper_bound_usd, .99);
+  assert.equal(report.runs.length, 0);
+});
+test('unsupported optional parameters are omitted and unknown-cost failures retain spending', async () => {
+  const f = await fixture('error');
+  await assert.rejects(promisify(execFile)(process.execPath, f.args, { env: f.env }));
+  const report = JSON.parse(await readFile(f.output, 'utf8'));
+  assert.equal(await readFile(f.attempts, 'utf8'), '1');
+  assert.match(report.runs[0].blocked_error, /HTTP 503.*<REDACTED>/);
+  assert.equal(JSON.stringify(report).includes('fixture-eval-key'), false);
+  assert.ok(report.accounted_upper_bound_usd > .01);
+  assert.equal(report.recorded_cost_usd, 0);
+});
+test('an in-flight request has a durable cost reservation before the provider responds', async () => {
+  const f = await fixture('stall');
+  const child = spawn(process.execPath, f.args, { env: f.env, stdio: 'ignore' });
+  const exited = new Promise(resolve => child.once('exit', resolve));
+  try {
+    const deadline = Date.now() + 5000;
+    while (true) {
+      if (await readFile(f.attempts, 'utf8').catch(() => '') === '1') break;
+      assert.ok(Date.now() < deadline, 'Provider was never reached');
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    const report = JSON.parse(await readFile(f.output, 'utf8'));
+    assert.equal(report.runs.length, 1);
+    assert.ok(report.accounted_upper_bound_usd > .01);
+    assert.equal(report.runs[0].message, undefined);
+  } finally { child.kill('SIGTERM'); await exited; }
+});
+test('four concurrent requests each reserve cost and produce one readable checkpoint', async () => {
+  const f = await fixture('stall');
+  f.env.OPENROUTER_CONCURRENCY = '4';
+  const child = spawn(process.execPath, f.args, { env: f.env, stdio: 'ignore' });
+  const exited = new Promise(resolve => child.once('exit', resolve));
+  try {
+    const deadline = Date.now() + 5000;
+    while (await readFile(f.attempts, 'utf8').catch(() => '') !== '4') {
+      assert.ok(Date.now() < deadline, 'Concurrent provider requests were never reached');
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    const report = JSON.parse(await readFile(f.output, 'utf8'));
+    assert.equal(report.runs.length, 4);
+    assert.ok(Math.abs(report.accounted_upper_bound_usd - .01
+      - report.runs.reduce((total, row) => total + row.reserved_cost_usd, 0)) < 1e-9);
+    await new Promise(resolve => setTimeout(resolve, 50));
+    assert.equal(await readFile(f.attempts, 'utf8'), '4');
+  } finally { child.kill('SIGTERM'); await exited; }
+});
+
+test('clarification of an inverted range is scored separately from semantic constraint loss', async () => {
+  const f = await fixture('clarify-invalid');
+  f.env.OPENROUTER_CASES = 'edge-reversed-range';
+  await promisify(execFile)(process.execPath, f.args, { env: f.env });
+  const report = JSON.parse(await readFile(f.output, 'utf8'));
+  assert.equal(report.runs.length, 2);
+  assert.ok(report.runs.every(run => run.automated_failures.length === 0));
+  assert.ok(report.runs.every(run => run.semantic_review.startsWith('pending')));
+});
+
+test('paced evaluation delays the next provider request without adding retries or losing cost reservations', async () => {
+  const f = await fixture('clarify-invalid');
+  f.env.OPENROUTER_CASES = 'edge-reversed-range';
+  f.env.OPENROUTER_PAUSE_MS = '80';
+  f.env.RELEASE_TIMING_FILE = f.output + '.timing';
+  await promisify(execFile)(process.execPath, f.args, { env: f.env });
+  const times = (await readFile(f.env.RELEASE_TIMING_FILE, 'utf8')).trim().split('\n').map(Number);
+  assert.equal(times.length, 2);
+  assert.ok(times[1] - times[0] >= 75, 'Provider dispatches were not paced');
+  const report = JSON.parse(await readFile(f.output, 'utf8'));
+  assert.equal(report.settings.pause_between_requests_per_worker_ms, 80);
+  assert.equal(report.runs.length, report.planned_calls);
+  assert.equal(report.accounted_upper_bound_usd, .01);
+  assert.ok(report.runs.every(row => row.reserved_cost_usd > 0 && row.cost_usd === 0));
+});
+
+test('a pinned provider uses verified endpoint prices and disables fallback while retaining actual receipts', async () => {
+  const f = await fixture('pinned-provider');
+  f.env.OPENROUTER_CASES = 'edge-law-short-year';
+  f.env.OPENROUTER_PROVIDER = 'fixture/fp8';
+  await promisify(execFile)(process.execPath, f.args, { env: f.env });
+  const report = JSON.parse(await readFile(f.output, 'utf8'));
+  assert.equal(report.models[0].selected_endpoint.tag, 'fixture/fp8');
+  assert.equal(report.models[0].pricing.prompt, '0.0000002');
+  assert.equal(report.models[0].pricing.completion, '0.0000003');
+  assert.ok(Math.abs(report.accounted_upper_bound_usd - .0104) < 1e-9);
+  assert.ok(report.runs.every(row => row.provider === 'Fixture provider' && row.cost_usd === .0002));
+});
+
+test('higher endpoint prices can reject a pinned plan before any paid dispatch', async () => {
+  const f = await fixture('pinned-expensive', .9);
+  f.env.OPENROUTER_CASES = 'edge-law-short-year';
+  f.env.OPENROUTER_PROVIDER = 'fixture/fp8';
+  await assert.rejects(promisify(execFile)(process.execPath, f.args, { env: f.env }));
+  await assert.rejects(readFile(f.attempts), error => error.code === 'ENOENT');
+  const report = JSON.parse(await readFile(f.output, 'utf8'));
+  assert.equal(report.models[0].pricing.prompt, '0.00001');
+  assert.ok(report.total_plan_reserve_usd + report.accounted_upper_bound_usd > 1);
+  assert.equal(report.runs.length, 0);
+});
+
+test('a bounded completion ceiling is recorded in the provider plan', async () => {
+  const evaluationFixture = await fixture('error');
+  evaluationFixture.env.OPENROUTER_CASES = 'edge-law-short-year';
+  evaluationFixture.env.OPENROUTER_MAX_TOKENS = '1520';
+  await promisify(execFile)(process.execPath, [...evaluationFixture.args, '--plan'], { env: evaluationFixture.env });
+  const report = JSON.parse(await readFile(evaluationFixture.output, 'utf8'));
+  assert.equal(report.settings.max_tokens, 1520);
+  assert.equal(report.planned_calls, 2);
+  assert.equal(report.runs.length, 0);
+});
+
+test('the default evaluation scope excludes only the accepted Llama3.1 8B model', async () => {
+  const evaluationFixture = await fixture('default-scope');
+  delete evaluationFixture.env.OPENROUTER_MODELS;
+  evaluationFixture.env.OPENROUTER_CASES = 'edge-law-short-year';
+  await promisify(execFile)(process.execPath, [...evaluationFixture.args, '--plan'], { env: evaluationFixture.env });
+  const report = JSON.parse(await readFile(evaluationFixture.output, 'utf8'));
+  assert.deepEqual(report.models.map(model => model.id), [
+    'qwen/qwen3-14b',
+    'deepseek/deepseek-v4.1-flash',
+  ]);
+});
+
+test('silently repairing an inverted range remains a measured routing failure', async () => {
+  const f = await fixture('repair-invalid');
+  f.env.OPENROUTER_CASES = 'edge-reversed-range';
+  await assert.rejects(promisify(execFile)(process.execPath, f.args, { env: f.env }));
+  const report = JSON.parse(await readFile(f.output, 'utf8'));
+  assert.ok(report.runs.every(run => run.automated_failures.includes('lost_invalid_constraint')));
+});
+
+test('discovery continuation evaluation supplies a reference actually returned in its tool history', async () => {
+  const f = await fixture('discovery-continuation');
+  f.env.OPENROUTER_CASES = 'edge-cursor';
+  await promisify(execFile)(process.execPath, f.args, { env: f.env });
+  const report = JSON.parse(await readFile(f.output, 'utf8'));
+  assert.equal(report.runs.length, 2);
+  assert.ok(report.runs.every(run => run.automated_failures.length === 0));
+  for (const run of report.runs) {
+    const history = run.input.find(message => message.role === 'tool');
+    assert.equal(run.expected_cursor, JSON.parse(history.content).traversal.cursor);
+  }
+});
+
+test('incomplete provider reports retain every available call replay without claiming complete coverage', async () => {
+  const f = await fixture('error');
+  const input = JSON.parse(await readFile(f.input, 'utf8'));
+  const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
+  await writeFile(f.output, JSON.stringify({ input_sha256: hash(input), schema_sha256: hash(input.schema),
+    planned_calls: 4, runs: [
+      { requested_model: 'fixture-model', repetition: 1, case: 'index_pending', input: [],
+        message: { tool_calls: [{ function: { name: 'continue_acts', arguments: '{"cursor":"invented"}' } }] } },
+      { requested_model: 'fixture-model', repetition: 2, case: 'index_pending', input: [], blocked_error: 'Provider unavailable' },
+    ] }));
+  const { stdout } = await promisify(execFile)(process.execPath,
+    [fileURLToPath(new URL('./fixtures/release-final-model-review.mjs', import.meta.url)), f.input, f.output]);
+  const review = JSON.parse(stdout);
+  assert.equal(review.complete, false);
+  assert.deepEqual(review.reports.map(report => [report.planned_calls, report.dispatched_calls, report.complete]), [[4, 2, false]]);
+  assert.equal(review.rows.length, 2);
+  assert.deepEqual(review.rows[0].calls[0].issues, ['reference_not_returned:cursor']);
+  assert.equal(review.rows[0].calls[0].replay.result.error.category, 'invalid_cursor');
+  assert.equal(review.rows[1].provider_error, 'Provider unavailable');
+});
+
+test('independent DPR acquisition plans every non-anchor occurrence within the composed-call budget', async () => {
+  const acquisition = fileURLToPath(new URL('../../../docs/implementation/historical-attachment-controls/acquire-independent.mjs', import.meta.url));
+  const run = async (...args) => JSON.parse((await promisify(execFile)(process.execPath, [acquisition, ...args])).stdout);
+  const report = await run();
+  assert.equal(report.plan.length, 28);
+  for (const snapshot of ['2014-01-01', '2026-10-07']) {
+    const rows = report.plan.filter(row => row.request.dataVigenza === snapshot);
+    assert.equal(rows.length, 14);
+    assert.deepEqual(rows.map(row => row.label), [
+      '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', 'Allegato I', 'Allegato II',
+    ]);
+    assert.equal(new Set(rows.map(row => row.supplied_navigation_url)).size, 14);
+    assert.equal(2 + rows.length, 16, 'portal, AKN and detail attempts must fit the composed-call ceiling');
+  }
+  const articles = await run('--only=articles');
+  assert.equal(articles.plan.length, 24);
+  assert.ok(articles.plan.every(row => /^\d+$/.test(row.label)));
+  const attachments = await run('--only=attachments');
+  assert.equal(attachments.plan.length, 4);
+  assert.ok(attachments.plan.every(row => row.label.startsWith('Allegato ')));
+});
+
+async function privacyCaptureFixture(prefix, policy = {}) {
+  const { captureDetails } = await import('../../../docs/implementation/historical-attachment-controls/capture-details.mjs');
+  const scratch = await mkdtemp(join(tmpdir(), `normattiva-privacy-${prefix}-`));
+  return { captureDetails, scratch, root: pathToFileURL(scratch + '/'),
+    plan: ['2018-09-18', '2018-09-19'].map(date => ({ name: `privacy-${date}`,
+      url: 'https://fixture.invalid/detail', request: { dataVigenza: date } })),
+    priorAttempts: [{ name: 'privacy-2018-09-18', attempts: 1, lastOutcome: 'transient_failure' }],
+    policy: { maxAttemptsPerCoordinate: 3, maxNewRequests: 5,
+      transientCircuitBreaker: 3, retryBackoffMs: [15_000, 60_000], coordinatePaceMs: 1_100,
+      ...policy } };
+}
+
+test('Privacy boundary acquisition reuses the exact successful dated detail controls', async () => {
+  const acquisition = fileURLToPath(new URL('../../../docs/implementation/historical-attachment-controls/acquire-privacy-boundary.mjs', import.meta.url));
+  const report = JSON.parse((await promisify(execFile)(process.execPath, [acquisition])).stdout);
+  assert.equal(report.plan.length, 2);
+  assert.deepEqual(report.plan.map(row => row.request.dataVigenza), ['2018-09-18', '2018-09-19']);
+  assert.ok(report.plan.every(row => row.request.codiceRedazionale === '003G0218'
+    && row.request.idArticolo === 1 && row.request.tipoDettaglio === 'singolavigenza'));
+  assert.ok(report.plan.every(row => row.provenance_file === 'release-live-canaries-2026-10-06.json'
+    && Number.isInteger(row.provenance_attempt)));
+  assert.deepEqual(report.retained_attempts, [{ name: 'privacy-article-1-2018-09-18',
+    attempts: 1, lastOutcome: 'transient_failure', failure: 'UND_ERR_CONNECT_TIMEOUT' }]);
+  assert.deepEqual(report.traffic_policy, { maxAttemptsPerCoordinate: 3, maxNewRequests: 5,
+    transientCircuitBreaker: 3, retryBackoffMs: [15_000, 60_000], coordinatePaceMs: 1_100 });
+  assert.equal(report.terminal_manifest, 'privacy-boundary-2026-10-09T12-11-29.625Z/manifest.json');
+  assert.equal(report.execution_required, false);
+});
+
+test('bounded Privacy acquisition retries transient failures without suppressing either date', async () => {
+  const fixture = await privacyCaptureFixture('capture');
+  const outcomes = new Map([
+    ['2018-09-18', [503, 200]],
+    ['2018-09-19', [503, 200]],
+  ]);
+  const waits = [];
+  const seen = [];
+  const fetchImpl = async (_url, init) => {
+    const date = JSON.parse(init.body).dataVigenza;
+    seen.push(date);
+    const directories = await readdir(fixture.scratch);
+    const inFlight = JSON.parse(await readFile(join(fixture.scratch, directories[0], 'manifest.json'), 'utf8'));
+    assert.equal(inFlight.captures.at(-1).state, 'in_flight', 'manifest must precede dispatch');
+    const status = outcomes.get(date).shift();
+    return new Response(status === 200
+      ? JSON.stringify({ success: true, data: { atto: { articoloHtml: `<p>${date}</p>` } } })
+      : JSON.stringify({ success: false }), { status });
+  };
+  const result = await fixture.captureDetails({ root: fixture.root, directoryPrefix: 'privacy-test', plan: fixture.plan,
+    priorAttempts: fixture.priorAttempts, policy: fixture.policy,
+    dependencies: { fetchImpl, wait: async milliseconds => waits.push(milliseconds) } });
+  assert.deepEqual(seen, ['2018-09-18', '2018-09-18', '2018-09-19', '2018-09-19']);
+  assert.deepEqual(waits, [15_000, 60_000, 1_100, 15_000]);
+  assert.equal(result.manifest.outcome, 'complete');
+  assert.equal(result.manifest.policy.max_new_requests, 5);
+  assert.equal(result.manifest.captures.length, 4);
+  assert.ok(result.manifest.captures.every(row => row.state === 'complete'));
+  assert.deepEqual(result.manifest.coordinates.map(row => [row.name, row.total_attempts, row.outcome]), [
+    ['privacy-2018-09-18', 3, 'succeeded'],
+    ['privacy-2018-09-19', 2, 'succeeded'],
+  ]);
+});
+
+test('bounded Privacy acquisition opens its resumed-run circuit only after both dates get an initial attempt', async () => {
+  const fixture = await privacyCaptureFixture('circuit');
+  const seen = [];
+  const previousExitCode = process.exitCode;
+  try {
+    const result = await fixture.captureDetails({ root: fixture.root, directoryPrefix: 'privacy-test', plan: fixture.plan,
+      priorAttempts: fixture.priorAttempts, policy: fixture.policy,
+      dependencies: { fetchImpl: async (_url, init) => {
+        seen.push(JSON.parse(init.body).dataVigenza);
+        return new Response('{}', { status: 503 });
+      }, wait: async () => {} } });
+    assert.deepEqual(seen, ['2018-09-18', '2018-09-18', '2018-09-19']);
+    assert.equal(result.manifest.outcome, 'circuit_open');
+    assert.equal(result.manifest.policy.circuit_scope, 'new requests in this resumed run');
+    assert.deepEqual(result.manifest.coordinates.map(row => [row.name, row.outcome]), [
+      ['privacy-2018-09-18', 'transient_attempts_exhausted'],
+      ['privacy-2018-09-19', 'circuit_open'],
+    ]);
+    assert.ok(result.manifest.captures.every(row => row.state === 'complete'));
+  } finally { process.exitCode = previousExitCode; }
+});
+
+test('bounded Privacy acquisition cannot exceed its declared global new-request cap', async () => {
+  const fixture = await privacyCaptureFixture('cap', { transientCircuitBreaker: 99 });
+  const previousExitCode = process.exitCode;
+  try {
+    const result = await fixture.captureDetails({ root: fixture.root, directoryPrefix: 'privacy-test', plan: fixture.plan,
+      priorAttempts: fixture.priorAttempts, policy: fixture.policy,
+      dependencies: { fetchImpl: async () => new Response('{}', { status: 503 }), wait: async () => {} } });
+    assert.equal(result.manifest.captures.length, 5);
+    assert.equal(result.manifest.outcome, 'not_currently_verifiable_under_bounded_policy');
+    assert.deepEqual(result.manifest.coordinates.map(row => row.total_attempts), [3, 3]);
+    assert.ok(result.manifest.captures.every(row => row.state === 'complete'));
+  } finally { process.exitCode = previousExitCode; }
+});
+
+test('independent inspection verifies every DPR detail and the exact Privacy wording boundary', async () => {
+  const inspection = fileURLToPath(new URL('../../../docs/implementation/historical-attachment-controls/inspect-independent.py', import.meta.url));
+  const report = JSON.parse((await promisify(execFile)('python3', [inspection])).stdout);
+  assert.deepEqual(report.snapshots, ['2012-01-01', '2014-01-01', '2026-10-07']);
+  assert.deepEqual(report.verified_details, { '2014-01-01': 14, '2026-10-07': 14 });
+  assert.deepEqual(report.ascii_attachment_shapes, {
+    '2014-01-01': [[1, 1], [1, 1]], '2026-10-07': [[1, 1], [1, 1]],
+  });
+  assert.deepEqual(report.privacy_boundary, {
+    status: 'verified',
+    dates: ['2018-09-18', '2018-09-19'],
+    effective_ranges: [['20101124', '20180918'], ['20180919', '99999999']],
+    wording: ['Diritto alla protezione dei dati personali', 'Oggetto'],
+    total_new_requests: 2,
+    total_attempts_including_retained_failure: 3,
+  });
+});
+
+test('retained DPR controls complete historical and attachment traversal from independent details', async () => {
+  const runner = fileURLToPath(new URL('./fixtures/release-independent-controls.mjs', import.meta.url));
+  for (const [mode, snapshot] of [['historical', '2014-01-01'], ['current', '2026-10-07']]) {
+    const { stdout } = await promisify(execFile)(process.execPath, [runner, mode]);
+    const report = JSON.parse(stdout);
+    assert.equal(report.mode, mode);
+    assert.equal(report.snapshot_date, snapshot);
+    assert.deepEqual(report.occurrence_set, {
+      expected: 15,
+      source_order_independently_checked: 15,
+      runtime_verified: 15,
+      detail_capture_status: 'complete',
+    });
+    assert.ok(report.cold_first_useful_page_ms >= 0);
+    assert.ok(report.cached_first_useful_page_ms >= 0);
+    assert.ok(report.cold_reading_first_useful_page_ms >= 0);
+    assert.ok(report.cached_reading_first_useful_page_ms >= 0);
+    assert.ok(report.evicted_continuation_ms >= 0);
+    assert.equal(report.full_historical_traversal_gate, 'passed');
+    assert.equal(report.full_official_attachment_gate, 'passed');
+    assert.ok(report.complete_traversal_ms >= report.cold_reading_first_useful_page_ms);
+    assert.ok(report.attachment_first_useful_page_ms >= 0);
+    assert.equal(report.completed_occurrences.length, 15);
+    assert.deepEqual(report.completed_occurrences.slice(-2), ['Allegato I', 'Allegato II']);
+    assert.ok(report.pages.every(page => page.serialized_bytes <= 128 * 1024));
+    assert.ok(report.calls.some(call => call.attempts === 0));
+    assert.ok(report.calls.every(call => call.attempts <= 16));
+    assert.ok(report.calls.some(call => call.attempts === 16));
+    assert.ok(report.max_rss_kib <= 256 * 1024);
+  }
+  for (const [mode, code] of [['original', 'source_identity_conflict'], ['current-as-historical', 'snapshot_conflict']]) {
+    const { stdout } = await promisify(execFile)(process.execPath, [runner, mode]);
+    const report = JSON.parse(stdout);
+    assert.equal(report.measurements[0].error.code, code);
+    assert.equal(report.full_historical_traversal_gate, 'incomplete');
+    assert.equal(report.full_official_attachment_gate, 'incomplete');
+  }
+});
+
+test('the bounded terminal-client plan can target the production HTTP transport without inference', async () => {
+  const runner = fileURLToPath(new URL('./fixtures/release-cli.mjs', import.meta.url));
+  const scratch = await mkdtemp(join(tmpdir(), 'normattiva-release-client-plan-'));
+  const output = join(scratch, 'result.json');
+  const { stdout } = await promisify(execFile)(process.execPath,
+    [runner, 'claude', output, 'http', '--plan'], { env: {
+      ...process.env, PATH: '', RELEASE_CLIENT_HTTP_URL: 'http://127.0.0.1:43123/api/mcp',
+    } });
+  const plan = JSON.parse(stdout);
+  assert.equal(plan.execution, 'disabled');
+  assert.equal(plan.client, 'claude');
+  assert.equal(plan.transport, 'http');
+  assert.deepEqual(plan.mcp_config, { mcpServers: { normattiva: {
+    type: 'http', url: 'http://127.0.0.1:43123/api/mcp',
+  } } });
+  await assert.rejects(readFile(output), error => error.code === 'ENOENT');
+});
+
+test('the terminal-client evaluator rejects missing or unknown execution modes before launching a client', async () => {
+  const runner = fileURLToPath(new URL('./fixtures/release-cli.mjs', import.meta.url));
+  const scratch = await mkdtemp(join(tmpdir(), 'normattiva-release-client-mode-'));
+  for (const [name, option] of [['missing', undefined], ['typo', '--paln']]) {
+    const output = join(scratch, `${name}.json`);
+    const args = [runner, 'claude', output, 'http', ...(option ? [option] : [])];
+    await assert.rejects(promisify(execFile)(process.execPath, args, { env: {
+      ...process.env, PATH: '', RELEASE_CLIENT_HTTP_URL: 'http://127.0.0.1:43123/api/mcp',
+    } }), error => error.stderr.includes('Specify exactly one of --plan or --execute'));
+    await assert.rejects(readFile(output), error => error.code === 'ENOENT');
+  }
+});
+
+test('the retained representative terminal client crosses HTTP with literal continuation and absence honesty', async () => {
+  const report = JSON.parse(await readFile(new URL('../../../docs/implementation/release-final-claude-http.json', import.meta.url)));
+  assert.equal(report.client, 'claude');
+  assert.equal(report.transport, 'http');
+  assert.match(report.version, /^2\.1\.295 /);
+  assert.deepEqual(report.actual_models, ['claude-sonnet-5-5']);
+  assert.equal(report.execution_error, undefined);
+  assert.deepEqual(report.client_errors, []);
+  assert.ok(report.reported_list_cost_usd <= 0.50);
+  assert.equal(report.usage.server_tool_use.web_search_requests, 0);
+  assert.equal(report.usage.server_tool_use.web_fetch_requests, 0);
+  assert.deepEqual(report.calls.map(call => call.tool), [
+    'mcp__normattiva__find_acts',
+    'mcp__normattiva__read_article',
+    'mcp__normattiva__read_article',
+    'mcp__normattiva__read_article',
+  ]);
+  assert.equal(report.calls[0].result.match, 'identified');
+  assert.equal(report.calls[1].result.progress, 'more');
+  assert.equal(report.calls[2].result.outcome, 'unresolved');
+  assert.equal(report.calls[3].result.progress, 'complete');
+  assert.deepEqual(report.continuation_checks, [{ literal: true }]);
+  assert.match(report.messages.join('\n'), /non prova quindi l'inesistenza/i);
+});

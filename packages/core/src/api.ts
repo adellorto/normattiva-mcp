@@ -1,6 +1,9 @@
-import { McpError, ErrorCode } from "@modelcontextprotocol/sdk/types.js";
+import { OperationError, type ErrorDetail } from "./errors.js";
+import { executeUpstream } from "./upstream.js";
+import { RESPONSE_LIMITS, calendarDateSchema, articleContentSchema } from "./contracts.js";
 import type {
   RicercaAvanzataBody,
+  RicercaSempliceBody,
   RicercaResponse,
   DettaglioAttoBody,
   DettaglioAttoResponse,
@@ -14,124 +17,279 @@ import type {
 // Hard-coded to the production OpenData environment. The PRE environment
 // requires mTLS and is intentionally unsupported here.
 export const BASE_URL = "https://api.normattiva.it/t/normattiva.api";
+const ARTICLE_DETAIL_PATH = "/bff-opendata/v1/api/v1/atto/dettaglio-atto";
+export const ARTICLE_DETAIL_URL = BASE_URL + ARTICLE_DETAIL_PATH;
 
 const COMMON_HEADERS: Record<string, string> = {
   Accept: "application/json, text/plain, */*",
   "Accept-Language": "it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7",
   Origin: "https://dati.normattiva.it",
-  "User-Agent": "normattiva-mcp/0.1.4 (+https://www.npmjs.com/package/normattiva-mcp)",
+  "User-Agent": "normattiva-mcp/0.2.0 (+https://www.npmjs.com/package/normattiva-mcp)",
 };
 
-const REQUEST_TIMEOUT_MS = 20_000;
+const MAX_SOURCE_BYTES = RESPONSE_LIMITS.sourceBytes;
+const MAX_ERROR_BYTES = 16 * 1024;
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const url = BASE_URL + path;
-  let res: Response;
-  try {
-    res = await fetch(url, {
-      ...init,
-      signal: init?.signal ?? AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-      headers: { ...COMMON_HEADERS, ...(init?.headers as Record<string, string> | undefined) },
-    });
-  } catch (err) {
-    throw new McpError(
-      ErrorCode.InternalError,
-      `Network error contacting Normattiva: ${(err as Error).message}`,
-    );
+function retryAfter(value: string | null): number | undefined {
+  if (!value) return undefined;
+  if (/^\d+$/.test(value.trim())) {
+    const delay = Number(value) * 1_000;
+    return Number.isSafeInteger(delay) ? delay : undefined;
   }
-
-  if (!res.ok) {
-    let detail = "";
-    let apiCode: string | undefined;
-    try {
-      const body = (await res.json()) as {
-        message?: string;
-        description?: string;
-        error?: string;
-        code?: string;
-      };
-      apiCode = body.code;
-      detail = body.message ?? body.description ?? body.error ?? JSON.stringify(body);
-    } catch {
-      detail = await res.text().catch(() => "");
-    }
-    // IPZS-specific 4xx codes (per spec §1.3.x): 1003 invalid export format,
-    // 1005/1006 invalid input/vigenza, 1200 resource missing, 1204 token unknown,
-    // 1501 window > 12 months, 1502 > 7000 atti, 1503 inverted date range.
-    const isClientError =
-      res.status === 400 ||
-      res.status === 404 ||
-      res.status === 422 ||
-      (apiCode !== undefined && /^1[0-9]{3}$/.test(apiCode));
-    const mcpCode = isClientError ? ErrorCode.InvalidRequest : ErrorCode.InternalError;
-    const codeTag = apiCode ? ` [code=${apiCode}]` : "";
-    throw new McpError(
-      mcpCode,
-      `Normattiva API ${res.status}${codeTag}: ${detail || res.statusText}`,
-    );
-  }
-
-  return (await res.json()) as T;
+  // HTTP-date, not arbitrary strings accepted by Date.parse (e.g. "-1").
+  if (!/^[A-Z][a-z]{2}, \d{2} [A-Z][a-z]{2} \d{4} \d{2}:\d{2}:\d{2} GMT$/.test(value)) return undefined;
+  const date = Date.parse(value);
+  return Number.isFinite(date) ? Math.max(0, date - Date.now()) : undefined;
 }
 
-function postJson<T>(path: string, body: unknown): Promise<T> {
+export async function boundedBody(response: Response, limit: number, truncate = false): Promise<string> {
+  if (!response.body) return "";
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  const parts: string[] = [];
+  let bytes = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      bytes += value.byteLength;
+      if (bytes > limit) {
+        if (truncate) break;
+        throw new OperationError({
+          category: "upstream_failure", code: "source_limit_exceeded", retryability: false,
+          message: "The decoded upstream body exceeded the source limit.", provider: "normattiva",
+        });
+      }
+      parts.push(decoder.decode(value, { stream: true }));
+    }
+    parts.push(decoder.decode());
+    return parts.join("");
+  } finally {
+    await reader.cancel().catch(() => {});
+    reader.releaseLock();
+  }
+}
+
+export function transportError(error: unknown, operation: string): OperationError {
+  const cause = (error as { cause?: { code?: string } } | undefined)?.cause?.code;
+  const mapping: Record<string, ErrorDetail["transport_cause"]> = {
+    ENOTFOUND: "dns", EAI_AGAIN: "dns", ECONNRESET: "connection_reset",
+    UND_ERR_SOCKET: "connection_reset", ECONNREFUSED: "connection_refused",
+    CERT_HAS_EXPIRED: "tls", DEPTH_ZERO_SELF_SIGNED_CERT: "tls",
+    UNABLE_TO_VERIFY_LEAF_SIGNATURE: "tls", UND_ERR_CONNECT_TIMEOUT: "timeout",
+    UND_ERR_HEADERS_TIMEOUT: "timeout", UND_ERR_BODY_TIMEOUT: "timeout", ETIMEDOUT: "timeout",
+  };
+  const transient = ["EAI_AGAIN", "ECONNRESET", "UND_ERR_SOCKET", "ETIMEDOUT", "UND_ERR_CONNECT_TIMEOUT", "UND_ERR_HEADERS_TIMEOUT", "UND_ERR_BODY_TIMEOUT"].includes(cause ?? "");
+  const permanent = ["ENOTFOUND", "CERT_HAS_EXPIRED", "DEPTH_ZERO_SELF_SIGNED_CERT", "UNABLE_TO_VERIFY_LEAF_SIGNATURE"].includes(cause ?? "");
+  return new OperationError({
+    category: "transport_failure", code: "upstream_transport_failure",
+    message: "A transport failure prevented contacting Normattiva.",
+    retryability: transient ? true : permanent ? false : "unknown",
+    transport_cause: mapping[cause ?? ""] ?? "unknown", provider: "normattiva", operation,
+  }, { cause: error });
+}
+
+async function request<T>(path: string, init?: RequestInit, validate?: (body: unknown) => boolean, normalize?: (body: T) => T): Promise<T> {
+  return executeUpstream({
+    operation: path,
+    // These endpoints are searches, detail reads and metadata GETs. Export
+    // submission must use a separate operation declared replay-unsafe.
+    replaySafe: true,
+    execute: async (signal) => {
+      let response: Response;
+      try {
+        response = await fetch(BASE_URL + path, {
+          ...init, signal,
+          headers: { ...COMMON_HEADERS, ...(init?.headers as Record<string, string> | undefined) },
+          redirect: "error",
+        });
+      } catch (error) {
+        throw transportError(error, path);
+      }
+      if (!response.ok) {
+        let body: { code?: unknown; message?: unknown } = {};
+        // Read once. A bad/oversized error body must not hide a 429 or status.
+        try { body = JSON.parse(await boundedBody(response, MAX_ERROR_BYTES, true)) ?? {}; } catch {}
+        const code = typeof body.code === "string" && /^[A-Za-z0-9_-]{1,80}$/.test(body.code) ? body.code : undefined;
+        const delay = retryAfter(response.headers.get("retry-after"));
+        const knownTransient = (response.status === 500 && code === "500"
+          && body.message === "Errore generico della chiamata, riprovare più tardi");
+        throw new OperationError({
+          category: response.status === 429 ? "rate_limited" : "upstream_failure",
+          code: response.status === 429 ? "upstream_rate_limited" : "upstream_http_error",
+          message: response.status === 429 ? "Normattiva is rate limited; retry in a later call."
+            : `Legal absence unproved; Normattiva HTTP ${response.status}.`,
+          retryability: response.status === 429 || knownTransient ? true
+            : response.status === 400 || response.status === 422 ? false : "unknown",
+          ...(delay !== undefined ? { retry_after_ms: delay } : {}),
+          provider: "normattiva", operation: path, http_status: response.status, upstream_code: code,
+        });
+      }
+      let text: string;
+      try { text = await boundedBody(response, MAX_SOURCE_BYTES); }
+      catch (error) {
+        if (error instanceof OperationError) throw error;
+        throw transportError(error, path);
+      }
+      let body: unknown;
+      try { body = JSON.parse(text); } catch (cause) {
+        throw new OperationError({ category: "upstream_failure", code: "malformed_upstream_response",
+          message: "Normattiva returned malformed success data.", retryability: false,
+          provider: "normattiva", operation: path }, { cause });
+      }
+      if (validate && !validate(body)) throw new OperationError({
+        category: "upstream_failure", code: "malformed_upstream_response",
+        message: "Normattiva returned an unexpected success shape.", retryability: false,
+        provider: "normattiva", operation: path,
+      });
+      return normalize ? normalize(body as T) : body as T;
+    },
+  });
+}
+
+function postJson<T>(path: string, body: unknown, validate: (body: unknown) => boolean, normalize?: (body: T) => T): Promise<T> {
   return request<T>(path, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
+  }, validate, normalize);
+}
+
+const object = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
+const searchResponse = (value: unknown): boolean => object(value)
+  && typeof value.numeroAttiTrovati === "number" && Number.isInteger(value.numeroAttiTrovati) && value.numeroAttiTrovati >= 0
+  && Array.isArray(value.listaAtti) && value.listaAtti.every(object);
+const articleResponse = (value: unknown): boolean => object(value) && typeof value.success === "boolean"
+  && (!value.success || (object(value.data) && object(value.data.atto) && typeof value.data.atto.articoloHtml === "string"));
+
+function malformedArticleMetadata(): OperationError {
+  return new OperationError({ category: "upstream_failure", code: "malformed_upstream_response",
+    message: "Normattiva returned malformed article metadata.", retryability: false,
+    provider: "normattiva", operation: "article_detail" });
+}
+
+function effectiveDate(value: unknown, openEnd = false): string | undefined {
+  if (value === undefined || value === null || (openEnd && value === "99999999")) return undefined;
+  const normalized = typeof value === "string" && /^\d{8}$/.test(value)
+    ? `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)}` : value;
+  const parsed = calendarDateSchema.safeParse(normalized);
+  if (!parsed.success) throw malformedArticleMetadata();
+  return parsed.data;
+}
+
+function normalizeArticleResponse(body: DettaglioAttoResponse): DettaglioAttoResponse {
+  if (!body.success || !body.data?.atto) return body;
+  const atto = body.data.atto;
+  const metadata = articleContentSchema.safeParse({
+    format: "html", text: atto.articoloHtml, title: atto.titolo ?? undefined,
+    effective_from: effectiveDate(atto.articoloDataInizioVigenza),
+    effective_to: effectiveDate(atto.articoloDataFineVigenza, true),
   });
+  if (!metadata.success) throw malformedArticleMetadata();
+  return { ...body, data: { ...body.data, atto: { ...atto,
+    titolo: metadata.data.title,
+    articoloDataInizioVigenza: metadata.data.effective_from,
+    articoloDataFineVigenza: metadata.data.effective_to,
+  } } };
 }
 
 export function ricercaAvanzata(body: RicercaAvanzataBody): Promise<RicercaResponse> {
-  return postJson("/bff-opendata/v1/api/v1/ricerca/avanzata", body);
+  return postJson("/bff-opendata/v1/api/v1/ricerca/avanzata", body, searchResponse);
 }
 
-export async function dettaglioAtto(body: DettaglioAttoBody): Promise<DettaglioAttoResponse> {
-  try {
-    return await postJson<DettaglioAttoResponse>("/bff-opendata/v1/api/v1/atto/dettaglio-atto", body);
-  } catch (err) {
-    // Soft-fail "not found" responses so callers can probe sotto_articolo / id_gruppo
-    // without try/catch: real bad-input or server errors still surface as exceptions.
-    if (
-      err instanceof McpError &&
-      err.code === ErrorCode.InvalidRequest &&
-      /non\s+trovat[oa]/i.test(err.message)
-    ) {
-      return { success: false, message: err.message };
+/** Observed official simple-search ordering; not a documented relevance guarantee. */
+export function ricercaSemplice(body: RicercaSempliceBody): Promise<RicercaResponse> {
+  return postJson("/bff-opendata/v1/api/v1/ricerca/semplice", body, searchResponse);
+}
+
+export function dettaglioAtto(body: DettaglioAttoBody): Promise<DettaglioAttoResponse> {
+  return postJson(ARTICLE_DETAIL_PATH, body, articleResponse, normalizeArticleResponse);
+}
+
+/** Only the official website is allowed; redirects consume separate attempts. */
+export interface WebsiteSession { sessionId?: string; affinity?: string; }
+export async function officialText(url: string, session?: WebsiteSession): Promise<{ text: string; url: string }> {
+  for (let redirects = 0; redirects <= 4; redirects++) {
+    const target = new URL(url);
+    if (target.origin !== "https://www.normattiva.it" || target.username || target.password) {
+      throw new OperationError({ category: "upstream_failure", code: "untrusted_source_address",
+        message: "The supplied source address is not on the official website.", retryability: false });
     }
-    throw err;
+    const result = await executeUpstream({ operation: target.pathname, replaySafe: true, execute: async signal => {
+      let response: Response;
+      // Website navigation is not an OpenData cross-origin request. The website
+      // rejects the OpenData portal Origin with HTTP 409, including valid ELI URLs.
+      const { Origin: _origin, ...websiteHeaders } = COMMON_HEADERS;
+      const cookies = [session?.sessionId && `JSESSIONID=${session.sessionId}`, session?.affinity && `NCC=${session.affinity}`].filter(Boolean).join("; ");
+      try { response = await fetch(url, { signal, redirect: "manual", headers: { ...websiteHeaders,
+        ...(cookies ? { Cookie: cookies } : {}) } }); }
+      catch (error) { throw transportError(error, target.pathname); }
+      // The dated page selects the download in its servlet session. Keep only
+      // this cookie and its load-balancer affinity, on the allowlisted host,
+      // for one acquisition; never persist
+      // it in locators, cache entries, diagnostics or continuation references.
+      if (session) for (const cookie of response.headers.getSetCookie()) {
+        const match = /^(JSESSIONID|NCC)=([A-Za-z0-9._-]{1,512})(?:;|$)/.exec(cookie);
+        if (match?.[1] === "JSESSIONID") session.sessionId = match[2];
+        if (match?.[1] === "NCC") session.affinity = match[2];
+      }
+      if ([301, 302, 303, 307, 308].includes(response.status)) {
+        const location = response.headers.get("location");
+        await response.body?.cancel();
+        if (!location) throw new OperationError({ category: "upstream_failure", code: "malformed_upstream_response",
+          message: "The official redirect has no destination.", retryability: false });
+        return { redirect: new URL(location, url).href };
+      }
+      if (!response.ok) {
+        await response.body?.cancel();
+        throw new OperationError({ category: response.status === 429 ? "rate_limited" : "upstream_failure",
+          code: response.status === 429 ? "upstream_rate_limited" : "upstream_http_error",
+          message: `Legal absence unproved; Normattiva HTTP ${response.status}.`,
+          retryability: response.status === 429 ? true : [400, 422].includes(response.status) ? false : "unknown",
+          retry_after_ms: retryAfter(response.headers.get("retry-after")), provider: "normattiva", http_status: response.status });
+      }
+      try { return { text: await boundedBody(response, MAX_SOURCE_BYTES) }; }
+      catch (error) { if (error instanceof OperationError) throw error; throw transportError(error, target.pathname); }
+    } });
+    if (result.redirect) { url = result.redirect; continue; }
+    return { text: result.text!, url };
   }
+  throw new OperationError({ category: "upstream_failure", code: "source_redirect_limit",
+    message: "The official source exceeded the redirect limit.", retryability: false });
 }
 
 export function ricercaAggiornati(body: AggiornatiBody): Promise<RicercaResponse> {
-  return postJson("/bff-opendata/v1/api/v1/ricerca/aggiornati", body);
+  return postJson("/bff-opendata/v1/api/v1/ricerca/aggiornati", body, searchResponse);
 }
 
 function memoize<T>(fn: () => Promise<T>): () => Promise<T> {
-  let cache: Promise<T> | undefined;
-  return () => {
-    if (!cache) {
-      cache = fn().catch((err) => {
-        cache = undefined;
-        throw err;
-      });
-    }
+  let cache: T | undefined;
+  // Only completed metadata is shared: a cancelled caller cannot poison a
+  // second caller's in-flight request or spend that caller's budget.
+  return async () => {
+    if (cache === undefined) cache = await fn();
     return cache;
   };
 }
 
+const labeledItems = (body: unknown): boolean => Array.isArray(body)
+  && body.every(item => object(item) && typeof item.label === "string" && typeof item.value === "string");
+
 export const getDenominazioni = memoize(() =>
-  request<DenominazioneItem[]>("/bff-opendata/v1/api/v1/tipologiche/denominazione-atto"),
+  request<DenominazioneItem[]>("/bff-opendata/v1/api/v1/tipologiche/denominazione-atto", undefined, labeledItems),
 );
 
 export const getClassiProvvedimento = memoize(() =>
-  request<ClasseItem[]>("/bff-opendata/v1/api/v1/tipologiche/classe-provvedimento"),
+  request<ClasseItem[]>("/bff-opendata/v1/api/v1/tipologiche/classe-provvedimento", undefined, labeledItems),
 );
 
 export const getCollezioniPredefinite = memoize(() =>
-  request<CollezioneItem[]>("/bff-opendata/v1/api/v1/collections/collection-predefinite"),
+  request<CollezioneItem[]>("/bff-opendata/v1/api/v1/collections/collection-predefinite", undefined,
+    body => Array.isArray(body) && body.every(item => object(item)
+      && typeof item.nomeCollezione === "string" && typeof item.numeroAtti === "number")),
 );
 
 export const getRicerchePredefinite = memoize(() =>
-  request<RicerchePredefiniteResponse>("/bff-opendata/v1/api/v1/ricerca/predefinita"),
+  request<RicerchePredefiniteResponse>("/bff-opendata/v1/api/v1/ricerca/predefinita", undefined,
+    body => object(body) && Array.isArray(body.ricerchePredefinite)),
 );

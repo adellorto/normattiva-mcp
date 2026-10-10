@@ -1,0 +1,119 @@
+{
+  "recorded_at": "2026-10-07T14:02:08.272Z",
+  "node": "v24.15.0",
+  "mode": "original",
+  "production_revision": "d0e1d836cf530684dc5f43300fc341d7235760fc",
+  "source_basis": "Unmodified captured official portal/XML with independently captured exact-discovery identity; streamed replay, no network.",
+  "snapshot_date": "2012-01-01",
+  "measurements": [
+    {
+      "phase": "cold-index",
+      "time_to_typed_failure_ms": 304.143565,
+      "error": {
+        "category": "upstream_failure",
+        "code": "source_identity_conflict",
+        "message": "The AKN identifies another or unverifiable publication.",
+        "retryability": false,
+        "provider": "normattiva"
+      },
+      "serialized_bytes": 456,
+      "returned_items": 0,
+      "useful_page": false
+    },
+    {
+      "phase": "repeat-index",
+      "time_to_typed_failure_ms": 225.7138070000001,
+      "error": {
+        "category": "upstream_failure",
+        "code": "source_identity_conflict",
+        "message": "The AKN identifies another or unverifiable publication.",
+        "retryability": false,
+        "provider": "normattiva"
+      },
+      "serialized_bytes": 456,
+      "returned_items": 0,
+      "useful_page": false
+    },
+    {
+      "phase": "cold-reading",
+      "time_to_typed_failure_ms": 212.46819800000003,
+      "error": {
+        "category": "upstream_failure",
+        "code": "source_identity_conflict",
+        "message": "The AKN identifies another or unverifiable publication.",
+        "retryability": false,
+        "provider": "normattiva"
+      },
+      "serialized_bytes": 456,
+      "returned_items": 0,
+      "useful_page": false
+    }
+  ],
+  "calls": [
+    {
+      "elapsed_ms": 299.402372,
+      "attempts": 2,
+      "decoded_bytes": 433495,
+      "queue_ms": 0,
+      "upstream_ms": 36,
+      "residual_local_ms": 263.402372
+    },
+    {
+      "elapsed_ms": 224.99363200000005,
+      "attempts": 2,
+      "decoded_bytes": 433495,
+      "queue_ms": 0,
+      "upstream_ms": 11,
+      "residual_local_ms": 213.99363200000005
+    },
+    {
+      "elapsed_ms": 210.878102,
+      "attempts": 2,
+      "decoded_bytes": 433495,
+      "queue_ms": 0,
+      "upstream_ms": 10,
+      "residual_local_ms": 200.878102
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20120101",
+      "file": "011G0193-2012-01-01/capture-1.gz",
+      "decoded_bytes": 146685
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20120101",
+      "file": "011G0193-2012-01-01/capture-2.gz",
+      "decoded_bytes": 286810
+    },
+    {
+      "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20120101",
+      "file": "011G0193-2012-01-01/capture-1.gz",
+      "decoded_bytes": 146685
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20120101",
+      "file": "011G0193-2012-01-01/capture-2.gz",
+      "decoded_bytes": 286810
+    },
+    {
+      "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20120101",
+      "file": "011G0193-2012-01-01/capture-1.gz",
+      "decoded_bytes": 146685
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20120101",
+      "file": "011G0193-2012-01-01/capture-2.gz",
+      "decoded_bytes": 286810
+    }
+  ],
+  "decoded_source_bytes": 1300485,
+  "cold_first_useful_page_ms": null,
+  "cached_first_useful_page_ms": null,
+  "complete_traversal_ms": null,
+  "cache_status": "Source rejected before verified cache insertion; repeat-index is not a cached useful-page benchmark.",
+  "max_rss_kib": 152888,
+  "failure_workload_memory_target": "passed",
+  "full_historical_traversal_gate": "incomplete",
+  "full_official_attachment_gate": "incomplete"
+}

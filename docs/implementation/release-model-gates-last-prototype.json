@@ -1,0 +1,161 @@
+{
+  "tiktoken_version": "0.14.0",
+  "baseline": "Same tools/list with tool and nested schema descriptions removed; conservative guidance upper bound. No client wrappers or model evaluation.",
+  "sample_basis": "Synthetic default-registration MCP responses. Explanations plus error messages; both duplicated MCP representations counted. Full payload includes locators and metadata.",
+  "encodings": {
+    "o200k_base": {
+      "schema_without_descriptions": 15814,
+      "schema_with_descriptions": 16834,
+      "guidance_percent": 6.45,
+      "samples": {
+        "identified_currentness_unknown": {
+          "explanatory_tokens_one_representation": 11,
+          "explanatory_tokens_both_representations": 22,
+          "full_mcp_tokens": 738
+        },
+        "index_more": {
+          "explanatory_tokens_one_representation": 23,
+          "explanatory_tokens_both_representations": 46,
+          "full_mcp_tokens": 2550
+        },
+        "article_more": {
+          "explanatory_tokens_one_representation": 14,
+          "explanatory_tokens_both_representations": 28,
+          "full_mcp_tokens": 2689
+        },
+        "article_unresolved": {
+          "explanatory_tokens_one_representation": 12,
+          "explanatory_tokens_both_representations": 24,
+          "full_mcp_tokens": 671
+        },
+        "suffix_unresolved": {
+          "explanatory_tokens_one_representation": 17,
+          "explanatory_tokens_both_representations": 34,
+          "full_mcp_tokens": 683
+        },
+        "reading_more": {
+          "explanatory_tokens_one_representation": 25,
+          "explanatory_tokens_both_representations": 50,
+          "full_mcp_tokens": 2647
+        },
+        "invalid_cursor": {
+          "explanatory_tokens_one_representation": 15,
+          "explanatory_tokens_both_representations": 30,
+          "full_mcp_tokens": 74
+        },
+        "index_pending": {
+          "explanatory_tokens_one_representation": 22,
+          "explanatory_tokens_both_representations": 44,
+          "full_mcp_tokens": 1606
+        },
+        "discovery_more": {
+          "explanatory_tokens_one_representation": 25,
+          "explanatory_tokens_both_representations": 50,
+          "full_mcp_tokens": 2425
+        },
+        "degraded_discovery": {
+          "explanatory_tokens_one_representation": 14,
+          "explanatory_tokens_both_representations": 28,
+          "full_mcp_tokens": 742
+        },
+        "no_candidates": {
+          "explanatory_tokens_one_representation": 14,
+          "explanatory_tokens_both_representations": 28,
+          "full_mcp_tokens": 132
+        },
+        "index_interrupted": {
+          "explanatory_tokens_one_representation": 28,
+          "explanatory_tokens_both_representations": 56,
+          "full_mcp_tokens": 2710
+        },
+        "changed_snapshot": {
+          "explanatory_tokens_one_representation": 19,
+          "explanatory_tokens_both_representations": 38,
+          "full_mcp_tokens": 1139
+        },
+        "attachment_coverage": {
+          "explanatory_tokens_one_representation": 27,
+          "explanatory_tokens_both_representations": 54,
+          "full_mcp_tokens": 4084
+        }
+      }
+    },
+    "cl100k_base": {
+      "schema_without_descriptions": 15211,
+      "schema_with_descriptions": 16239,
+      "guidance_percent": 6.76,
+      "samples": {
+        "identified_currentness_unknown": {
+          "explanatory_tokens_one_representation": 11,
+          "explanatory_tokens_both_representations": 22,
+          "full_mcp_tokens": 760
+        },
+        "index_more": {
+          "explanatory_tokens_one_representation": 23,
+          "explanatory_tokens_both_representations": 46,
+          "full_mcp_tokens": 2654
+        },
+        "article_more": {
+          "explanatory_tokens_one_representation": 14,
+          "explanatory_tokens_both_representations": 28,
+          "full_mcp_tokens": 2808
+        },
+        "article_unresolved": {
+          "explanatory_tokens_one_representation": 12,
+          "explanatory_tokens_both_representations": 24,
+          "full_mcp_tokens": 685
+        },
+        "suffix_unresolved": {
+          "explanatory_tokens_one_representation": 17,
+          "explanatory_tokens_both_representations": 34,
+          "full_mcp_tokens": 697
+        },
+        "reading_more": {
+          "explanatory_tokens_one_representation": 25,
+          "explanatory_tokens_both_representations": 50,
+          "full_mcp_tokens": 2741
+        },
+        "invalid_cursor": {
+          "explanatory_tokens_one_representation": 15,
+          "explanatory_tokens_both_representations": 30,
+          "full_mcp_tokens": 73
+        },
+        "index_pending": {
+          "explanatory_tokens_one_representation": 23,
+          "explanatory_tokens_both_representations": 46,
+          "full_mcp_tokens": 1651
+        },
+        "discovery_more": {
+          "explanatory_tokens_one_representation": 25,
+          "explanatory_tokens_both_representations": 50,
+          "full_mcp_tokens": 2527
+        },
+        "degraded_discovery": {
+          "explanatory_tokens_one_representation": 15,
+          "explanatory_tokens_both_representations": 30,
+          "full_mcp_tokens": 764
+        },
+        "no_candidates": {
+          "explanatory_tokens_one_representation": 14,
+          "explanatory_tokens_both_representations": 28,
+          "full_mcp_tokens": 129
+        },
+        "index_interrupted": {
+          "explanatory_tokens_one_representation": 28,
+          "explanatory_tokens_both_representations": 56,
+          "full_mcp_tokens": 2798
+        },
+        "changed_snapshot": {
+          "explanatory_tokens_one_representation": 19,
+          "explanatory_tokens_both_representations": 38,
+          "full_mcp_tokens": 1171
+        },
+        "attachment_coverage": {
+          "explanatory_tokens_one_representation": 28,
+          "explanatory_tokens_both_representations": 56,
+          "full_mcp_tokens": 4257
+        }
+      }
+    }
+  }
+}

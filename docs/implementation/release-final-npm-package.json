@@ -1,0 +1,12 @@
+{
+  "recorded_at": "2026-10-06T15:27:59.428Z",
+  "node": "v24.15.0",
+  "package_version": "0.2.0",
+  "scratch": "/tmp/normattiva-release-package-WXvM9n",
+  "archive": "/tmp/normattiva-release-package-WXvM9n/normattiva-mcp-0.2.0.tgz",
+  "isolated_package_contracts": "passed",
+  "same_key_restart": "passed",
+  "configured_npm_http_transfer": "passed",
+  "different_trust_rejection": "passed",
+  "scope": "Synthetic upstream; fresh production HTTP handler processes, not deployed Vercel or model acceptance."
+}

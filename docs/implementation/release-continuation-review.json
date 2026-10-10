@@ -1,0 +1,44 @@
+{
+  "scope": "Every generated continuation call checked literally; compatible calls executed through fresh production MCP with synthetic sources. Model prose and terminal absence explanation need manual review. No live/model-general acceptance.",
+  "rows": [
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 1,
+      "case": "index_interrupted",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "qwen/qwen3-14b",
+      "repetition": 2,
+      "case": "index_interrupted",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 1,
+      "case": "index_interrupted",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": []
+    },
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "repetition": 2,
+      "case": "index_interrupted",
+      "caller_visible_text": null,
+      "calls_checked": 1,
+      "failures": []
+    }
+  ],
+  "terminal_checks": {
+    "execution_completed": true,
+    "literal_continuation": true,
+    "complete_text": true,
+    "unresolved_999": true
+  },
+  "gate": "passed"
+}

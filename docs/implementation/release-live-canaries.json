@@ -1,0 +1,571 @@
+{
+  "recorded_at": "2026-10-05T14:13:42.380Z",
+  "node": "v24.15.0",
+  "scope": "Live official sources through local default MCP registration; no deployed/npm/model acceptance.",
+  "calls": [
+    {
+      "name": "TUEL exact discovery",
+      "tool": "find_acts",
+      "input": {
+        "request": "decreto legislativo 267/2000 articolo 13"
+      },
+      "result": {
+        "match": "identified",
+        "interpretation": "decreto legislativo 267/2000 articolo 13",
+        "article_reference": "13",
+        "ordering": "exact_citation",
+        "corpus": "live",
+        "explanation": "Act identity is verified; current legal force is unknown.",
+        "traversal": {
+          "progress": "complete",
+          "items": [
+            {
+              "act_locator": "a1_eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0",
+              "publication": {
+                "data_gu": "2000-09-28",
+                "codice_redazionale": "000G0304"
+              },
+              "title": "[Testo unico delle leggi sull'ordinamento degli enti locali.\r ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-05T14:14:03.971Z",
+                  "publication": {
+                    "data_gu": "2000-09-28",
+                    "codice_redazionale": "000G0304"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata"
+                }
+              ],
+              "current": "unknown"
+            }
+          ]
+        }
+      },
+      "serialized_bytes": 1713,
+      "elapsed_ms": 21558,
+      "validation": "passed"
+    },
+    {
+      "name": "TUEL ordinary direct read",
+      "tool": "read_article",
+      "input": {
+        "act_locator": "a1_eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0",
+        "article_reference": "13",
+        "snapshot_date": "2026-10-02",
+        "max_chars": 4
+      },
+      "result": {
+        "outcome": "unresolved",
+        "reason": "source_identity_conflict",
+        "requested": {
+          "act_locator": "a1_eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0",
+          "snapshot_date": "2026-10-02",
+          "article_reference": "13"
+        },
+        "evidence": [
+          {
+            "source": "official_detail",
+            "checked_at": "2026-10-05T14:14:03.997Z",
+            "publication": {
+              "data_gu": "2000-09-28",
+              "codice_redazionale": "000G0304"
+            },
+            "snapshot_date": "2026-10-02",
+            "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+            "explanation": "The article detail did not verify the exact publication."
+          }
+        ]
+      },
+      "serialized_bytes": 1276,
+      "elapsed_ms": 1002,
+      "validation": "blocked_or_failed",
+      "failure": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'unresolved'\n- 'found'\n"
+    },
+    {
+      "name": "TUEL dated AKN/index canary",
+      "tool": "list_articles",
+      "input": {
+        "act_locator": "a1_eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0",
+        "snapshot_date": "2026-10-02",
+        "page_size": 1
+      },
+      "result": {
+        "error": {
+          "category": "upstream_failure",
+          "code": "upstream_http_error",
+          "message": "Normattiva returned HTTP 409. This does not establish legal absence.",
+          "retryability": "unknown",
+          "provider": "normattiva",
+          "http_status": 409
+        }
+      },
+      "serialized_bytes": 382,
+      "elapsed_ms": 940,
+      "validation": "blocked_or_failed",
+      "failure": "{\"error\":{\"category\":\"upstream_failure\",\"code\":\"upstream_http_error\",\"message\":\"Normattiva returned HTTP 409. This does not establish legal absence.\",\"retryability\":\"unknown\",\"provider\":\"normattiva\",\"http_status\":409}}"
+    },
+    {
+      "name": "CAD reviewed alias live verification",
+      "tool": "find_acts",
+      "input": {
+        "request": "CAD articolo 5"
+      },
+      "result": {
+        "match": "identified",
+        "interpretation": "CAD articolo 5",
+        "article_reference": "5",
+        "ordering": "reviewed_alias",
+        "corpus": "live",
+        "explanation": "Act identity is verified; current legal force is unknown.",
+        "traversal": {
+          "progress": "complete",
+          "items": [
+            {
+              "act_locator": "a1_eyJkYXRhX2d1IjoiMjAwNS0wNS0xNiIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwNUcwMTA0In0",
+              "publication": {
+                "data_gu": "2005-05-16",
+                "codice_redazionale": "005G0104"
+              },
+              "title": "[Codice dell'amministrazione digitale.\r ]",
+              "official_urn": "urn:nir:stato:decreto.legislativo:2005-03-07;82",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-05T14:14:46.803Z",
+                  "publication": {
+                    "data_gu": "2005-05-16",
+                    "codice_redazionale": "005G0104"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata"
+                },
+                {
+                  "source": "reviewed_alias",
+                  "checked_at": "2026-10-05T00:00:00Z",
+                  "official_url": "https://www.normattiva.it/staticPage/codici"
+                }
+              ],
+              "alias": {
+                "name": "Codice dell'amministrazione digitale",
+                "provenance": "https://www.normattiva.it/staticPage/codici",
+                "verified_at": "2026-10-05"
+              },
+              "current": "unknown"
+            }
+          ]
+        }
+      },
+      "serialized_bytes": 2309,
+      "elapsed_ms": 40873,
+      "validation": "passed"
+    },
+    {
+      "name": "Official relevance search",
+      "tool": "find_acts",
+      "input": {
+        "request": "trasparenza amministrativa"
+      },
+      "result": {
+        "match": "candidates",
+        "interpretation": "trasparenza amministrativa",
+        "ordering": "observed_relevance",
+        "corpus": "live",
+        "explanation": "Select a candidate; current legal force is unknown.",
+        "traversal": {
+          "progress": "more",
+          "items": [
+            {
+              "act_locator": "a1_eyJkYXRhX2d1IjoiMjAxNC0wNi0yNCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjE0RzAwMTAzIn0",
+              "publication": {
+                "data_gu": "2014-06-24",
+                "codice_redazionale": "14G00103"
+              },
+              "title": "[Misure urgenti per la semplificazione e la trasparenza amministrativa e per l'efficienza degli uffici giudiziari. (14G00103)  ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-05T14:14:47.422Z",
+                  "publication": {
+                    "data_gu": "2014-06-24",
+                    "codice_redazionale": "14G00103"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/semplice"
+                }
+              ],
+              "current": "unknown"
+            },
+            {
+              "act_locator": "a1_eyJkYXRhX2d1IjoiMjAxNC0wOC0xOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjE0RzAwMTI5In0",
+              "publication": {
+                "data_gu": "2014-08-18",
+                "codice_redazionale": "14G00129"
+              },
+              "title": "[Conversione in legge, con modificazioni, del decreto-legge 24  giugno 2014, n. 90, recante misure  urgenti  per  la  semplificazione  e  la trasparenza  amministrativa   e   per   l'efficienza   degli   uffici giudiziari. (14G00129)  ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-05T14:14:47.423Z",
+                  "publication": {
+                    "data_gu": "2014-08-18",
+                    "codice_redazionale": "14G00129"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/semplice"
+                }
+              ],
+              "current": "unknown"
+            },
+            {
+              "act_locator": "a1_eyJkYXRhX2d1IjoiMjAyNS0wMS0xNCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjI1RzAwMDA0In0",
+              "publication": {
+                "data_gu": "2025-01-14",
+                "codice_redazionale": "25G00004"
+              },
+              "title": "[Regolamento  per  la  disciplina  delle  modalita'  di  accesso  alla qualifica  iniziale,  del  percorso  di  formazione  iniziale,  della progressione in  carriera,  dell'aggiornamento  professionale,  della formazione specialistica e della  regolazione  dell'attivita'  libero professionale dei funzionari della carriera dei medici del  Corpo  di polizia penitenziaria. (25G00004)  ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-05T14:14:47.425Z",
+                  "publication": {
+                    "data_gu": "2025-01-14",
+                    "codice_redazionale": "25G00004"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/semplice"
+                }
+              ],
+              "current": "unknown"
+            },
+            {
+              "act_locator": "a1_eyJkYXRhX2d1IjoiMjAyMi0xMS0wNyIsImNvZGljZV9yZWRhemlvbmFsZSI6IjIyRzAwMTcyIn0",
+              "publication": {
+                "data_gu": "2022-11-07",
+                "codice_redazionale": "22G00172"
+              },
+              "title": "[Regolamento recante disciplina delle  modalita'  di  svolgimento  dei concorsi nella Polizia di Stato per l'accesso ai ruoli del personale, ai ruoli direttivi e alle carriere dei funzionari e per la promozione a vice questore aggiunto e dei relativi corsi di formazione iniziale, dei corsi  di  formazione  dirigenziale  e  di  aggiornamento  per  i funzionari, nonche' dei requisiti psico-fisici ed attitudinali per la partecipazione  ai  concorsi  per  l'accesso  alla  banda   musicale. (22G00172)  ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-05T14:14:47.426Z",
+                  "publication": {
+                    "data_gu": "2022-11-07",
+                    "codice_redazionale": "22G00172"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/semplice"
+                }
+              ],
+              "current": "unknown"
+            },
+            {
+              "act_locator": "a1_eyJkYXRhX2d1IjoiMjAxMy0wNC0wNSIsImNvZGljZV9yZWRhemlvbmFsZSI6IjEzRzAwMDc2In0",
+              "publication": {
+                "data_gu": "2013-04-05",
+                "codice_redazionale": "13G00076"
+              },
+              "title": "[((Riordino della  disciplina  riguardante  il diritto di accesso civico e gli obblighi di pubblicita',  trasparenza e   diffusione   di   informazioni   da   parte    delle    pubbliche amministrazioni.)) (13G00076) \r ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-05T14:14:47.428Z",
+                  "publication": {
+                    "data_gu": "2013-04-05",
+                    "codice_redazionale": "13G00076"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/semplice"
+                }
+              ],
+              "current": "unknown"
+            }
+          ],
+          "cursor": "d1_eyJ2IjoxLCJvcGVyYXRpb24iOiJjb250aW51ZV9hY3RzIiwiYWxpYXNfdmVyc2lvbiI6MSwicGxhbiI6eyJyZXF1ZXN0IjoidHJhc3BhcmVuemEgYW1taW5pc3RyYXRpdmEiLCJyb3V0ZSI6InJlbGV2YW5jZSIsInVuY2VydGFpblRpbWUiOmZhbHNlLCJxdWVyeSI6InRyYXNwYXJlbnphIGFtbWluaXN0cmF0aXZhIiwiZmlsdGVycyI6e319LCJ0YXJnZXQiOjAsInBhZ2UiOjIsIm9mZnNldCI6MCwibGltaXQiOjUsImRlZ3JhZGVkIjpmYWxzZX0.rEQE_TaIKtftYpR75fDLv0XqMwRnHTAVI32kibn-uYA",
+          "explanation": "Page only; continue with the literal cursor. Live search pages may change."
+        }
+      },
+      "serialized_bytes": 9221,
+      "elapsed_ms": 627,
+      "validation": "passed"
+    },
+    {
+      "name": "Civil Code discovery",
+      "tool": "find_acts",
+      "input": {
+        "request": "regio decreto 262/1942"
+      },
+      "result": {
+        "match": "identified",
+        "interpretation": "regio decreto 262/1942",
+        "ordering": "exact_citation",
+        "corpus": "live",
+        "explanation": "Act identity is verified; current legal force is unknown.",
+        "traversal": {
+          "progress": "complete",
+          "items": [
+            {
+              "act_locator": "a1_eyJkYXRhX2d1IjoiMTk0Mi0wNC0wNCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjA0MlUwMjYyIn0",
+              "publication": {
+                "data_gu": "1942-04-04",
+                "codice_redazionale": "042U0262"
+              },
+              "title": "[Approvazione del testo del Codice civile. (042U0262) \r ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-05T14:14:47.924Z",
+                  "publication": {
+                    "data_gu": "1942-04-04",
+                    "codice_redazionale": "042U0262"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata"
+                }
+              ],
+              "current": "unknown"
+            }
+          ]
+        }
+      },
+      "serialized_bytes": 1611,
+      "elapsed_ms": 490,
+      "validation": "passed"
+    },
+    {
+      "name": "Civil Code structured snapshot",
+      "tool": "list_articles",
+      "input": {
+        "act_locator": "a1_eyJkYXRhX2d1IjoiMTk0Mi0wNC0wNCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjA0MlUwMjYyIn0",
+        "snapshot_date": "2026-10-02",
+        "page_size": 1
+      },
+      "result": {
+        "error": {
+          "category": "upstream_failure",
+          "code": "upstream_http_error",
+          "message": "Normattiva returned HTTP 409. This does not establish legal absence.",
+          "retryability": "unknown",
+          "provider": "normattiva",
+          "http_status": 409
+        }
+      },
+      "serialized_bytes": 382,
+      "elapsed_ms": 1378,
+      "validation": "blocked_or_failed",
+      "failure": "{\"error\":{\"category\":\"upstream_failure\",\"code\":\"upstream_http_error\",\"message\":\"Normattiva returned HTTP 409. This does not establish legal absence.\",\"retryability\":\"unknown\",\"provider\":\"normattiva\",\"http_status\":409}}"
+    },
+    {
+      "name": "Privacy Code discovery",
+      "tool": "find_acts",
+      "input": {
+        "request": "decreto legislativo 196/2003"
+      },
+      "result": {
+        "match": "identified",
+        "interpretation": "decreto legislativo 196/2003",
+        "ordering": "exact_citation",
+        "corpus": "live",
+        "explanation": "Act identity is verified; current legal force is unknown.",
+        "traversal": {
+          "progress": "complete",
+          "items": [
+            {
+              "act_locator": "a1_eyJkYXRhX2d1IjoiMjAwMy0wNy0yOSIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwM0cwMjE4In0",
+              "publication": {
+                "data_gu": "2003-07-29",
+                "codice_redazionale": "003G0218"
+              },
+              "title": "[Codice in materia di protezione dei dati personali ((, recante disposizioni per l'adeguamento dell'ordinamento nazionale al regolamento (UE) n. 2016/679 del Parlamento europeo e del Consiglio, del 27 aprile 2016, relativo alla protezione delle persone fisiche con riguardo al trattamento dei dati personali, nonche' alla libera circolazione di tali dati e che abroga la direttiva 95/46/CE)).\r ]",
+              "evidence": [
+                {
+                  "source": "official_search",
+                  "checked_at": "2026-10-05T14:15:12.632Z",
+                  "publication": {
+                    "data_gu": "2003-07-29",
+                    "codice_redazionale": "003G0218"
+                  },
+                  "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata"
+                }
+              ],
+              "current": "unknown"
+            }
+          ]
+        }
+      },
+      "serialized_bytes": 2299,
+      "elapsed_ms": 23330,
+      "validation": "passed"
+    },
+    {
+      "name": "Privacy 2017 independent historical control",
+      "tool": "list_articles",
+      "input": {
+        "act_locator": "a1_eyJkYXRhX2d1IjoiMjAwMy0wNy0yOSIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwM0cwMjE4In0",
+        "snapshot_date": "2017-01-01",
+        "page_size": 1
+      },
+      "result": {
+        "error": {
+          "category": "upstream_failure",
+          "code": "upstream_http_error",
+          "message": "Normattiva returned HTTP 409. This does not establish legal absence.",
+          "retryability": "unknown",
+          "provider": "normattiva",
+          "http_status": 409
+        }
+      },
+      "serialized_bytes": 382,
+      "elapsed_ms": 2027,
+      "validation": "blocked_or_failed",
+      "failure": "{\"error\":{\"category\":\"upstream_failure\",\"code\":\"upstream_http_error\",\"message\":\"Normattiva returned HTTP 409. This does not establish legal absence.\",\"retryability\":\"unknown\",\"provider\":\"normattiva\",\"http_status\":409}}"
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+      "request": {
+        "denominazioneAtto": "DECRETO LEGISLATIVO",
+        "annoProvvedimento": "2000",
+        "numeroProvvedimento": "267",
+        "orderType": "recente",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "transport_cause": "OperationError"
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+      "request": {
+        "denominazioneAtto": "DECRETO LEGISLATIVO",
+        "annoProvvedimento": "2000",
+        "numeroProvvedimento": "267",
+        "orderType": "recente",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "http_status": 200,
+      "headers_ms": 439
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "request": {
+        "idArticolo": 13,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 0,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 0,
+        "dataGU": "2000-09-28",
+        "codiceRedazionale": "000G0304",
+        "dataVigenza": "2026-10-02",
+        "tipoDettaglio": "singolavigenza"
+      },
+      "http_status": 200,
+      "headers_ms": 457
+    },
+    {
+      "url": "https://www.normattiva.it/eli/id/2000/09/28/000G0304/CONSOLIDATED/20261002",
+      "http_status": 409,
+      "headers_ms": 410
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+      "request": {
+        "denominazioneAtto": "DECRETO LEGISLATIVO",
+        "annoProvvedimento": "2005",
+        "numeroProvvedimento": "82",
+        "giornoProvvedimento": "7",
+        "meseProvvedimento": "3",
+        "orderType": "recente",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "transport_cause": "OperationError"
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+      "request": {
+        "denominazioneAtto": "DECRETO LEGISLATIVO",
+        "annoProvvedimento": "2005",
+        "numeroProvvedimento": "82",
+        "giornoProvvedimento": "7",
+        "meseProvvedimento": "3",
+        "orderType": "recente",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "http_status": 200,
+      "headers_ms": 19463
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/semplice",
+      "request": {
+        "testoRicerca": "trasparenza amministrativa",
+        "orderType": "rilevante",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "http_status": 200,
+      "headers_ms": 601
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+      "request": {
+        "denominazioneAtto": "REGIO DECRETO",
+        "annoProvvedimento": "1942",
+        "numeroProvvedimento": "262",
+        "orderType": "recente",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "http_status": 200,
+      "headers_ms": 105
+    },
+    {
+      "url": "https://www.normattiva.it/eli/id/1942/04/04/042U0262/CONSOLIDATED/20261002",
+      "http_status": 409,
+      "headers_ms": 485
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+      "request": {
+        "denominazioneAtto": "DECRETO LEGISLATIVO",
+        "annoProvvedimento": "2003",
+        "numeroProvvedimento": "196",
+        "orderType": "recente",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "transport_cause": "OperationError"
+    },
+    {
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/ricerca/avanzata",
+      "request": {
+        "denominazioneAtto": "DECRETO LEGISLATIVO",
+        "annoProvvedimento": "2003",
+        "numeroProvvedimento": "196",
+        "orderType": "recente",
+        "paginazione": {
+          "paginaCorrente": 1,
+          "numeroElementiPerPagina": 5
+        }
+      },
+      "http_status": 200,
+      "headers_ms": 2056
+    },
+    {
+      "url": "https://www.normattiva.it/eli/id/2003/07/29/003G0218/CONSOLIDATED/20170101",
+      "http_status": 409,
+      "headers_ms": 2022
+    }
+  ]
+}

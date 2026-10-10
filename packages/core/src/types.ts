@@ -1,5 +1,5 @@
 export interface AttoListItem {
-  annoProvvedimento?: number;
+  annoProvvedimento?: number | string;
   numeroProvvedimento?: string;
   denominazioneAtto?: string;
   descrizioneAtto?: string;
@@ -7,10 +7,19 @@ export interface AttoListItem {
   codiceRedazionale?: string;
   dataGU?: string;
   dataEmanazione?: string;
+  numeroGU?: string;
+  numeroSupplemento?: string;
+  tipoSupplemento?: string;
   dataPubblicazione?: string;
   classeProvvedimento?: string;
   dataUltimaModifica?: string;
   ultimiAttiModificanti?: string;
+}
+
+export interface RicercaSempliceBody {
+  testoRicerca: string;
+  orderType: "rilevante";
+  paginazione: { paginaCorrente: number; numeroElementiPerPagina: number };
 }
 
 export interface RicercaResponse {
@@ -31,6 +40,8 @@ export interface DettaglioAttoBody {
   idGruppo: number;
   progressivo: number;
   versione: number;
+  flagTipoArticolo?: string;
+  tipoDettaglio?: "singolavigenza";
 }
 
 export interface DettaglioAttoResponse {
@@ -38,8 +49,19 @@ export interface DettaglioAttoResponse {
   data?: {
     atto?: {
       titolo?: string;
+      sottoTitolo?: string;
+      annoGU?: number;
+      meseGU?: number;
+      giornoGU?: number;
       tipoProvvedimentoDescrizione?: string;
       tipoProvvedimentoCodice?: string;
+      annoProvvedimento?: number;
+      meseProvvedimento?: number;
+      giornoProvvedimento?: number;
+      numeroProvvedimento?: number;
+      numeroGU?: number;
+      tipoSupplementoCode?: string;
+      numeroSupplemento?: number;
       articoloHtml?: string;
       articoloDataInizioVigenza?: string;
       articoloDataFineVigenza?: string;

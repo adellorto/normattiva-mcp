@@ -1,0 +1,302 @@
+{
+  "recorded_at": "2026-10-07T08:16:33.455814+00:00",
+  "fixed_point": "c344071cb8f1441112f11d898b97657e08ada6d2",
+  "node": "v24.15.0",
+  "scope": "Local default wrappers and isolated installed npm/traced Vercel output with external upstream fixtures. No deployed HTTP acceptance, official-source traffic, paid inference, push or publication.",
+  "regressions": {
+    "passed": 119,
+    "total": 119,
+    "public_http_controls": 9,
+    "log": "release-http-cancellation-regressions.txt"
+  },
+  "typechecks": {
+    "workspace_build": "passed",
+    "http_preserve_symlinks": "passed"
+  },
+  "http_cancel_before": {
+    "recorded_at": "2026-10-06T15:30:15.027Z",
+    "node": "v24.15.0",
+    "transport": "http",
+    "mode": "cancellation",
+    "gate": "failed",
+    "elapsed_ms": 2066.339393,
+    "events": [
+      {
+        "event": "started",
+        "at": 1791300612983
+      }
+    ],
+    "result": {
+      "error": "MCP error -32001: AbortError: This operation was aborted"
+    },
+    "healthy": {
+      "error": "MCP error -32001: Request timed out"
+    },
+    "scope": "Default built stdio / production HTTP handler; synthetic stalled upstream, production 20s attempt and 50s shared policy. Not deployed HTTP."
+  },
+  "http_cancel_after": {
+    "recorded_at": "2026-10-07T08:14:22.234Z",
+    "node": "v24.15.0",
+    "transport": "http",
+    "mode": "cancellation",
+    "gate": "passed",
+    "elapsed_ms": 603.122349,
+    "cancelled_at": 1791360861677,
+    "cancellation_abort_ms": 11,
+    "events": [
+      {
+        "event": "started",
+        "at": 1791360861655
+      },
+      {
+        "event": "aborted",
+        "at": 1791360861688
+      }
+    ],
+    "result": {
+      "error": "MCP error -32001: AbortError: This operation was aborted"
+    },
+    "healthy": {
+      "reason": "verified_official_article",
+      "requested": {
+        "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjd9fQ.kvCT5Db79U77v4pyZenWO73bh-7hvvnOAy7ESBQAbeY",
+        "snapshot_date": "2026-10-02",
+        "article_reference": "13"
+      },
+      "evidence": [
+        {
+          "source": "official_detail",
+          "checked_at": "2026-10-07T08:14:22.197Z",
+          "snapshot_date": "2026-10-02",
+          "publication": {
+            "data_gu": "2000-09-28",
+            "codice_redazionale": "000G0304"
+          },
+          "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto"
+        }
+      ],
+      "outcome": "found",
+      "content": {
+        "format": "text",
+        "text": "Art. 13. Fixture text 13.",
+        "effective_from": "2020-01-01"
+      },
+      "progress": "complete"
+    },
+    "scope": "Default built stdio / production HTTP handler; synthetic stalled upstream, production 20s attempt and 50s shared policy. Not deployed HTTP."
+  },
+  "stdio_cancel_after": {
+    "recorded_at": "2026-10-07T08:14:21.418Z",
+    "node": "v24.15.0",
+    "transport": "stdio",
+    "mode": "cancellation",
+    "gate": "passed",
+    "elapsed_ms": 553.4342899999997,
+    "cancelled_at": 1791360860885,
+    "cancellation_abort_ms": 5,
+    "events": [
+      {
+        "event": "started",
+        "at": 1791360860876
+      },
+      {
+        "event": "aborted",
+        "at": 1791360860890
+      }
+    ],
+    "result": {
+      "error": "MCP error -32001: AbortError: This operation was aborted"
+    },
+    "healthy": {
+      "reason": "verified_official_article",
+      "requested": {
+        "act_locator": "a2_eyJ2IjoyLCJwdWJsaWNhdGlvbiI6eyJkYXRhX2d1IjoiMjAwMC0wOS0yOCIsImNvZGljZV9yZWRhemlvbmFsZSI6IjAwMEcwMzA0In0sImlkZW50aXR5Ijp7InR5cGUiOiJERUNSRVRPIExFR0lTTEFUSVZPIiwiaXNzdWVkIjoiMjAwMC0wOC0xOCIsIm51bWJlciI6MjY3LCJnYXpldHRlIjoyMjd9fQ.kvCT5Db79U77v4pyZenWO73bh-7hvvnOAy7ESBQAbeY",
+        "snapshot_date": "2026-10-02",
+        "article_reference": "13"
+      },
+      "evidence": [
+        {
+          "source": "official_detail",
+          "checked_at": "2026-10-07T08:14:21.392Z",
+          "snapshot_date": "2026-10-02",
+          "publication": {
+            "data_gu": "2000-09-28",
+            "codice_redazionale": "000G0304"
+          },
+          "official_url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto"
+        }
+      ],
+      "outcome": "found",
+      "content": {
+        "format": "text",
+        "text": "Art. 13. Fixture text 13.",
+        "effective_from": "2020-01-01"
+      },
+      "progress": "complete"
+    },
+    "scope": "Default built stdio / production HTTP handler; synthetic stalled upstream, production 20s attempt and 50s shared policy. Not deployed HTTP."
+  },
+  "http_timeout": {
+    "recorded_at": "2026-10-07T08:04:23.485Z",
+    "node": "v24.15.0",
+    "transport": "http",
+    "mode": "timeout",
+    "gate": "passed",
+    "elapsed_ms": 40764.339525,
+    "events": [
+      {
+        "event": "started",
+        "at": 1791360222741
+      },
+      {
+        "event": "aborted",
+        "at": 1791360242742
+      },
+      {
+        "event": "started",
+        "at": 1791360243455
+      },
+      {
+        "event": "aborted",
+        "at": 1791360263472
+      }
+    ],
+    "result": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "upstream_timeout: The upstream attempt timed out."
+          }
+        ],
+        "structuredContent": {
+          "error": {
+            "category": "transport_failure",
+            "code": "upstream_timeout",
+            "retryability": true,
+            "message": "The upstream attempt timed out.",
+            "transport_cause": "timeout",
+            "provider": "normattiva",
+            "operation": "/bff-opendata/v1/api/v1/atto/dettaglio-atto"
+          }
+        },
+        "isError": true
+      }
+    },
+    "scope": "Default built stdio / production HTTP handler; synthetic stalled upstream, production 20s attempt and 50s shared policy. Not deployed HTTP."
+  },
+  "stdio_timeout": {
+    "recorded_at": "2026-10-07T08:04:24.183Z",
+    "node": "v24.15.0",
+    "transport": "stdio",
+    "mode": "timeout",
+    "gate": "passed",
+    "elapsed_ms": 41131.618635,
+    "events": [
+      {
+        "event": "started",
+        "at": 1791360223062
+      },
+      {
+        "event": "aborted",
+        "at": 1791360243063
+      },
+      {
+        "event": "started",
+        "at": 1791360244153
+      },
+      {
+        "event": "aborted",
+        "at": 1791360264170
+      }
+    ],
+    "result": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "upstream_timeout: The upstream attempt timed out."
+          }
+        ],
+        "structuredContent": {
+          "error": {
+            "category": "transport_failure",
+            "code": "upstream_timeout",
+            "retryability": true,
+            "message": "The upstream attempt timed out.",
+            "transport_cause": "timeout",
+            "provider": "normattiva",
+            "operation": "/bff-opendata/v1/api/v1/atto/dettaglio-atto"
+          }
+        },
+        "isError": true
+      }
+    },
+    "scope": "Default built stdio / production HTTP handler; synthetic stalled upstream, production 20s attempt and 50s shared policy. Not deployed HTTP."
+  },
+  "npm_package": {
+    "recorded_at": "2026-10-07T08:10:55.729Z",
+    "node": "v24.15.0",
+    "package_version": "0.2.0",
+    "scratch": "/tmp/normattiva-release-package-zD1we2",
+    "archive": "/tmp/normattiva-release-package-zD1we2/normattiva-mcp-0.2.0.tgz",
+    "isolated_package_contracts": "passed",
+    "same_key_restart": "passed",
+    "configured_npm_http_transfer": "passed",
+    "different_trust_rejection": "passed",
+    "scope": "Synthetic upstream; fresh production HTTP handler processes, not deployed Vercel or model acceptance."
+  },
+  "vercel_package": {
+    "recorded_at": "2026-10-07T08:15:42.239Z",
+    "node": "v24.15.0",
+    "built_handler": "packages/http-server/api/mcp.js",
+    "runtime": "nodejs24.x",
+    "max_duration_seconds": 60,
+    "worker_present": true,
+    "declared_file_path_mappings": 18,
+    "isolated_built_function_contracts": "passed",
+    "package_version": "0.2.0",
+    "isolated_built_function_cancellation": "passed",
+    "cancellation_abort_ms": 8,
+    "cancellation_events": [
+      {
+        "event": "started",
+        "at": 1791360942214
+      },
+      {
+        "event": "aborted",
+        "at": 1791360942223
+      }
+    ],
+    "scope": "Dereferenced local Vercel output outside workspace; parser worker, default contracts and same-instance upstream cancellation/lane release. Synthetic official boundaries; not deployed Vercel verification."
+  },
+  "vercel_build_log": "release-http-cancellation-vercel-build.txt",
+  "retained_vercel_precursor": "release-http-cancellation-vercel-precursor.txt",
+  "negative_controls": {
+    "request_signal_before": "Public fixture failed with HTTP Request abort must reach upstream; passes after default handler replacement.",
+    "request_shaped_notification_precursor": "Payload-only parsing cancelled another call. Public fixture failed with only a notification may cancel the original call. Strict JSON-RPC notification kind guard makes the regression pass.",
+    "other_instance": "A second production handler module accepts the portable namespace but cannot cancel a request in the first handler registry. The regression asserts this limitation and then cancels on the originating handler."
+  },
+  "production_limits_unchanged": {
+    "shared_deadline_ms": 50000,
+    "attempt_timeout_ms": 20000,
+    "direct_attempts": 2,
+    "composed_attempts": 16,
+    "active_attempts_per_process": 1
+  },
+  "source_hashes": {
+    "packages/http-server/api/mcp.ts": "62b1912790861ec7b8ee84eee3da6a7caed83a25309063e4fcd1be22eafe96f8",
+    "packages/core/src/server.ts": "1af94543bd358111c9117cd4b4791479dec59c79803d9b91d1b7fd83a30436ff",
+    "packages/core/src/upstream.ts": "4f58a78eb641e990062144c2c15a7bed32c20af67c85f3022d4cbb4449216b76",
+    "packages/core/test/fixtures/http-cancellation.mjs": "90aa574a81fbabcea9bfce67accef330d9aac5ec201b421d38baa66f51245c24",
+    "packages/core/test/fixtures/release-vercel-package.mjs": "e960816bb06a3354772fe94e8ad51efe8ba63fea895ff4992385426af4972899"
+  },
+  "remaining_acceptance": [
+    "deployed request lifecycle signals and cross-instance notification delivery",
+    "full TUEL memory target",
+    "final model routing/honesty and native guidance",
+    "independent complete historical/attachment controls",
+    "complete representative client matrix"
+  ],
+  "inference_spending_added": 0
+}

@@ -1,6 +1,6 @@
 {
   "name": "@normattiva/http-server",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@normattiva/core": "workspace:*",
-    "mcp-handler": "^1.1.0"
+    "@modelcontextprotocol/sdk": "^1.29.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

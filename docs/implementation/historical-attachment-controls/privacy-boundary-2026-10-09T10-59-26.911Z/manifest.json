@@ -1,0 +1,26 @@
+{
+  "captures": [
+    {
+      "name": "privacy-article-1-2018-09-18",
+      "provenance_file": "release-live-canaries-2026-10-06.json",
+      "provenance_attempt": 16,
+      "url": "https://api.normattiva.it/t/normattiva.api/bff-opendata/v1/api/v1/atto/dettaglio-atto",
+      "request": {
+        "idArticolo": 1,
+        "sottoArticolo": 1,
+        "sottoArticolo1": 0,
+        "flagTipoArticolo": "0",
+        "idGruppo": 0,
+        "progressivo": 0,
+        "versione": 0,
+        "dataGU": "2003-07-29",
+        "codiceRedazionale": "003G0218",
+        "dataVigenza": "2018-09-18",
+        "tipoDettaglio": "singolavigenza"
+      },
+      "captured_at": "2026-10-09T10:59:26.911Z",
+      "failure": "UND_ERR_CONNECT_TIMEOUT",
+      "elapsed_ms": 10542.640545
+    }
+  ]
+}

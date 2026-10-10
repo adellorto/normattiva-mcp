@@ -1,0 +1,41 @@
+{
+  "recorded_at": "2026-10-09",
+  "reviewer": "local evidence review",
+  "scope": "Both DeepSeek v4.1 Flash outputs from the bounded interrupted-index correction after adding case-sensitive opaque cursor guidance at the default MCP schema and result seams.",
+  "acceptance": "failed",
+  "criteria": {
+    "zero_observed_false_absence": "Not exercised by this continuation-only corrective sample.",
+    "zero_observed_fabricated_references": "Failed. Both repetitions changed the returned cursor; fresh MCP rejected both changed references as invalid_cursor.",
+    "zero_observed_unsupported_completion": "Not exercised by this continuation-only corrective sample. Neither output produced caller-visible prose."
+  },
+  "counts": {
+    "planned_calls": 2,
+    "dispatched_calls": 2,
+    "completed_outputs": 2,
+    "provider_errors": 0,
+    "truncated_outputs": 0,
+    "rows_with_automatic_failures": 2,
+    "generated_calls": 2,
+    "caller_visible_prose_answers": 0
+  },
+  "reference_failures": [
+    {
+      "repetition": 1,
+      "expected_length": 502,
+      "actual_length": 502,
+      "differences": [{ "zero_based_character": 156, "expected": "k", "actual": "K" }],
+      "replay_result": "reference_not_returned:cursor; MCP invalid_cursor"
+    },
+    {
+      "repetition": 2,
+      "expected_length": 502,
+      "actual_length": 502,
+      "differences": [
+        { "zero_based_character": 156, "expected": "k", "actual": "K" },
+        { "zero_based_character": 157, "expected": "K", "actual": "k" }
+      ],
+      "replay_result": "reference_not_returned:cursor; MCP invalid_cursor"
+    }
+  ],
+  "conclusion": "The measured wording safeguard does not correct this deterministic mixed-case transcription failure. The failed precursor remains evidence; it is not a successful model gate or a guarantee about other references."
+}

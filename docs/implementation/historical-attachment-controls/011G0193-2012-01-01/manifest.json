@@ -1,0 +1,42 @@
+{
+  "publication": {
+    "data_gu": "2011-09-22",
+    "codice_redazionale": "011G0193"
+  },
+  "date": "2012-01-01",
+  "captures": [
+    {
+      "url": "https://www.normattiva.it/eli/id/2011/09/22/011G0193/CONSOLIDATED/20120101",
+      "request": null,
+      "captured_at": "2026-10-07T13:44:56.348Z",
+      "status": 200,
+      "elapsed_ms": 10785,
+      "decoded_bytes": 146685,
+      "sha256": "4bb3a36142e81d6444a7e10a2317dcb2b3490a4f01db0f0e12f6a147cffc2780",
+      "content_type": "text/html;charset=UTF-8",
+      "location": null,
+      "file": "capture-1.gz"
+    },
+    {
+      "url": "https://www.normattiva.it/do/atto/caricaAKN?dataGU=20110922&codiceRedaz=011G0193&dataVigenza=20120101",
+      "request": null,
+      "captured_at": "2026-10-07T13:45:07.301Z",
+      "status": 200,
+      "elapsed_ms": 9589,
+      "decoded_bytes": 286810,
+      "sha256": "c60f131a97e21883414d9fcf03d633598c1af6b68e7c975d3043deba064f2a64",
+      "content_type": "text/xml",
+      "location": null,
+      "file": "capture-2.gz"
+    }
+  ],
+  "result": {
+    "error": {
+      "category": "upstream_failure",
+      "code": "source_identity_conflict",
+      "message": "The AKN identifies another or unverifiable publication.",
+      "retryability": false,
+      "provider": "normattiva"
+    }
+  }
+}
