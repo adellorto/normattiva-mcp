@@ -87,6 +87,8 @@ async function handler(req: Request): Promise<Response> {
     }
     dispatch(message, extra);
   };
+  // Hosts must deliver disconnects through Request.signal. Vercel's matching
+  // function entry opts into that lifecycle signal with supportsCancellation.
   req.signal.addEventListener("abort", abort, { once: true });
   const handleMessage = async (): Promise<Response> => {
     let parsedBody: unknown;
