@@ -85,7 +85,7 @@ Una sola richiesta upstream attiva per processo; scadenza condivisa di 50 second
 
 ## Configurazione e fiducia nei riferimenti
 
-Lo stdio locale non richiede la configurazione di una chiave. Al primo avvio del server (non durante `npm install`) crea una chiave casuale crittografica e la riusa dopo riavvii, reinstallazioni e aggiornamenti ordinari. Il file di stato usa permessi privati dove la piattaforma li supporta e si trova in:
+Nel sorgente di sviluppo per il prossimo rilascio 0.2.1, lo stdio locale non richiede la configurazione di una chiave. Al primo avvio del server (non durante `npm install`) crea una chiave casuale crittografica e la riusa dopo riavvii, reinstallazioni e aggiornamenti ordinari. Il file di stato usa permessi privati dove la piattaforma li supporta e si trova in:
 
 - Linux: `$XDG_STATE_HOME/normattiva-mcp/reference-key`, oppure `~/.local/state/normattiva-mcp/reference-key` se `XDG_STATE_HOME` non è impostata.
 - macOS: `~/Library/Application Support/normattiva-mcp/reference-key`.
