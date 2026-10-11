@@ -2,15 +2,11 @@
 
 **English** · [Italiano](./README.it.md)
 
-[![Listed in italia-mcp-servers](https://img.shields.io/badge/listed%20in-italia--mcp--servers-blue)](https://github.com/bsab/italia-mcp-servers)
+A lightweight [Model Context Protocol](https://modelcontextprotocol.io) server that exposes the [Normattiva](https://www.normattiva.it) OpenData API — the official Italian legislation portal run by IPZS — to LLM clients like Claude Desktop, Cursor, and Claude Code.
 
-A [Model Context Protocol](https://modelcontextprotocol.io) server for official Italian legislation from [Normattiva](https://www.normattiva.it), run by IPZS. Shared discovery, dated article indexing and bounded reading serve both local stdio and Streamable HTTP clients.
+It wraps the synchronous read endpoints (search, article detail, recent updates) and the static reference catalogs as MCP **tools**, **resources**, and **prompts**.
 
-## Release status
-
-Version **0.2.0** is published and the production hosted endpoint is live. The immutable [tag](https://github.com/adellorto/normattiva-mcp/tree/v0.2.0), [GitHub Release](https://github.com/adellorto/normattiva-mcp/releases/tag/v0.2.0), [npm package](https://www.npmjs.com/package/normattiva-mcp/v/0.2.0) and [hosted endpoint](https://normattiva-mcp.adellorto.com/api/mcp) all expose the coordinated replacement interface described below. The [publication record](docs/implementation/release-publication.md) ties those public artifacts to the reviewed commit and records the passing post-release production smoke.
-
-This source revision implements stages 1–4 of the [accepted remediation](https://github.com/adellorto/normattiva-mcp/issues/6#issuecomment-5992182865). The [pre-publication acceptance handoff](docs/implementation/release-acceptance.md) remains the historical record of the evidence, decisions and checks that were still pending at that time. Current model checks, native guidance and the approved exclusion of **Llama3.1 8B** from validated support are recorded in the [model guidance remedy](docs/implementation/model-guidance-remedy.md). Passing finite offline or model samples does not establish arbitrary model reliability. Implementation records: [validated reading](docs/implementation/validated-reading.md), [act discovery](docs/implementation/act-discovery.md), [public integration](docs/implementation/public-integration.md). See the [breaking migration guide](docs/migration.md) for removed inputs and fields.
+Version 0.2.x remains under development and was rolled back after issues were encountered; the currently supported release is v0.1.4.
 
 ## Capabilities
 
@@ -18,137 +14,137 @@ This source revision implements stages 1–4 of the [accepted remediation](https
 
 | Tool | Purpose |
 | --- | --- |
-| `find_acts` | First call for an act or article request: copy the entire user message unchanged into `request`, preserving characters, reading instructions and date/status constraints, then wait for the result. Returns `identified`, `candidates`, or `no_candidates`, act locators and separated article intent; never article text. For a next page without a cursor, ask without tools. Empty discovery does not prove absence; use returned official references and never invent sources or URLs. |
-| `continue_acts` | Continue discovery with only an actual returned cursor, copied literally; placeholders and guesses are invalid. Without one, make no tool call and ask for it in one short sentence. Reading/index cursors belong to their original tool. Search uses a live corpus; completion does not prove exhaustive legal relevance. |
-| `list_articles` | Page through verified article occurrences, available headings, hierarchy and attachment references for an `act_locator` at a concrete `snapshot_date`. Continue via `list_articles` with only `cursor` and optionally `page_size`, omitting the original target/date; for an already requested full index, continue without asking again. Inspect coverage separately from progress. |
-| `read_article` | Read an already returned exact `article_locator`, or `act_locator` plus `article_reference`, without mandatory indexing. Returns `found`, evidence-backed `absent`, or `unresolved` (existence unknown). Continue via `read_article` with only the literal `cursor` and optionally `max_chars`; for an already requested full article, continue without asking permission. |
-| `read_act` | Read bounded text and structured table cells for an `act_locator`, optionally selecting a listed `attachment_ref`. Continue via `read_act` with only `cursor` and optionally `max_chars`, omitting the original target/date; follow cursors without asking again when the whole act was requested. Completion and legal-content coverage are distinct. |
-| `recent_updates` | List acts whose **consolidated text was amended** in an inclusive date window of at most twelve months, including act locators. For **new Gazette publications**, use `find_acts` with an explicit publication window. Metadata alone does not explain amendment content. |
+| `search_acts` | Search Italian legislation by free text, title, act type, year/number, date range, vigenza class, or in-force date. Returns metadata for each matching atto including `codice_redazionale` and `data_gu` (which `read_article` needs). To find acts **newly published** in Gazzetta Ufficiale within a window, set `data_pubblicazione_da` / `data_pubblicazione_a` — this is the right tool for "what was published recently?", not `recent_updates`. |
+| `list_articles` | Discover the article numbers of an atto by sequentially probing `read_article` from `articolo=1`. Finds base articles by default; pass `include_suffixes: true` to also probe `bis`/`ter`/`quater`/… for each one. Each entry carries optional `is_preamble` and `is_abrogated` flags (informational; nothing is filtered server-side). Articles inside structured groups (`id_gruppo != 0`) are still not enumerated automatically. |
+| `read_article` | Fetch the text of a single article of a specific atto at a given date of vigenza. Returns plain text by default; pass `format: "html"` for the original markup (preserves amendment markers). In text mode, hyperlink targets are inlined as `L. 5/2003 [urn:nir:stato:legge:2003-06-05;131]` so URN citations survive the conversion. Successful responses include `found: true`; non-existent articles (wrong `sotto_articolo`, `id_gruppo`, or out-of-range `articolo`) return `{ found: false, reason, richiesta }` instead of throwing — so probing is exception-free. The LLM can call this in parallel for several articles of the same atto. |
+| `read_act` | Aggregate-read of an entire atto: internally enumerates articles and fetches each one, returning them in order capped by `max_chars` (default 80 000 ≈ 20k Claude tokens). Honors `include_suffixes` and `id_gruppo` like `list_articles`. When the budget is exhausted the response includes `truncated: true`, `truncated_reason`, and `articolo_successivo` for resuming via a follow-up call with `articolo_da` set to that value. |
+| `recent_updates` | Lists atti normativi whose **consolidated text was amended** within a date window (max 12 months) — i.e. the in-force version changed because another act modified it. Does **not** list acts newly published in Gazzetta Ufficiale; for those, use `search_acts` with `data_pubblicazione_da` / `data_pubblicazione_a`. |
 
 ### Resources
 
 | URI | Contents |
 | --- | --- |
-| `normattiva://tipologiche/denominazioni` | Official act-type codes and Italian names; optional reference metadata. |
-| `normattiva://tipologiche/classi-provvedimento` | Official version classes: `1` = without amendments, `2` = amended, `3` = repealed; no selected-act currentness evidence. |
-| `normattiva://collezioni-predefinite` | Official predefined collections and their counts. |
-| `normattiva://ricerche-predefinite` | Official preset searches and upstream filters, for reference rather than direct tool arguments. |
-
-Discovery accepts the user's request directly; reading these catalogs is optional.
+| `normattiva://tipologiche/denominazioni` | Act-type codes (e.g. `PLE` → `LEGGE`, `PDL` → `DECRETO-LEGGE`). Use the value as the `denominazione` argument of `search_acts`. |
+| `normattiva://tipologiche/classi-provvedimento` | Vigenza class codes: `1` = senza aggiornamenti, `2` = aggiornato, `3` = abrogato. |
+| `normattiva://collezioni-predefinite` | Predefined collections of acts with their item counts. |
+| `normattiva://ricerche-predefinite` | Predefined searches with their preset filters. |
 
 ### Prompts
 
 | Name | Args | Purpose |
 | --- | --- | --- |
-| `ricerca-articolo` | `argomento` | Opt-in research: select up to 3 acts using discovery and actual index headings, read up to 10 articles, cite only read content and disclose coverage. Follow further cursors for explicitly exhaustive requests. |
-| `monitoraggio-modifiche` | `giorni` (1–365, default `7`) | Group metadata for acts whose consolidated text was amended. Read relevant dated content before describing changes; use `find_acts` for new publications. |
+| `ricerca-articolo` | `argomento` | Search Italian law on a topic and read the most relevant articles. |
+| `monitoraggio-modifiche` | `giorni` (default `7`) | Summarize amendments to the consolidated text of existing acts in the last *N* days (uses `recent_updates`; for newly published acts use `search_acts` with `data_pubblicazione_da/a`). |
 
-Essential call and interpretation guidance is in tool descriptions/results. No prompt, catalog attachment or initialization instructions are required for ordinary tool use.
+## Installation & client configuration
 
-## Discovery and reading
-
-Make one discovery call with the complete user request verbatim, including articles/commas, dates, currentness and contradictions. Wait for its result before reading or searching further; do not insert remembered citations, substitute publication for issuance, or silently repair an invalid range. Clarification of an invalid request is also appropriate.
-
-```json
-{"name":"find_acts","arguments":{"request":"decreto legislativo 267/2000 articolo 13"}}
-```
-
-Select the returned candidate's opaque `act_locator`; never put a human citation or a value constructed from memory in a locator field. Discovery keeps `article_reference` separate. Substitute the actual returned value below:
-
-```json
-{"name":"read_article","arguments":{"act_locator":"<returned act_locator>","article_reference":"13","snapshot_date":"2026-10-02"}}
-```
-
-For suffixes, structured or repeated occurrences, select an exact `article_locator` from `list_articles`. Never reconstruct internal coordinates or choose a generation from model memory. If discovery remains `candidates`, selection is still required. Alias review/live identity verification does not prove current legal force: candidates currently report `current: "unknown"`.
-
-Discovery pagination uses `continue_acts({cursor})`. Reading/index pagination calls the same tool again with `{cursor}` and an optional new budget. Treat every cursor as opaque and case-sensitive: reuse the exact returned string without retyping, normalizing, decoding, repairing or changing letter case, and omit the original target/date. `find_acts` and `continue_acts` take no public page-size argument.
-
-Reading resolves an omitted date to a concrete UTC date on the initial call. Reading references retain that snapshot and acquired representation through restarts and cache eviction. Start a new request to change the date. Search pages remain live and may change membership/order across calls; within-page changes fail explicitly rather than silently shifting position.
-
-## Outcomes, progress and limits
-
-Successful tools expose matching JSON in `structuredContent` and text content. Article `outcome` is independent of execution: `found` has `content.text`; `absent` requires positive evidence and `absence_basis`; `unresolved` cannot establish presence or absence. An ambiguous upstream 404 is unresolved, not absence.
-
-Index, whole-act and discovery progress is in `traversal`; a direct article uses top-level `progress`. `pending` means preparation without useful entries (index/whole-act only), `more` means another bounded page remains, and `complete` ends the observed traversal. `interrupted` preserves the useful prefix with a cursor, `failure.error` and the first unfinished position. A failure before useful progress is `isError: true` with `structuredContent.error`: category, code, safe message and `retryability` (`true`, `false`, or `"unknown"`), plus applicable provider/HTTP/transport/retry timing. Unknown retryability does not authorize automatic retries. Schema-invalid calls may instead receive the MCP SDK's validation error.
-
-| Limit | Default | Maximum |
-| --- | --- | --- |
-| Discovery candidates per page | 5 | 20 internally configured; public calls use the default |
-| Index entries per page | 30 | 50 |
-| Reading text characters per page | 16,000 | 64,000 |
-| Full serialized response, including both MCP representations | — | 128 KiB UTF-8 |
-| Decoded source acquisition | — | 24 MiB |
-
-Text limits count Unicode code points; returned segment offsets address UTF-16 positions. Table IDs, dimensions, cells, spans, headers and offsets survive pagination. Byte limits can reduce a page further; supported content resumes instead of being skipped. Unrepresentable entries and source/parser limits fail explicitly.
-
-All upstream work shares one active attempt per process, a 50-second call deadline, 20-second attempt limit and budgets of two attempts for direct reads or sixteen for composed operations. Retries require replay safety and known transient evidence; continuation gets a fresh allowance. Clients/hosting must allow response overhead beyond the deadline; the HTTP function allows 60 seconds. Cancellation stops queued and active work in stdio and within the same HTTP process.
-
-## Configuration and reference trust
-
-In the development source for the upcoming 0.2.1 release, local stdio needs no key setup. On the first server launch (not during `npm install`), it creates a cryptographically random key and reuses it across restarts, reinstalls and ordinary upgrades. The state file uses private permissions where the platform supports them and is stored at:
-
-- Linux: `$XDG_STATE_HOME/normattiva-mcp/reference-key`, or `~/.local/state/normattiva-mcp/reference-key` when `XDG_STATE_HOME` is unset.
-- macOS: `~/Library/Application Support/normattiva-mcp/reference-key`.
-- Windows: `%LOCALAPPDATA%\normattiva-mcp\reference-key`.
-
-To choose the local key explicitly, set `NORMATTIVA_REFERENCE_KEY` to exactly 64 hexadecimal characters encoding a cryptographically generated 32-byte key. An explicit value always takes precedence:
+Run via `npx`:
 
 ```bash
-openssl rand -hex 32
-export NORMATTIVA_REFERENCE_KEY='<paste your preserved 64-hex key>'
+npx normattiva-mcp
 ```
 
-The server reads the process environment and does not automatically load `.env` files. A malformed explicit value fails instead of falling back. A malformed or inaccessible local state file is left unchanged and fails with guidance to use the explicit override; no secret value is logged. Compatible processes with the same preserved key can verify signed references across restarts. Changing or losing the key invalidates signed references and requires new discovery/traversal. Unshared deployments reject references explicitly.
+### Claude Desktop / Claude Code
 
-Hosted HTTP remains explicit-only: set `NORMATTIVA_REFERENCE_KEY` in the deployment secret configuration. A hosted process never creates local or per-instance fallback trust. Remote clients do not receive or need the hosted key. Reference transfer between local, npm and hosted copies additionally requires deliberately shared trust and compatible versions.
-
-Formats: `a1_` portable, validated publication locators (not existence evidence); `a2_` signed act locators carrying independently returned official discovery identity; `n2_` compact signed exact article/attachment references; `n3_` lowercase-only signed reading cursors; and `d2_` lowercase-only signed live-discovery cursors. This implementation also reads earlier `n1_` references, `n2_` reading cursors and `d1_` discovery cursors. Older implementations reject the newer versions, so upgrade both transfer endpoints before sending newly issued references. Lowercase cursors use Base32-encoded authenticated raw-DEFLATE payloads; their decoded payload remains bounded to 16 KiB. Compact cursors share the target's snapshot binding within one authenticated payload. Signed act identity survives restart and requires shared trust for transfer. Detail responses must independently match that identity and the requested validity interval. Unsupported/tampered/untrusted references fail without silently restarting or redirecting to caller-selected hosts. No cursor database is required.
-
-Upstream destinations are fixed official Normattiva production API/website hosts. The open API requires no authentication. The mTLS PRE environment is excluded.
-
-## Clients and HTTP
-
-Version 0.2.0 stdio clients can run the published package with preserved trust:
+Add to your MCP client config (`claude_desktop_config.json` for Claude Desktop, or `~/.claude.json` / `.mcp.json` for Claude Code):
 
 ```json
 {
   "mcpServers": {
     "normattiva": {
       "command": "npx",
-      "args": ["-y", "normattiva-mcp@0.2.0"],
-      "env": { "NORMATTIVA_REFERENCE_KEY": "<your preserved 64-hex key>" }
+      "args": ["-y", "normattiva-mcp"]
     }
   }
 }
 ```
 
-The production hosted endpoint is `https://normattiva-mcp.adellorto.com/api/mcp`. Hosted users need no reference key or additional authentication; the operator configures deployment trust. Compatible self-hosted copies expose the same six tools over Streamable HTTP, with permissive CORS and no authentication by default.
+### Cursor
 
-HTTP initialization returns an opaque `Mcp-Session-Id`; clients must preserve it on subsequent POSTs so cancellation notifications target their own requests. Requests without that header still work, but their notifications cannot cancel an earlier POST. The server also stops work when its host aborts the incoming `Request.signal`. This Vercel deployment opts `api/mcp.ts` into documented downstream-disconnect delivery with `supportsCancellation`; other hosts must provide equivalent `Request.signal` behavior. A lost connection is lifecycle cleanup, not an explicit MCP cancellation notification. The namespace works across restarts with the preserved signing key, while notification routing only reaches active calls on the same process. Multiple instances still require affinity or shared routing for separate MCP cancellation notifications; no cross-instance notification guarantee is made. Invalid namespaces return HTTP 404 and require fresh initialization. POSTs carry one MCP message; batches are rejected. GET and DELETE return 405; responses use JSON without a resumable SSE stream.
+In `.cursor/mcp.json`:
 
-For Vercel self-hosting, configure the preserved key in the deployment environment, build all packages and deploy from the **repository root** where `.vercel/project.json` lives. Use `vercel deploy --prod` only when ready to publish. The user controls push, npm publication and deployment. Existing live landing page/configs: [English](https://normattiva-mcp.adellorto.com/), [Italian](https://normattiva-mcp.adellorto.com/it/).
-
-## Building and checking source
-
-Requires Node.js ≥20 and pnpm. Deterministic tests are currently exercised on Node 24; the actual HTTP-handler test uses Node's TypeScript support.
-
-```bash
-pnpm install
-pnpm build
-pnpm start
-pnpm test
+```json
+{
+  "mcpServers": {
+    "normattiva": {
+      "command": "npx",
+      "args": ["-y", "normattiva-mcp"]
+    }
+  }
+}
 ```
 
-`pnpm test` makes no public API calls. With a configured key, `node tests/smoke.mjs` runs a small live stdio canary: handshake, discovery-to-reading, literal continuation, index/whole-act pages, resources/prompts, updates and typed errors. An upstream outage fails the canary; it never counts as a passing absence check. The canary is not full release acceptance.
+## Configuration
 
-## Coverage and limitations
+The server always talks to Normattiva's **production OpenData API** (`https://api.normattiva.it/t/normattiva.api`). The endpoint is hard-coded — there is no environment variable to override it. The PRE/test environment is intentionally not supported because it is mTLS-protected.
 
-Dated website AKN and supplied navigation addresses are checked against independent detail content. Historical membership is not inferred from navigation, root dates or counts. Substantive source conflicts withhold results; identified explanatory-note differences are disclosed. Article headings are returned when available and validated; no heading is invented from a law title.
+The OpenData API is open and does not require authentication.
 
-Inspect `coverage.article_inventory_complete`, `coverage.legal_content_complete` and unread attachment references even when traversal is `complete`. Unread graphics/PDFs remain visible and linked where the source supplies a link; no automatic scan interpretation or historical-link guarantee is added. Preface, preamble and conclusion reading lacks independent controls and remains disclosed outside supported coverage. Automatic full-history exports and source switching are excluded.
+## HTTP transport
 
-Tables use `read_act`; direct plain-text article reads containing tables return unresolved with that guidance. Legal text retains supported amendment/citation structure. Retrieval cannot guarantee that an external model reproduces every returned word. Upstream constraints and model behavior are distinguished from verified connector findings in the [planning map](https://github.com/adellorto/normattiva-mcp/issues/1).
+In addition to the npm-published stdio binary, this repo also ships `packages/http-server/` — a Vercel deployment of the same MCP server over the Streamable HTTP transport. Useful for clients that need a remote endpoint instead of a local subprocess.
+
+**Hosted endpoint:** `https://normattiva-mcp.adellorto.com/api/mcp` — free, no signup, no auth.
+
+Client config:
+
+```json
+{
+  "mcpServers": {
+    "normattiva": {
+      "url": "https://normattiva-mcp.adellorto.com/api/mcp"
+    }
+  }
+}
+```
+
+### Self-hosting
+
+To run your own copy on a Vercel account:
+
+```bash
+git clone https://github.com/adellorto/normattiva-mcp.git
+cd normattiva-mcp
+pnpm install
+cd packages/http-server
+npx vercel deploy
+```
+
+The handler exposes only Streamable HTTP (SSE is removed from the 2025-03-26 MCP spec). No authentication by default — anyone with the URL can call it.
+
+## Building from source
+
+Requires Node.js ≥ 20.
+
+```bash
+git clone <repo>
+cd normattiva-mcp
+npm install
+npm run build
+node dist/index.js  # speaks MCP on stdio
+```
+
+A live smoke test (hits the public API):
+
+```bash
+node tests/smoke.mjs
+```
+
+## Notes & limitations
+
+- **No table-of-contents endpoint.** Normattiva OpenData has no synchronous TOC. `list_articles` is a best-effort probe: it calls `read_article` for `articolo=1,2,3,…` until it stops finding results. By default it discovers **base articles** only; `include_suffixes: true` extends the probe to `bis`/`ter`/`quater`/… (round-by-round, stopping each chain at the first miss) but cannot find sub-articles whose base is missing, nor articles inside structured groups (`id_gruppo != 0`).
+- **`id_gruppo` is opaque.** Some atti — typically structured codes (codici, testi unici, leggi articolate) — return content only when `read_article` is called with a non-zero `id_gruppo`. The OpenData API offers no way to discover the right value synchronously. Practical strategy: try `id_gruppo=0` first; if results look empty or wrong, try small integers (1, 2, 3, …) until the article comes back.
+- **One article per call upstream.** Normattiva's `dettaglio-atto` endpoint serves one article at a time. `read_article` exposes that directly (parallelize from the client when reading several articles); `read_act` hides the orchestration and returns a single aggregated payload, capped by `max_chars` and resumable via `articolo_successivo`.
+- **HTML stripping.** The default `format: "text"` collapses Normattiva's HTML markup but preserves the Italian-law amendment markers `(( ... ))` (insertions) and `[ ... ]` (deletions), which carry semantic meaning. Hyperlinks to other normative acts are inlined as `<text> [urn:nir:…]` so the Akoma Ntoso URN survives in plain text.
+- **Article versioning is non-discoverable.** Each `read_article` call returns the version of the article in force on `data_vigenza` (the API's `versione=0` default). The OpenData API does not expose how many historical versions exist for an article, so previous texts can only be retrieved by varying `data_vigenza` (or by guessing `versione=1, 2, …`).
+- **`is_abrogated` is heuristic.** The flag matches the canonical `((ARTICOLO ABROGATO …))` marker that successive amendments insert at the head of a wholly-abrogated article. Articles where individual commi are abrogated but the article itself is alive (e.g. `((COMMA ABROGATO …))` in a few subsections) are **not** flagged.
+- **Async export and PRE environment** (mTLS-protected) are **not** wrapped — this server stays light and synchronous.
+- **`recent_updates`** treats `data_fine` as inclusive end-of-day (UTC). The window is capped at 12 months and 7000 atti by the API; both limits surface as IPZS error codes (`1501`, `1502`).
 
 ## License
 
-Source: [MIT](./LICENSE). Legislative content: IPZS [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); downstream use must attribute Normattiva / IPZS. Normattiva is an IPZS trademark; this project is not affiliated with or endorsed by IPZS.
+This server's source code is MIT — see [LICENSE](./LICENSE).
+
+Legislative content retrieved through this server is published by IPZS under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The server is a pass-through and does not relicense the content: any downstream use or redistribution must attribute Normattiva / IPZS as the source.
+
+Normattiva is a trademark of the Istituto Poligrafico e Zecca dello Stato Italiano (IPZS); this project is not affiliated with or endorsed by IPZS.
