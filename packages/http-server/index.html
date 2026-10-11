@@ -38,7 +38,7 @@
 
     <main>
       <section class="hero">
-        <div class="hero__overline">remote · model context protocol · v0.2.0</div>
+        <div class="hero__overline">remote · model context protocol · v0.2.1</div>
         <div class="section-mark" aria-hidden="true">§</div>
         <h1 class="hero__title">Italian law,<br />served to your agents.</h1>
         <p class="hero__lead">
@@ -47,7 +47,7 @@
           the official Italian legislation portal run by IPZS. Connect any MCP-compatible client and
           read bounded legal text and resume with literal references. Free, no signup, no auth.
         </p>
-        <p class="hero__lead">Release 0.2.0 is published and this production deployment is live. Post-release checks passed version and interface discovery, bounded reading with literal continuation, and typed invalid-cursor handling. Hosted users need no reference key.</p>
+        <p class="hero__lead">Release 0.2.1 adds automatic local stdio trust while preserving the 0.2.0 MCP interface and reference formats. This production deployment serves the hosted HTTP transport; hosted users need no reference key.</p>
         <p class="hero__lead"><code>find_acts</code> discovers the act; <code>list_articles</code> lists occurrences; <code>read_article</code> and <code>read_act</code> return bounded pages. Copy <code>cursor</code> values literally. <code>unresolved</code> does not prove absence, and traversal completion does not prove complete coverage. Unread images and attachments remain disclosed.</p>
         <div class="button-row">
           <a class="btn btn--primary" href="#quickstart">Quickstart →</a>
@@ -188,10 +188,7 @@
   <span class="k">"mcpServers"</span>: {
     <span class="name">"normattiva"</span>: {
       <span class="k">"command"</span>: <span class="v">"npx"</span>,
-      <span class="k">"args"</span>: [<span class="v">"-y"</span>, <span class="v">"normattiva-mcp@0.2.0"</span>],
-      <span class="k">"env"</span>: {
-        <span class="k">"NORMATTIVA_REFERENCE_KEY"</span>: <span class="v">"&lt;preserved 64-character hexadecimal key&gt;"</span>
-      }
+      <span class="k">"args"</span>: [<span class="v">"-y"</span>, <span class="v">"normattiva-mcp@0.2.1"</span>]
     }
   }
 }</pre>
@@ -200,7 +197,7 @@
               <div class="step">
                 <span class="step__num">2</span>
                 <div class="step__body">
-                  Requires Node.js ≥ 20. Generate the key once with <code>openssl rand -hex 32</code>, replace the placeholder and preserve it on every restart. This local key protects references; remote clients do not need it.
+                  Requires Node.js ≥ 20. On first launch, the server creates private local reference trust and reuses it across restarts, reinstalls and ordinary upgrades. Set an explicit key only when you deliberately need shared trust between compatible installations.
                 </div>
               </div>
             </div>

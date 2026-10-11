@@ -1,3 +1,4 @@
+import { createRequire } from "node:module";
 import { OperationError, type ErrorDetail } from "./errors.js";
 import { executeUpstream } from "./upstream.js";
 import { RESPONSE_LIMITS, calendarDateSchema, articleContentSchema } from "./contracts.js";
@@ -14,6 +15,8 @@ import type {
   RicerchePredefiniteResponse,
 } from "./types.js";
 
+const pkg = createRequire(import.meta.url)("../package.json") as { version: string };
+
 // Hard-coded to the production OpenData environment. The PRE environment
 // requires mTLS and is intentionally unsupported here.
 export const BASE_URL = "https://api.normattiva.it/t/normattiva.api";
@@ -24,7 +27,7 @@ const COMMON_HEADERS: Record<string, string> = {
   Accept: "application/json, text/plain, */*",
   "Accept-Language": "it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7",
   Origin: "https://dati.normattiva.it",
-  "User-Agent": "normattiva-mcp/0.2.0 (+https://www.npmjs.com/package/normattiva-mcp)",
+  "User-Agent": `normattiva-mcp/${pkg.version} (+https://www.npmjs.com/package/normattiva-mcp)`,
 };
 
 const MAX_SOURCE_BYTES = RESPONSE_LIMITS.sourceBytes;

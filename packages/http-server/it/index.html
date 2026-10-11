@@ -38,7 +38,7 @@
 
     <main>
       <section class="hero">
-        <div class="hero__overline">remoto · model context protocol · v0.2.0</div>
+        <div class="hero__overline">remoto · model context protocol · v0.2.1</div>
         <div class="section-mark" aria-hidden="true">§</div>
         <h1 class="hero__title">La legge italiana,<br />servita ai tuoi agenti.</h1>
         <p class="hero__lead">
@@ -48,7 +48,7 @@
           compatibile con MCP per leggere pagine limitate di testo e riprendere con riferimenti letterali.
           Gratuito, senza registrazione, senza autenticazione.
         </p>
-        <p class="hero__lead">Il rilascio 0.2.0 è pubblicato e questo deployment di produzione è attivo. Le verifiche successive al rilascio hanno confermato versione e interfaccia, lettura limitata con continuazione letterale e gestione tipizzata dei cursori non validi. Gli utenti del servizio ospitato non hanno bisogno di una chiave di riferimento.</p>
+        <p class="hero__lead">Il rilascio 0.2.1 aggiunge la fiducia automatica per lo stdio locale preservando l'interfaccia MCP e i formati dei riferimenti della versione 0.2.0. Questo deployment di produzione offre il trasporto HTTP; gli utenti del servizio ospitato non hanno bisogno di una chiave di riferimento.</p>
         <p class="hero__lead"><code>find_acts</code> individua l’atto; <code>list_articles</code> elenca le occorrenze; <code>read_article</code> e <code>read_act</code> leggono pagine limitate. Copia letteralmente i <code>cursor</code>. <code>unresolved</code> non prova assenza, e il completamento dell’attraversamento non prova copertura completa. Le immagini e gli allegati non letti rimangono segnalati.</p>
         <div class="button-row">
           <a class="btn btn--primary" href="#quickstart">Quickstart →</a>
@@ -189,10 +189,7 @@
   <span class="k">"mcpServers"</span>: {
     <span class="name">"normattiva"</span>: {
       <span class="k">"command"</span>: <span class="v">"npx"</span>,
-      <span class="k">"args"</span>: [<span class="v">"-y"</span>, <span class="v">"normattiva-mcp@0.2.0"</span>],
-      <span class="k">"env"</span>: {
-        <span class="k">"NORMATTIVA_REFERENCE_KEY"</span>: <span class="v">"&lt;chiave esadecimale persistente di 64 caratteri&gt;"</span>
-      }
+      <span class="k">"args"</span>: [<span class="v">"-y"</span>, <span class="v">"normattiva-mcp@0.2.1"</span>]
     }
   }
 }</pre>
@@ -201,7 +198,7 @@
               <div class="step">
                 <span class="step__num">2</span>
                 <div class="step__body">
-                  Richiede Node.js ≥ 20. Genera una sola volta la chiave con <code>openssl rand -hex 32</code>, sostituisci il segnaposto e conserva il valore ad ogni riavvio. È una chiave locale per i riferimenti; i client remoti non la richiedono.
+                  Richiede Node.js ≥ 20. Al primo avvio il server crea automaticamente una fiducia locale privata e la riusa dopo riavvii, reinstallazioni e aggiornamenti ordinari. Imposta una chiave esplicita solo quando vuoi condividere intenzionalmente la fiducia tra installazioni compatibili.
                 </div>
               </div>
             </div>
