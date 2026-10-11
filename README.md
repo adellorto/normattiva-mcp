@@ -85,14 +85,22 @@ All upstream work shares one active attempt per process, a 50-second call deadli
 
 ## Configuration and reference trust
 
-The replacement servers require `NORMATTIVA_REFERENCE_KEY`: exactly 64 hexadecimal characters encoding a cryptographically generated 32-byte key. Generate it **once**, then preserve it in your client environment or deployment secret:
+Local stdio needs no key setup. On the first server launch (not during `npm install`), it creates a cryptographically random key and reuses it across restarts, reinstalls and ordinary upgrades. The state file uses private permissions where the platform supports them and is stored at:
+
+- Linux: `$XDG_STATE_HOME/normattiva-mcp/reference-key`, or `~/.local/state/normattiva-mcp/reference-key` when `XDG_STATE_HOME` is unset.
+- macOS: `~/Library/Application Support/normattiva-mcp/reference-key`.
+- Windows: `%LOCALAPPDATA%\normattiva-mcp\reference-key`.
+
+To choose the local key explicitly, set `NORMATTIVA_REFERENCE_KEY` to exactly 64 hexadecimal characters encoding a cryptographically generated 32-byte key. An explicit value always takes precedence:
 
 ```bash
 openssl rand -hex 32
 export NORMATTIVA_REFERENCE_KEY='<paste your preserved 64-hex key>'
 ```
 
-The server reads the process environment; it does not automatically load `.env` files, create a key, or ship a shared secret. Missing/malformed configuration fails explicitly. Compatible processes with the same preserved key can verify signed references across restarts; hosted/npm transfer additionally needs shared trust and compatible versions. Changing or losing the key invalidates signed references and requires new discovery/traversal. Unshared deployments reject references explicitly.
+The server reads the process environment and does not automatically load `.env` files. A malformed explicit value fails instead of falling back. A malformed or inaccessible local state file is left unchanged and fails with guidance to use the explicit override; no secret value is logged. Compatible processes with the same preserved key can verify signed references across restarts. Changing or losing the key invalidates signed references and requires new discovery/traversal. Unshared deployments reject references explicitly.
+
+Hosted HTTP remains explicit-only: set `NORMATTIVA_REFERENCE_KEY` in the deployment secret configuration. A hosted process never creates local or per-instance fallback trust. Remote clients do not receive or need the hosted key. Reference transfer between local, npm and hosted copies additionally requires deliberately shared trust and compatible versions.
 
 Formats: `a1_` portable, validated publication locators (not existence evidence); `a2_` signed act locators carrying independently returned official discovery identity; `n2_` compact signed exact article/attachment references; `n3_` lowercase-only signed reading cursors; and `d2_` lowercase-only signed live-discovery cursors. This implementation also reads earlier `n1_` references, `n2_` reading cursors and `d1_` discovery cursors. Older implementations reject the newer versions, so upgrade both transfer endpoints before sending newly issued references. Lowercase cursors use Base32-encoded authenticated raw-DEFLATE payloads; their decoded payload remains bounded to 16 KiB. Compact cursors share the target's snapshot binding within one authenticated payload. Signed act identity survives restart and requires shared trust for transfer. Detail responses must independently match that identity and the requested validity interval. Unsupported/tampered/untrusted references fail without silently restarting or redirecting to caller-selected hosts. No cursor database is required.
 
@@ -127,7 +135,6 @@ Requires Node.js ≥20 and pnpm. Deterministic tests are currently exercised on 
 ```bash
 pnpm install
 pnpm build
-# Set the preserved NORMATTIVA_REFERENCE_KEY first.
 pnpm start
 pnpm test
 ```

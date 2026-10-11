@@ -40,7 +40,7 @@ test('default registration exposes focused discovery and locator reading without
   });
 });
 
-test('default servers require explicit stable trust and never print malformed key material', () => {
+test('default core registration requires explicit stable trust and never prints malformed key material', () => {
   const original = process.env.NORMATTIVA_REFERENCE_KEY;
   try {
     for (const value of [undefined, 'private-invalid-key', 'a'.repeat(63), 'z'.repeat(64)]) {

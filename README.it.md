@@ -85,14 +85,22 @@ Una sola richiesta upstream attiva per processo; scadenza condivisa di 50 second
 
 ## Configurazione e fiducia nei riferimenti
 
-I nuovi server richiedono `NORMATTIVA_REFERENCE_KEY`: esattamente 64 caratteri esadecimali per una chiave di 32 byte generata crittograficamente. Generala **una volta**, poi conservala nell'ambiente del client o nei segreti del deployment:
+Lo stdio locale non richiede la configurazione di una chiave. Al primo avvio del server (non durante `npm install`) crea una chiave casuale crittografica e la riusa dopo riavvii, reinstallazioni e aggiornamenti ordinari. Il file di stato usa permessi privati dove la piattaforma li supporta e si trova in:
+
+- Linux: `$XDG_STATE_HOME/normattiva-mcp/reference-key`, oppure `~/.local/state/normattiva-mcp/reference-key` se `XDG_STATE_HOME` non è impostata.
+- macOS: `~/Library/Application Support/normattiva-mcp/reference-key`.
+- Windows: `%LOCALAPPDATA%\normattiva-mcp\reference-key`.
+
+Per scegliere esplicitamente la chiave locale, imposta `NORMATTIVA_REFERENCE_KEY` a esattamente 64 caratteri esadecimali per una chiave di 32 byte generata crittograficamente. Il valore esplicito ha sempre la precedenza:
 
 ```bash
 openssl rand -hex 32
 export NORMATTIVA_REFERENCE_KEY='<incolla la chiave persistente di 64 caratteri hex>'
 ```
 
-Il server legge l'ambiente del processo; non carica automaticamente `.env`, non crea chiavi e non include un segreto condiviso. Configurazione assente o malformata fallisce esplicitamente. Processi compatibili con la stessa chiave conservata verificano riferimenti firmati dopo riavvio; trasferimenti tra hosting e npm richiedono anche fiducia condivisa e versioni compatibili. Perdere/cambiare chiave invalida riferimenti firmati e richiede nuove ricerche/letture. Deployment con fiducia diversa rifiutano i riferimenti.
+Il server legge l'ambiente del processo e non carica automaticamente file `.env`. Un valore esplicito malformato fallisce invece di attivare il fallback. Un file di stato locale malformato o inaccessibile resta invariato e produce un errore con l'indicazione di usare l'override esplicito; nessun valore segreto viene registrato nei log. Processi compatibili con la stessa chiave conservata verificano riferimenti firmati dopo il riavvio. Perdere o cambiare chiave invalida i riferimenti firmati e richiede nuove ricerche o letture. Deployment con fiducia diversa rifiutano i riferimenti.
+
+Il server HTTP in hosting resta solo esplicito: configura `NORMATTIVA_REFERENCE_KEY` nei segreti del deployment. Un processo ospitato non crea mai fiducia locale o un fallback per istanza. I client remoti non ricevono né richiedono la chiave ospitata. Il trasferimento di riferimenti tra copie locali, npm e ospitate richiede inoltre fiducia condivisa intenzionalmente e versioni compatibili.
 
 Formati: `a1_` riferimenti portabili alla pubblicazione validata (non prove di esistenza); `a2_` riferimenti firmati agli atti con identità restituita indipendentemente dalla ricerca ufficiale; `n2_` riferimenti esatti compatti firmati; `n3_` cursori di lettura firmati composti solo da caratteri minuscoli; `d2_` cursori firmati minuscoli della ricerca live. Questa implementazione legge anche i precedenti riferimenti `n1_`, i cursori di lettura `n2_` e i cursori di ricerca `d1_`. Le implementazioni precedenti rifiutano le nuove versioni, quindi aggiorna entrambe le estremità prima di trasferire riferimenti appena emessi. I cursori minuscoli usano payload raw-DEFLATE autenticati e codificati Base32; il payload decodificato resta limitato a 16 KiB. I cursori compatti condividono il legame allo snapshot del destinatario in un unico payload autenticato. L'identità firmata sopravvive al riavvio e richiede fiducia condivisa per il trasferimento. Le risposte di dettaglio devono confermare indipendentemente quell'identità e l'intervallo di validità richiesto. Riferimenti non supportati/manomessi/non fidati falliscono senza riavvii silenziosi o richieste a host scelti dal chiamante. Nessun database dei cursori.
 
@@ -127,7 +135,6 @@ Node.js ≥20 e pnpm. I test deterministici sono attualmente eseguiti su Node 24
 ```bash
 pnpm install
 pnpm build
-# Configura prima NORMATTIVA_REFERENCE_KEY con la chiave persistente.
 pnpm start
 pnpm test
 ```

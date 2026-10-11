@@ -24,6 +24,16 @@ test('the production HTTP handler exposes the same focused interface on stateles
   assert.match(stdout, /HTTP public contracts passed/);
 });
 
+test('the production HTTP handler still refuses to create local trust when configuration is absent', async () => {
+  const { stdout } = await promisify(execFile)(process.execPath,
+    [fileURLToPath(new URL('./fixtures/http-without-reference-trust.mjs', import.meta.url))], {
+      timeout: 30_000,
+      env: Object.fromEntries(Object.entries(process.env)
+        .filter(([name]) => name !== 'NORMATTIVA_REFERENCE_KEY')),
+    });
+  assert.match(stdout, /HTTP explicit trust requirement passed/);
+});
+
 test('the migration smoke workflow crosses the built server using synthetic controls', async () => {
   const fixture = new URL('./fixtures/public-upstream.mjs', import.meta.url).href;
   const { stdout } = await promisify(execFile)(process.execPath,
