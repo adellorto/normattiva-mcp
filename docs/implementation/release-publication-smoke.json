@@ -1,0 +1,26 @@
+{
+  "recorded_at": "2026-10-11T09:49:14.729Z",
+  "endpoint": "https://normattiva-mcp.adellorto.com/api/mcp",
+  "server": {
+    "name": "normattiva-mcp",
+    "version": "0.2.0"
+  },
+  "public_surface": {
+    "tools": 6,
+    "resources": 4,
+    "prompts": 2
+  },
+  "workflow": {
+    "discovery_match": "identified",
+    "article_reference": "13",
+    "act_locator_sha256": "1ac46a58e7915b2172e214f4ce9ed7d0272e20dee29e177e9005644a2bb40235",
+    "first_read_outcome": "found",
+    "first_read_progress": "more",
+    "continuation_cursor_sha256": "69de28ce4e6de9c3ec8a2c76c4cc5efd53fd649809405964d176f0479cae7662",
+    "continuation_cursor_supplied_unchanged": true,
+    "continuation_outcome": "found",
+    "continuation_progress": "more",
+    "invalid_cursor_category": "invalid_cursor"
+  },
+  "secrets_supplied": false
+}
