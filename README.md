@@ -6,11 +6,11 @@
 
 A [Model Context Protocol](https://modelcontextprotocol.io) server for official Italian legislation from [Normattiva](https://www.normattiva.it), run by IPZS. Shared discovery, dated article indexing and bounded reading serve both local stdio and Streamable HTTP clients.
 
-## Development status
+## Release status
 
-This source revision implements stages 1–4 of the [accepted remediation](https://github.com/adellorto/normattiva-mcp/issues/6#issuecomment-5992182865). Both default servers now expose the coordinated replacement interface described below. It is **unpublished**: the existing npm package, hosted endpoint and live landing page still reflect the previous release. Examples of the replacement interface apply to a source build now and the coordinated release after publication.
+Version **0.2.0** is published and the production hosted endpoint is live. The immutable [tag](https://github.com/adellorto/normattiva-mcp/tree/v0.2.0), [GitHub Release](https://github.com/adellorto/normattiva-mcp/releases/tag/v0.2.0), [npm package](https://www.npmjs.com/package/normattiva-mcp/v/0.2.0) and [hosted endpoint](https://normattiva-mcp.adellorto.com/api/mcp) all expose the coordinated replacement interface described below. The [publication record](docs/implementation/release-publication.md) ties those public artifacts to the reviewed commit and records the passing post-release production smoke.
 
-Candidate **0.2.0** has passed its local pre-publication gates and is prepared for the user-run publication handoff. The [release acceptance handoff](docs/implementation/release-acceptance.md) records the evidence and the still-unpassed deployed-revision checks. Current model checks, native guidance and the approved exclusion of **Llama3.1 8B** from validated support are recorded in the [model guidance remedy](docs/implementation/model-guidance-remedy.md). Passing finite offline or model samples does not establish arbitrary model reliability, and local packaging does not establish production deployment acceptance. Implementation records: [validated reading](docs/implementation/validated-reading.md), [act discovery](docs/implementation/act-discovery.md), [public integration](docs/implementation/public-integration.md). See the [breaking migration guide](docs/migration.md) for removed inputs and fields.
+This source revision implements stages 1–4 of the [accepted remediation](https://github.com/adellorto/normattiva-mcp/issues/6#issuecomment-5992182865). The [pre-publication acceptance handoff](docs/implementation/release-acceptance.md) remains the historical record of the evidence, decisions and checks that were still pending at that time. Current model checks, native guidance and the approved exclusion of **Llama3.1 8B** from validated support are recorded in the [model guidance remedy](docs/implementation/model-guidance-remedy.md). Passing finite offline or model samples does not establish arbitrary model reliability. Implementation records: [validated reading](docs/implementation/validated-reading.md), [act discovery](docs/implementation/act-discovery.md), [public integration](docs/implementation/public-integration.md). See the [breaking migration guide](docs/migration.md) for removed inputs and fields.
 
 ## Capabilities
 
@@ -85,14 +85,22 @@ All upstream work shares one active attempt per process, a 50-second call deadli
 
 ## Configuration and reference trust
 
-The replacement servers require `NORMATTIVA_REFERENCE_KEY`: exactly 64 hexadecimal characters encoding a cryptographically generated 32-byte key. Generate it **once**, then preserve it in your client environment or deployment secret:
+In the development source for the upcoming 0.2.1 release, local stdio needs no key setup. On the first server launch (not during `npm install`), it creates a cryptographically random key and reuses it across restarts, reinstalls and ordinary upgrades. The state file uses private permissions where the platform supports them and is stored at:
+
+- Linux: `$XDG_STATE_HOME/normattiva-mcp/reference-key`, or `~/.local/state/normattiva-mcp/reference-key` when `XDG_STATE_HOME` is unset.
+- macOS: `~/Library/Application Support/normattiva-mcp/reference-key`.
+- Windows: `%LOCALAPPDATA%\normattiva-mcp\reference-key`.
+
+To choose the local key explicitly, set `NORMATTIVA_REFERENCE_KEY` to exactly 64 hexadecimal characters encoding a cryptographically generated 32-byte key. An explicit value always takes precedence:
 
 ```bash
 openssl rand -hex 32
 export NORMATTIVA_REFERENCE_KEY='<paste your preserved 64-hex key>'
 ```
 
-The server reads the process environment; it does not automatically load `.env` files, create a key, or ship a shared secret. Missing/malformed configuration fails explicitly. Compatible processes with the same preserved key can verify signed references across restarts; hosted/npm transfer additionally needs shared trust and compatible versions. Changing or losing the key invalidates signed references and requires new discovery/traversal. Unshared deployments reject references explicitly.
+The server reads the process environment and does not automatically load `.env` files. A malformed explicit value fails instead of falling back. A malformed or inaccessible local state file is left unchanged and fails with guidance to use the explicit override; no secret value is logged. Compatible processes with the same preserved key can verify signed references across restarts. Changing or losing the key invalidates signed references and requires new discovery/traversal. Unshared deployments reject references explicitly.
+
+Hosted HTTP remains explicit-only: set `NORMATTIVA_REFERENCE_KEY` in the deployment secret configuration. A hosted process never creates local or per-instance fallback trust. Remote clients do not receive or need the hosted key. Reference transfer between local, npm and hosted copies additionally requires deliberately shared trust and compatible versions.
 
 Formats: `a1_` portable, validated publication locators (not existence evidence); `a2_` signed act locators carrying independently returned official discovery identity; `n2_` compact signed exact article/attachment references; `n3_` lowercase-only signed reading cursors; and `d2_` lowercase-only signed live-discovery cursors. This implementation also reads earlier `n1_` references, `n2_` reading cursors and `d1_` discovery cursors. Older implementations reject the newer versions, so upgrade both transfer endpoints before sending newly issued references. Lowercase cursors use Base32-encoded authenticated raw-DEFLATE payloads; their decoded payload remains bounded to 16 KiB. Compact cursors share the target's snapshot binding within one authenticated payload. Signed act identity survives restart and requires shared trust for transfer. Detail responses must independently match that identity and the requested validity interval. Unsupported/tampered/untrusted references fail without silently restarting or redirecting to caller-selected hosts. No cursor database is required.
 
@@ -100,21 +108,21 @@ Upstream destinations are fixed official Normattiva production API/website hosts
 
 ## Clients and HTTP
 
-After the coordinated release, stdio clients can run `npx normattiva-mcp` with preserved trust. During this unpublished stage use a built source path instead of the published package:
+Version 0.2.0 stdio clients can run the published package with preserved trust:
 
 ```json
 {
   "mcpServers": {
     "normattiva": {
-      "command": "node",
-      "args": ["/absolute/path/normattiva-mcp/packages/stdio-server/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "normattiva-mcp@0.2.0"],
       "env": { "NORMATTIVA_REFERENCE_KEY": "<your preserved 64-hex key>" }
     }
   }
 }
 ```
 
-The existing hosted endpoint is `https://normattiva-mcp.adellorto.com/api/mcp`; it has not received this migration. Remote clients need no signing secret; the operator configures it. Compatible self-hosted copies expose the same six tools over Streamable HTTP, with permissive CORS and no authentication by default.
+The production hosted endpoint is `https://normattiva-mcp.adellorto.com/api/mcp`. Hosted users need no reference key or additional authentication; the operator configures deployment trust. Compatible self-hosted copies expose the same six tools over Streamable HTTP, with permissive CORS and no authentication by default.
 
 HTTP initialization returns an opaque `Mcp-Session-Id`; clients must preserve it on subsequent POSTs so cancellation notifications target their own requests. Requests without that header still work, but their notifications cannot cancel an earlier POST. The server also stops work when its host aborts the incoming `Request.signal`. This Vercel deployment opts `api/mcp.ts` into documented downstream-disconnect delivery with `supportsCancellation`; other hosts must provide equivalent `Request.signal` behavior. A lost connection is lifecycle cleanup, not an explicit MCP cancellation notification. The namespace works across restarts with the preserved signing key, while notification routing only reaches active calls on the same process. Multiple instances still require affinity or shared routing for separate MCP cancellation notifications; no cross-instance notification guarantee is made. Invalid namespaces return HTTP 404 and require fresh initialization. POSTs carry one MCP message; batches are rejected. GET and DELETE return 405; responses use JSON without a resumable SSE stream.
 
@@ -127,7 +135,6 @@ Requires Node.js ≥20 and pnpm. Deterministic tests are currently exercised on 
 ```bash
 pnpm install
 pnpm build
-# Set the preserved NORMATTIVA_REFERENCE_KEY first.
 pnpm start
 pnpm test
 ```

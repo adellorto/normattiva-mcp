@@ -9,6 +9,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { signingKey } from './traversal-upstream.mjs';
 import { checkContracts } from './public-contracts.mjs';
+import { releaseVersion } from './release-version.mjs';
 import './release-upstream.mjs';
 const root = fileURLToPath(new URL('../../../../', import.meta.url));
 const source = join(root, '.vercel/output/functions/api/mcp.func');
@@ -43,7 +44,7 @@ await client.connect(new StreamableHTTPClientTransport(new URL('https://fixture.
   fetch: (url, init) => POST(new Request(url, init)),
 }));
 try {
-  assert.equal(client.getServerVersion().version, '0.2.0');
+  assert.equal(client.getServerVersion().version, releaseVersion);
   await checkContracts(client);
   // Exercise cancellation in the traced function, rather than inferring it
   // from source-handler tests or a client-side rejected promise.

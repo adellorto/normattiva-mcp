@@ -3,6 +3,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+import { releaseVersion } from './release-version.mjs';
 
 const deployment = new URL(process.argv[2]);
 const endpoint = new URL('/api/mcp', deployment);
@@ -33,7 +34,7 @@ const report = {
 
 try {
   await client.connect(transport);
-  assert.equal(client.getServerVersion().version, '0.2.0');
+  assert.equal(client.getServerVersion().version, releaseVersion);
   const discovery = (await client.callTool({
     name: 'find_acts',
     arguments: { request: 'decreto legislativo 267/2000 articolo 13' },

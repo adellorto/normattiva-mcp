@@ -3,6 +3,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { signingKey } from './traversal-upstream.mjs';
 import { checkContracts } from './public-contracts.mjs';
+import { releaseVersion } from './release-version.mjs';
 import './public-upstream.mjs';
 process.env.NORMATTIVA_REFERENCE_KEY = signingKey.toString('hex');
 try {
@@ -18,7 +19,11 @@ try {
       return response;
     },
   });
-  try { await client.connect(transport); await checkContracts(client); }
+  try {
+    await client.connect(transport);
+    assert.equal(client.getServerVersion().version, releaseVersion);
+    await checkContracts(client);
+  }
   finally { await client.close(); }
   console.log('HTTP public contracts passed');
   process.exit(0);

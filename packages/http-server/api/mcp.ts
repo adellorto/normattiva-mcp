@@ -1,11 +1,13 @@
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { CancelledNotificationSchema, InitializeRequestSchema, isJSONRPCRequest, isJSONRPCNotification } from "@modelcontextprotocol/sdk/types.js";
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { createRequire } from "node:module";
 import {
   createServer,
   configuredSigningKey,
 } from "@normattiva/core";
-import pkg from "../package.json" with { type: "json" };
+
+const pkg = createRequire(import.meta.url)("../package.json") as { version: string };
 
 // The namespace is self-contained; only in-flight requests occupy process memory.
 // A cancellation on another instance cannot reach this map. Never key by bare RPC id.

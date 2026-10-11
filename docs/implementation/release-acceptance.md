@@ -1,5 +1,7 @@
 # Candidate 0.2.0 pre-publication acceptance and handoff
 
+> Historical record: this document preserves the evidence and status at the time of the 9–10 October 2026 handoff, including failures and actions that were then still pending. See the [0.2.0 publication record](release-publication.md) for the immutable public artifacts, production deployment and post-release verification completed on 11 October 2026.
+
 Initial acceptance work began on 5 October 2026; the coordinated pre-publication decision was completed on 9 October 2026, Node 24.15.0/Linux, against local candidate `e284be4` plus the release-handoff documentation. On 10 October, the first immutable Preview of reviewed commit `db2b778` exposed the missing Vercel cancellation opt-in; [issue #33](https://github.com/adellorto/normattiva-mcp/issues/33) now records its supported correction and a passing replacement Preview. The [accepted delivery specification](https://github.com/adellorto/normattiva-mcp/issues/6#issuecomment-5992182865) still governs acceptance. No push, tag, npm publication or production deployment was performed.
 
 Every native prerequisite on the implementation map is closed. Their failed precursors, scoped corrections and limits remain recorded below; the terminal decision relies on the integrated evidence, not on relabelling any earlier failure.

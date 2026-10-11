@@ -5,6 +5,7 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { checkContracts } from './fixtures/public-contracts.mjs';
+import { releaseVersion } from './fixtures/release-version.mjs';
 import { fileURLToPath } from 'node:url';
 import { signingKey } from './fixtures/traversal-upstream.mjs';
 
@@ -14,7 +15,10 @@ test('the built stdio server integrates discovery, reading, resources and prompt
     '--import', fileURLToPath(new URL('./fixtures/public-upstream.mjs', import.meta.url)),
     fileURLToPath(new URL('../../stdio-server/dist/index.js', import.meta.url)),
   ], env: { ...process.env, NORMATTIVA_REFERENCE_KEY: signingKey.toString('hex') } }));
-  try { await checkContracts(client); } finally { await client.close(); }
+  try {
+    assert.equal(client.getServerVersion().version, releaseVersion);
+    await checkContracts(client);
+  } finally { await client.close(); }
 });
 
 test('the production HTTP handler exposes the same focused interface on stateless requests', async () => {
@@ -22,6 +26,16 @@ test('the production HTTP handler exposes the same focused interface on stateles
   const { stdout } = await promisify(execFile)(process.execPath,
     [fileURLToPath(new URL('./fixtures/public-http.mjs', import.meta.url))], { timeout: 30_000 });
   assert.match(stdout, /HTTP public contracts passed/);
+});
+
+test('the production HTTP handler still refuses to create local trust when configuration is absent', async () => {
+  const { stdout } = await promisify(execFile)(process.execPath,
+    [fileURLToPath(new URL('./fixtures/http-without-reference-trust.mjs', import.meta.url))], {
+      timeout: 30_000,
+      env: Object.fromEntries(Object.entries(process.env)
+        .filter(([name]) => name !== 'NORMATTIVA_REFERENCE_KEY')),
+    });
+  assert.match(stdout, /HTTP explicit trust requirement passed/);
 });
 
 test('the migration smoke workflow crosses the built server using synthetic controls', async () => {
