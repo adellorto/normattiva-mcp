@@ -85,7 +85,7 @@ All upstream work shares one active attempt per process, a 50-second call deadli
 
 ## Configuration and reference trust
 
-Local stdio needs no key setup. On the first server launch (not during `npm install`), it creates a cryptographically random key and reuses it across restarts, reinstalls and ordinary upgrades. The state file uses private permissions where the platform supports them and is stored at:
+In the development source for the upcoming 0.2.1 release, local stdio needs no key setup. On the first server launch (not during `npm install`), it creates a cryptographically random key and reuses it across restarts, reinstalls and ordinary upgrades. The state file uses private permissions where the platform supports them and is stored at:
 
 - Linux: `$XDG_STATE_HOME/normattiva-mcp/reference-key`, or `~/.local/state/normattiva-mcp/reference-key` when `XDG_STATE_HOME` is unset.
 - macOS: `~/Library/Application Support/normattiva-mcp/reference-key`.
