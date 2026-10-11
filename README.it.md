@@ -6,11 +6,11 @@
 
 Un server [Model Context Protocol](https://modelcontextprotocol.io) per la normativa italiana ufficiale di [Normattiva](https://www.normattiva.it), gestito da IPZS. Ricerca di atti, indice degli articoli a una data precisa e lettura limitata sono condivisi dai trasporti stdio e Streamable HTTP.
 
-## Stato dello sviluppo
+## Stato del rilascio
 
-Questa revisione implementa le fasi 1–4 della [specifica accettata](https://github.com/adellorto/normattiva-mcp/issues/6#issuecomment-5992182865). Entrambi i server predefiniti espongono la nuova interfaccia descritta sotto. È **non pubblicata**: il pacchetto npm, l'endpoint ospitato e la pagina pubblica riflettono ancora la versione precedente. Gli esempi della nuova interfaccia valgono subito per una compilazione dai sorgenti e, dopo la pubblicazione, per il rilascio coordinato.
+La versione **0.2.0** è pubblicata e l'endpoint ospitato di produzione è attivo. Il [tag](https://github.com/adellorto/normattiva-mcp/tree/v0.2.0), il [rilascio GitHub](https://github.com/adellorto/normattiva-mcp/releases/tag/v0.2.0), il [pacchetto npm](https://www.npmjs.com/package/normattiva-mcp/v/0.2.0) e l'[endpoint ospitato](https://normattiva-mcp.adellorto.com/api/mcp) espongono la nuova interfaccia coordinata descritta sotto. Il [resoconto della pubblicazione](docs/implementation/release-publication.md) collega questi artefatti pubblici al commit revisionato e registra il controllo di produzione superato dopo il rilascio.
 
-La versione candidata **0.2.0** ha superato le verifiche locali precedenti alla pubblicazione ed è pronta per la consegna delle operazioni riservate all'utente. Il [resoconto di accettazione](docs/implementation/release-acceptance.md) registra le prove e le verifiche sulla revisione effettivamente distribuita che non sono ancora state eseguite. Le verifiche attuali sui modelli, la guida misurata con tokenizer nativo e l'esclusione approvata di **Llama3.1 8B** dal supporto validato sono registrate nella [correzione della guida ai modelli](docs/implementation/model-guidance-remedy.md). Campioni finiti offline o sui modelli non dimostrano affidabilità arbitraria dei modelli, e il packaging locale non equivale all'accettazione del deployment in produzione. Dettagli: [lettura validata](docs/implementation/validated-reading.md), [ricerca di atti](docs/implementation/act-discovery.md), [integrazione pubblica](docs/implementation/public-integration.md). La [guida alla migrazione incompatibile](docs/migration.md) elenca campi e chiamate rimossi.
+Questa revisione implementa le fasi 1–4 della [specifica accettata](https://github.com/adellorto/normattiva-mcp/issues/6#issuecomment-5992182865). Il [resoconto di accettazione precedente alla pubblicazione](docs/implementation/release-acceptance.md) resta il documento storico delle prove, delle decisioni e delle verifiche ancora in sospeso in quel momento. Le verifiche attuali sui modelli, la guida misurata con tokenizer nativo e l'esclusione approvata di **Llama3.1 8B** dal supporto validato sono registrate nella [correzione della guida ai modelli](docs/implementation/model-guidance-remedy.md). Campioni finiti offline o sui modelli non dimostrano affidabilità arbitraria dei modelli. Dettagli: [lettura validata](docs/implementation/validated-reading.md), [ricerca di atti](docs/implementation/act-discovery.md), [integrazione pubblica](docs/implementation/public-integration.md). La [guida alla migrazione incompatibile](docs/migration.md) elenca campi e chiamate rimossi.
 
 ## Funzionalità
 
@@ -100,21 +100,21 @@ Le destinazioni sono host ufficiali fissi dell'API e del sito Normattiva in prod
 
 ## Client e HTTP
 
-Dopo il rilascio coordinato, i client stdio potranno eseguire `npx normattiva-mcp` con la chiave persistente. Finché questa fase non è pubblicata, usa il percorso dei sorgenti compilati:
+I client stdio della versione 0.2.0 possono eseguire il pacchetto pubblicato con la chiave persistente:
 
 ```json
 {
   "mcpServers": {
     "normattiva": {
-      "command": "node",
-      "args": ["/percorso/assoluto/normattiva-mcp/packages/stdio-server/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "normattiva-mcp@0.2.0"],
       "env": { "NORMATTIVA_REFERENCE_KEY": "<chiave persistente di 64 caratteri hex>" }
     }
   }
 }
 ```
 
-L'endpoint esistente `https://normattiva-mcp.adellorto.com/api/mcp` non ha ancora questa migrazione. I client remoti non ricevono il segreto; lo configura il gestore. Copie compatibili ospitate autonomamente espongono gli stessi sei strumenti via Streamable HTTP, con CORS permissivo e senza autenticazione predefinita.
+L'endpoint ospitato di produzione è `https://normattiva-mcp.adellorto.com/api/mcp`. Gli utenti del servizio ospitato non hanno bisogno di una chiave di riferimento né di autenticazione aggiuntiva; la fiducia del deployment è configurata dal gestore. Copie compatibili ospitate autonomamente espongono gli stessi sei strumenti via Streamable HTTP, con CORS permissivo e senza autenticazione predefinita.
 
 L'inizializzazione HTTP restituisce un `Mcp-Session-Id` opaco; i client devono conservarlo nei POST successivi affinché le notifiche di cancellazione individuino le proprie richieste. Le richieste senza questo header funzionano, ma le loro notifiche non possono cancellare un POST precedente. Il server ferma il lavoro anche quando l'host interrompe il `Request.signal` in ingresso. Questo deployment Vercel abilita per `api/mcp.ts` la consegna documentata della disconnessione downstream con `supportsCancellation`; altri host devono fornire un comportamento equivalente del `Request.signal`. La perdita della connessione provoca pulizia del ciclo di vita, ma non è una notifica MCP esplicita. Il riferimento resta valido dopo riavvii con la chiave di firma conservata, mentre le notifiche raggiungono solo chiamate attive nello stesso processo. Con più istanze servono ancora affinità o instradamento condiviso per notifiche MCP separate; non è garantita la cancellazione tramite notifica tra istanze. Un riferimento di sessione non valido restituisce HTTP 404 e richiede una nuova inizializzazione. Ogni POST contiene un solo messaggio MCP; i batch sono rifiutati. GET e DELETE restituiscono 405; le risposte usano JSON senza stream SSE riprendibile.
 
